@@ -1,0 +1,214 @@
+package agency.highlysuspect.apathy.expr;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+//Hey, you know what's really hard to implement in Java?
+//Parser combinators.
+public class ConfigParser {
+	static class ParseResult<T> {
+		ParseResult(X x) {
+			this.x = x;
+		}
+		
+		X x;
+		
+		static <T> ParseResult<T> success(T value, String rest) {
+			return new ParseResult<>(new Success<>(value, rest));
+		}
+		
+		static <T> ParseResult<T> error(String problem, String rest) {
+			return new ParseResult<>(new Error(problem, rest));
+		}
+		
+		interface X {}
+		
+		static class Success<T> implements X {
+			public Success(T value, String rest) {
+				this.value = value;
+				this.rest = rest;
+			}
+			
+			T value;
+			String rest;
+		}
+		
+		static class Error implements X {
+			public Error(String problem, String rest) {
+				this.problem = problem;
+				this.rest = rest;
+			}
+			
+			String problem;
+			String rest;
+		}
+		
+		boolean isSuccess() {
+			return x instanceof Success;
+		}
+		
+		boolean isError() {
+			return !isSuccess();
+		}
+		
+		Success<T> getSuccess() {
+			return (Success<T>) x;
+		}
+		
+		Error getError() {
+			return (Error) x;
+		}
+		
+		//Might actually be a "flatMap"
+		<U> ParseResult<U> flatMap(Function<Success<T>, ParseResult<U>> func) {
+			if(isSuccess()) return func.apply(getSuccess());
+			else return castError();
+		}
+		
+		<U> ParseResult<U> castError() {
+			if(!isError()) throw new IllegalArgumentException("castError on a non error");
+			return (ParseResult<U>) this;
+		}
+	}
+	
+	interface Parser<T> {
+		ParseResult<T> parse(String input);
+		
+		default <U> Parser<U> map(Function<T, U> mapper) {
+			return input -> this.parse(input).flatMap(s -> ParseResult.success(mapper.apply(s.value), s.rest));
+		}
+		
+		default Parser<T> or(Parser<T> next) {
+			return input -> {
+				ParseResult<T> r = this.parse(input);
+				if(r.isSuccess()) {
+					return r;
+				} else {
+					return next.parse(input);
+				}
+			};
+		}
+		
+		default <U> Parser<U> ignoreThen(Parser<U> next) {
+			return input -> this.parse(input).flatMap(s -> next.parse(s.rest));
+		}
+		
+		default <A, C> Parser<T> surroundedBy(Parser<A> left, Parser<C> right) {
+			return input -> {
+				ParseResult<A> first = left.parse(input);
+				if(first.isError()) return first.castError();
+				
+				ParseResult<T> second = first.flatMap(o -> this.parse(o.rest));
+				if(second.isError()) return second.castError();
+				
+				ParseResult<C> third = second.flatMap(o -> right.parse(o.rest));
+				if(third.isError()) return third.castError();
+				
+				return ParseResult.success(second.getSuccess().value, third.getSuccess().rest);
+			};
+		}
+		
+		default Parser<List<T>> asterisk() {
+			return input -> {
+				List<T> result = new ArrayList<>();
+				
+				String rest = input;
+				while(true) {
+					ParseResult<T> r = this.parse(rest);
+					if(r.isSuccess()) {
+						ParseResult.Success<T> asd = r.getSuccess();
+						result.add(asd.value);
+						rest = asd.rest;
+					} else {
+						return ParseResult.success(result, r.getError().rest);
+					}
+				}
+			};
+		}
+		
+		static <A, B, C> Parser<B> surround(Parser<A> a, Parser<B> b, Parser<C> c) {
+			return b.surroundedBy(a, c);
+		}
+		
+		//there's one in minecraft but lol. client only
+		interface CharPredicate {
+			boolean test(char c);
+		}
+		
+		static Parser<String> until(CharPredicate c, boolean allowEof) {
+			return input -> {
+				if(input.isEmpty()) {
+					if(allowEof) return ParseResult.success(input, input);
+					else return ParseResult.error("Unexpected end of file", input);
+				}
+				
+				//Logic from string#trim
+				int start = 0;
+				char[] chars = input.toCharArray();
+				while(start < chars.length && c.test(chars[start])) {
+					start++;
+				}
+				
+				String head = input.substring(0, start - 1);
+				String tail = input.substring(start);
+				return ParseResult.success(head, tail);
+			};
+		}
+		
+		static Parser<String> trim() {
+			return until(c -> c <= ' ', true);
+		}
+		
+		static Parser<Character> expectChar(char c) {
+			return input -> {
+				if(input.isEmpty()) return ParseResult.error("Unexpected end of file", input);
+				else {
+					char head = input.charAt(0);
+					String tail = input.substring(1);
+					return head == c ?
+						ParseResult.success(head, tail) :
+						ParseResult.error("Expected char " + c + " but found " + head, tail);
+				}
+			};
+		}
+	}
+	
+	//I need tagged unions and I need them yesterday
+	private static class Arg {
+		Arg(Object value) {
+			this.value = value;
+		}
+		
+		static Parser<Arg> parse(String input) {
+			return Parser.until(c -> Character.isWhitespace(c) || c == ')', false).map(Arg::new);
+		}
+		
+		Object value; //either String or an Expr
+		
+		boolean isString() {
+			return value instanceof String;
+		}
+		
+		String getString() {
+			return (String) value;
+		}
+		
+		boolean isExpr() {
+			return value instanceof Expr;
+		}
+		
+		Expr getExpr() {
+			return (Expr) value;
+		}
+	}
+	
+	//An Expr containing a list of "a, b, c, d" corresponds to the string (a b c d).
+	private static class Expr {
+		List<String> elements;
+		
+		static Parser<Expr> parse(String input) {
+			
+		}
+	}
+}

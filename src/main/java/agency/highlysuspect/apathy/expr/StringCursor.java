@@ -7,10 +7,6 @@ class StringCursor {
 		this.pos = pos;
 	}
 	
-	public StringCursor copy() {
-		return new StringCursor(input, pos);
-	}
-	
 	final String input;
 	int pos;
 	
@@ -42,6 +38,6 @@ class StringCursor {
 	Token findStringToken() {
 		int here = pos;
 		while(withinBounds() && !atWhitespace() && charAt() != ')') skip();
-		return Tokens.value(here, pos, input.substring(here, pos));
+		return Tokens.value(Span.from(here, pos), input.substring(here, pos));
 	}
 }

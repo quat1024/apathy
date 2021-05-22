@@ -5,58 +5,63 @@ import org.apache.commons.lang3.StringUtils;
 import org.derive4j.Data;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
+@SuppressWarnings("OptionalUsedAsFieldOrParameterType") //bad convention!
 abstract class Node {
 	interface Cases<R> {
 		// Anything not special.
-		R atom(int start, int end, String val);
+		R atom(Optional<Span> source, String val);
 		
 		// (a b c d) -> list of a, b, c, d
-		R list(int start, int end, List<Node> entries);
-		
-		// the end of the file
-		R eof();
+		R list(Optional<Span> source, List<Node> entries);
 	}
 	
+	public abstract String toString();
 	public abstract <R> R match(Cases<R> cases);
 	
 	public final String show() {
 		return Nodes.caseOf(this)
-			.atom((start, end, val) -> val)
-			.list((start, end, entries) -> {
+			.atom((span, val) -> val)
+			.list((span, entries) -> {
 				StringBuilder owo = new StringBuilder("(");
 				entries.forEach(node -> {
 					owo.append(node.show());
 					owo.append(" ");
 				});
 				return owo.substring(0, owo.length() - 1) + ")";
-			})
-			.eof_("");
+			});
 	}
 	
 	public final void debugSpans(String original, int indent) {
 		String asd = StringUtils.repeat('\t', indent);
 		
 		Nodes.caseOf(this)
-			.atom((start, end, val) -> {
+			.atom((span, val) -> {
 				System.out.println(asd + "atom  " + val);
-				System.out.println(asd + "   => " + original.substring(start, end));
+				if(span.isPresent()) {
+					System.out.println(asd + "   => " + span.get().cut(original));
+				} else {
+					System.out.println(asd + "   =>  (no span)");
+				}
 				return Unit.INSTANCE;
 			})
-			.list((start, end, entries) -> {
+			.list((span, entries) -> {
 				System.out.println(asd + "list  " + show());
-				System.out.println(asd + "   => " + original.substring(start, end));
+				if(span.isPresent()) {
+					System.out.println(asd + "   => " + span.get().cut(original));
+				} else {
+					System.out.println(asd + "   =>  (no span)");
+				}
 				entries.forEach(e -> e.debugSpans(original, indent + 1));
 				return Unit.INSTANCE;
-			})
-			.otherwiseEmpty();
+			});
 	}
 	
 	public final String describe() {
 		return Nodes.caseOf(this)
 			.atom_("atom")
-			.list_("list")
-			.eof_("end of file");
+			.list_("list");
 	}
 }

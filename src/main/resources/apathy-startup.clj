@@ -54,7 +54,7 @@
 	(fn [mob player] (if (partial mob player) :allow nil)))
 
 (defn deny-if
-	"Lifts a partial rule (predicate) into a rule. The rule returns :deny if the predicate is true, and :pass if it's not.
+	"Lifts a partial rule (predicate) into a rule. The rule returns :deny if the predicate is true, and nil if it's not.
 	Example: (deny-if (difficulty 'easy))"
 	[partial]
 	(fn [mob player] (if (partial mob player) :deny nil)))

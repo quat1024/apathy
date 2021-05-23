@@ -17,9 +17,9 @@
 	A rule is a function of two arguments: [mob player]
 	where 'mob' is the mob thinking about performing an attack, and 'player' is the prospective target.
 	A rule returns one of three keywords:
-  :allow - The mob is allowed to attack the player.
-  :deny  - The mob is not allowed to attack the player.
-  :pass  - This rule doesn't apply right now."
+	:allow - The mob is allowed to attack the player.
+	:deny  - The mob is not allowed to attack the player.
+	:pass  - This rule doesn't apply right now."
 	(set! (. Api rule) fn))
 
 (defn reset-rule!

@@ -25,13 +25,10 @@ public class Api {
 	
 	//Internal
 	public static boolean notAllowedToTargetPlayer(MobEntity attacker, PlayerEntity target) {
-		attacker.world.getProfiler().push("apathy-clojure");
+		if(attacker.world.isClient) throw new IllegalStateException("No script execution on the client world... bad");
 		
 		Object ruleOutput = rule.invoke(attacker, target);
-		boolean result = (boolean) ruleOutputToBool.invoke(ruleOutput);
-		
-		attacker.world.getProfiler().pop();
-		return result;
+		return (boolean) ruleOutputToBool.invoke(ruleOutput);
 	}
 	
 	public static void log(String s) {

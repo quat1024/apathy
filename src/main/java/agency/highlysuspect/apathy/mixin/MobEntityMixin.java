@@ -17,6 +17,7 @@ public class MobEntityMixin {
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
 	public void whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		MobEntity thi$ = (MobEntity) (Object) this;
+		if(thi$.world.isClient) return;
 		
 		//Check whether it's okay to target this player.
 		if(newTarget instanceof PlayerEntity && Api.notAllowedToTargetPlayer(thi$, (PlayerEntity) newTarget)) {
@@ -28,6 +29,8 @@ public class MobEntityMixin {
 	@Inject(method = "tick", at = @At("HEAD"))
 	public void whenTicking(CallbackInfo ci) {
 		MobEntity thi$ = (MobEntity) (Object) this;
+		if(thi$.world.isClient) return;
+		
 		//If currently targeting a player, check to make sure it's still okay to do so.
 		if((thi$.world.getTime() + thi$.getEntityId()) % Api.recheckInterval == 0 //This check doesn't need to be done super often.
 			&& target instanceof PlayerEntity

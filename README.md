@@ -12,18 +12,14 @@ The first script that executes is `apathy-startup.clj`, a built-in one to set up
 
 This is the *plan*:
 
-* execute `cfg/apathy.clj` from the config file. (Default config file will have *plenty* of examples, dw if you're not a clojure programmer.)
+* execute `cfg/apathy.clj` from the config file. (Default config file will have *plenty* of examples, dw if you're not a clojure programmer. I'm not either.)
 * execute clojure scripts from data packs
 
 ### quick note on security
 
 Yes, Clojure is a Lisp with the full power of Java behind it. No attempts at sandboxing are made. You know what else has the full power of Java? Every single mod you have installed ;)
 
-Scripts are never sent over the network.
-
-This is the *plan*:
-
-* Scripts are not executed on the client. (I just need to make a server entry point, shoudn't be hard at all.)
+Scripts are never sent over the network, scripts from the server are never executed on the client.
 
 ## Blah
 
@@ -34,6 +30,8 @@ Due to remapping issues, it's not possible to reliably refer to classes and meth
 ## Examples
 
 I wrote docs like 5 minutes ago but they're already out of date Lol. Mod is still WIP...
+
+See `apathy-startup.clj` for the standard library
 
 ## Gotchas
 

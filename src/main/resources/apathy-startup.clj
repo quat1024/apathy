@@ -21,10 +21,7 @@
 	"A rule combinator that sequences other rules together. Evaluates rules one-by-one, returning the value of the first one that didn't return nil. Returns nil itself if none matched."
 	[& rules]
 	(fn [mob player]
-		(->> rules
-		     (map #(% mob player))
-		     (filter #(not= % nil))
-		     (first))))
+		(some #(% mob player) rules)))
 
 (defn debug-rule
 	"Wraps another rule, logs a message when it's invoked, and logs whatever it output."
@@ -36,9 +33,17 @@
 				(log-msg (str "Result: " result))
 				result))))
 
-(def always-allow (fn [mob player] :allow))
-(def always-deny (fn [mob player] :deny))
-(def always-pass (fn [mob player] nil))
+(defn always-allow
+	"A rule that always returns :allow ."
+	[] (constantly :allow))
+
+(defn always-deny 
+	"A rule that always returns :deny ."
+	[] (constantly :deny))
+
+(defn always-pass
+	"A rule that always returns nil."
+	[] (constantly nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; partial rules
 

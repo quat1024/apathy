@@ -20,4 +20,4 @@
 
 (set-rule!
  (allow-if (difficulty 'normal 'hard))
- always-deny)
+ (always-deny))

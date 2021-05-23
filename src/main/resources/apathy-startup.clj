@@ -83,10 +83,15 @@
 	(let [diffset (set (map #(Api/parseDifficulty %) diffs))]
 		(fn [mob player] (contains? diffset (Api/difficultyOf mob)))))
 
+(defn boss
+	"Partial rule. Returns true if the entity is a boss. Bossness is determined via inclusion in the apathy:bosses entity type tag." 
+	[]
+	(attacker-has-tag 'apathy:bosses))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule state
 
 (defn set-rule!
-	"Sets the current rule. Calling with more than one parameter chains them together using rule-chain."
+	"Sets the current rule. Calling with more than one parameter chains them together using chain-rule."
 	([fn] (set! (Api/rule) fn))
 	([first & more] (set! (Api/rule) (apply chain-rule first more))))
 

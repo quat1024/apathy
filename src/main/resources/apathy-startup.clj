@@ -43,44 +43,49 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; partial rules
 
 ;; What is a partial rule?
-;; A partial rule is a predicate on [mob player]. It returns a Boolean instead of :allow :deny or :pass.
-;; Many predicates over [mob player] can be taken to mean "true means 'yes, attack'" or "true means 'yes, don't attack'".
-;; allow-if and deny-if can lift a partial rule into a rule, following those steps.
+;; A partial rule is a predicate on [mob player]. It returns a Boolean instead of :allow :deny or nil.
+;; Many predicates over [mob player] can be interpreted to mean "true means 'yes, attack'" or "true means 'yes, don't attack'".
+;; allow-if and deny-if lift a partial rule into a rule, following one of those two interpretations.
 
 (defn allow-if
 	"Lifts a partial rule (predicate) into a rule. The rule returns :allow if the predicate is true, and nil if it's not.
 	Example: (allow-if (attacker-has-tag 'mymodpack:bosses))"
-	[a]
-	(fn [mob player] (if (a mob player) :allow nil)))
+	[partial]
+	(fn [mob player] (if (partial mob player) :allow nil)))
 
 (defn deny-if
 	"Lifts a partial rule (predicate) into a rule. The rule returns :deny if the predicate is true, and :pass if it's not.
 	Example: (deny-if (difficulty 'easy))"
-	[a]
-	(fn [mob player] (if (a mob player) :deny nil)))
+	[partial]
+	(fn [mob player] (if (partial mob player) :deny nil)))
 
 
 (defn attacker-has-tag
 	"Partial rule. true if the attacker has this entity tag, false if they don't.
 	Example: (attacker-has-tag 'minecraft:raiders)"
-	[tag]
-	(let [conv-tag (Api/toEntityTypeTag tag)]
-		(fn [mob player] (Api/attackerHasTag mob conv-tag))))
+;	[& tags]
+;	(let [tagset (set (map #(Api/parseEntityTypeTag %) tags))]
+;		(fn [mob player] (not= nil (->> tagset (filter #(Api/entityHasTag mob %)) (first)))))) ;idk if this works???? seems messy as hell
+	; whatever i'll just implement it in java
+	[& tags]
+	(Api/copOut (set (map #(Api/parseEntityTypeTag %) tags))))
 
 (defn attacker-is
-	"Partial rule. true if this is the attacker's entity ID, false if it's not.
+	"Partial rule. true if the argument list contains the attacker's entity ID, false if it doesn't.
+	Pass entity IDs as keywords, symbols, or strings.
 	Example: (attacker-is 'minecraft:creeper)"
-	[type]
-	(let [conv-type (Api/toEntityType type)]
-		(fn [mob player] (Api/attackerIs mob conv-type))))
+	[& types]
+	(let [typeset (set (map #(Api/parseEntityType %) types))]
+		(fn [mob player] (contains? typeset (Api/entityTypeOf mob)))))
 
 (defn difficulty
-	"Partial rule. true if this is the world's current difficulty, false if it's not.
-	Pass difficulties as symbols.
-	Example: (difficulty 'hard)"
-	[diff]
-	(let [conv-diff (Api/toDifficulty diff)] ; parse
-		(fn [mob player] (Api/difficultyIs mob conv-diff))))
+	"Partial rule. true if the argument list contains the world's current difficulty, false if it doesn't.
+	Pass difficulties as keywords, symbols, or strings.
+	Example: (difficulty :hard)
+	Example: (difficulty 'easy :normal)"
+	[& diffs]
+	(let [diffset (set (map #(Api/parseDifficulty %) diffs))]
+		(fn [mob player] (contains? diffset (Api/difficultyOf mob)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule state
 

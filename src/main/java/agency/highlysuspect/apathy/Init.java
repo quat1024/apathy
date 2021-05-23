@@ -51,11 +51,12 @@ public class Init implements ModInitializer {
 	}
 	
 	private static void loadIntoClojure(String message, InputStream yea) {
-		try {
+		try(InputStreamReader reader = new InputStreamReader(yea)) {
 			LOG.info(message);
-			Clojure.var("clojure.core", "load-reader").invoke(new InputStreamReader(yea));
+			Clojure.var("clojure.core", "load-reader").invoke(reader);
 			LOG.info("Success!");
-		} catch (RuntimeException e) {
+		} catch (RuntimeException | IOException e) {
+			
 			LOG.error("Failure.");
 			LOG.error("Problem loading clojure file", e);
 		}

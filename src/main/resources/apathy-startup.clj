@@ -90,11 +90,10 @@
 	([fn] (set! (Api/rule) fn))
 	([first & more] (set! (Api/rule) (apply chain-rule first more))))
 
+; Clojurians help me here, idk how "getters" work in clj especially because it's a functional language and there aren't really getters anyway.
 (defn get-rule!
 	"Thunk that gets the current rule."
-	; Clojurians help me here, idk how "getters" work in clj especially because it's a functional language and there aren't really getters anyway.
-	[]
-	(Api/rule))
+	[] (Api/rule))
 
 (defn reset-rule!
 	"Resets the rule to 'all mobs can attack anyone'."
@@ -107,15 +106,27 @@
 	(let [cur (get-rule!)]
 		(set-rule! cur next-rules)))
 
+(defn set-recheck-interval!
+	"As an optimization, mobs that are currently targeting a player don't recheck that it's still okay to do so, every single tick.
+	This number, which defaults to 20 (once a second), is how often they will do that."
+	[interval]
+	(set! (Api/recheckInterval) interval))
+
+(defn get-recheck-interval!
+	"Thunk that gets the current recheck interval."
+	[] (Api/recheckInterval))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; startup bits and bobs
 
 ; rule starts as null in java, game will summarily crash without this
 (reset-rule!)
 
+(set-recheck-interval! 20)
+
 ; called from java
-(set! (Api/toPreventTargetChangeBool)
+(set! (Api/ruleOutputToBool)
 	(fn [thing]
-		(cond
-			(= thing :allow) false ; don't prevent the mob from changing its target
-			(= thing :deny)  true  ; prevent the mob from changing its target
-			:else            false)))
+		(case thing
+			:deny  true  ; prevent the mob from changing its target
+			:allow false ; don't prevent the mob from changing its target
+			false)))

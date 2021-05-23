@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.Init;
 import clojure.lang.IFn;
 import clojure.lang.Keyword;
 import clojure.lang.Symbol;
@@ -14,20 +13,22 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
-import java.util.Set;
-import java.util.function.BiFunction;
-
-// Most of the relevant things in here have more natural-looking Clojure bindings defined in apathy-startup.clj. There's no need to import Api yourself.
+// Most of the relevant things in here have more natural-feeling Clojure bindings defined in apathy-startup.clj. There's no need to import Api yourself. Hopefully.
 public class Api {
+	//These are initialized in the startup clojure script
+	//I'd love to give them sensible defaults Java-side but hoo, IFn has 20 methods to implement for different arities lmao
 	public static IFn rule;
-	public static IFn toPreventTargetChangeBool;
+	public static IFn ruleOutputToBool;
+	
+	//How often a mob that is currently targeting a player rechecks that it's still okay to do so
+	public static int recheckInterval;
 	
 	//Internal
-	public static boolean preventAttackTargetChange(MobEntity attacker, PlayerEntity target) {
+	public static boolean notAllowedToTargetPlayer(MobEntity attacker, PlayerEntity target) {
 		attacker.world.getProfiler().push("apathy-clojure");
 		
 		Object ruleOutput = rule.invoke(attacker, target);
-		boolean result = (boolean) toPreventTargetChangeBool.invoke(ruleOutput);
+		boolean result = (boolean) ruleOutputToBool.invoke(ruleOutput);
 		
 		attacker.world.getProfiler().pop();
 		return result;

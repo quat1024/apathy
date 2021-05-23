@@ -56,9 +56,9 @@ public class Init implements ModInitializer {
 			Clojure.var("clojure.core", "load-reader").invoke(reader);
 			LOG.info("Success!");
 		} catch (RuntimeException | IOException e) {
-			
 			LOG.error("Failure.");
 			LOG.error("Problem loading clojure file", e);
+			throw new RuntimeException(e);
 		}
 	}
 }

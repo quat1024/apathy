@@ -19,5 +19,5 @@
 (reset-rule!)
 
 (set-rule!
- (allow-if (attacker-has-tag 'minecraft:raiders))
+ (allow-if (difficulty 'normal 'hard))
  always-deny)

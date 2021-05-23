@@ -37,4 +37,4 @@ I wrote docs like 5 minutes ago but they're already out of date Lol. Mod is stil
 
 ## Gotchas
 
-The Clojure environment is never reset. If you use `(add-rule!)` instead of `(set-rule!)`, remember to call `(reset-rule!)` before you begin.
+The Clojure environment is never reset, not even when you `/reload`, log out and back in in singleplayer, etc. If you use `(add-rule!)` instead of `(set-rule!)`, remember to call `(reset-rule!)` in your script.

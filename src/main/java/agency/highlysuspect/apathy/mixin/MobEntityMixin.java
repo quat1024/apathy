@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Api;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MobEntityMixin {
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
 	public void whenSettingTarget(@Nullable LivingEntity target, CallbackInfo ci) {
-		if(target instanceof PlayerEntity&& Init.config.preventAttackTargetChange((MobEntity) (Object) this, (PlayerEntity) target)) {
+		if(target instanceof PlayerEntity && Api.preventAttackTargetChange((MobEntity) (Object) this, (PlayerEntity) target)) {
 			ci.cancel();
 		}
 	}

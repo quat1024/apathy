@@ -59,16 +59,12 @@
 	[partial]
 	(fn [mob player] (if (partial mob player) :deny nil)))
 
-
 (defn attacker-has-tag
 	"Partial rule. true if the attacker has this entity tag, false if they don't.
 	Example: (attacker-has-tag 'minecraft:raiders)"
-;	[& tags]
-;	(let [tagset (set (map #(Api/parseEntityTypeTag %) tags))]
-;		(fn [mob player] (not= nil (->> tagset (filter #(Api/entityHasTag mob %)) (first)))))) ;idk if this works???? seems messy as hell
-	; whatever i'll just implement it in java
 	[& tags]
-	(Api/copOut (set (map #(Api/parseEntityTypeTag %) tags))))
+	(let [tagset (set (map #(Api/parseEntityTypeTag %) tags))]
+		(fn [mob player] (some #(Api/entityHasTag mob %) tagset))))
 
 (defn attacker-is
 	"Partial rule. true if the argument list contains the attacker's entity ID, false if it doesn't.

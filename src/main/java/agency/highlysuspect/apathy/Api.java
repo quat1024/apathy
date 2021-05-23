@@ -78,14 +78,6 @@ public class Api {
 		return TagRegistry.entityType(id);
 	}
 	
-	//I couldn't figure out how to implement this nicely in Clojure
-	public static BiFunction<MobEntity, PlayerEntity, Boolean> copOut(Set<Tag<EntityType<?>>> tags) {
-		return (mob, player) -> {
-			for(Tag<EntityType<?>> t : tags) if (t.contains(mob.getType())) return true;
-			return false;
-		};
-	}
-	
 	public static boolean entityHasTag(Entity e, Tag<EntityType<?>> tag) {
 		return tag.contains(e.getType());
 	}

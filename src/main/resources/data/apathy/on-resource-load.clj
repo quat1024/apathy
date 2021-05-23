@@ -19,5 +19,5 @@
 (reset-rule!)
 
 (set-rule!
- (allow-if (attacker-is 'minecraft:creeper :minecraft/spider))
+ (allow-if (attacker-has-tag 'minecraft:raiders))
  always-deny)

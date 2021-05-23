@@ -97,7 +97,7 @@
 
 (defn set-rule!
 	"Sets the current rule. Calling with more than one parameter chains them together using chain-rule."
-	([fn] (set! (Api/rule) fn))
+	([rule] (set! (Api/rule) rule))
 	([first & more] (set! (Api/rule) (apply chain-rule first more))))
 
 ; Clojurians help me here, idk how "getters" work in clj especially because it's a functional language and there aren't really getters anyway.

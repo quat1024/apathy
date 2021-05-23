@@ -1,11 +1,11 @@
 ; Defines symbols for use in your apathy config files.
-; Not overridable with a datapack.
+; Not overridable with a datapack, sorry!
+; See the mod's README for examples.
 
 (ns apathy.api
 	(:import agency.highlysuspect.apathy.Api))
 
-; Hello!
-(Api/log "This is printed from the Clojure script :)")
+(Api/log "This is printed from the top of the Clojure script :)")
 
 (defn log-msg
 	"Log a message from the mod's logger as a side effect."
@@ -22,20 +22,25 @@
   :pass  - This rule doesn't apply right now."
 	(set! (. Api rule) fn))
 
-(defn clear-rule!
+(defn reset-rule!
 	"Reset the rule to 'all mobs can attack anyone'."
 	[]
-	(set! (. Api rule) (fn [mob player] :allow)))
+	(set-rule! (fn [mob player] :allow)))
 
-(defn rule-chain-2
-	"chains two rules together, because i haven't figured out how to chain an arbitrary number of rules yet"
-	[rulea ruleb]
+(defn current-rule [] (Api/rule))
+
+(defn if-pass [thing val] (if (= thing :pass) val thing))
+(defn pass-if-nil [thing] (if (= thing nil) :pass thing))
+
+(defn rule-chain
+	"A rule that sequences other rules together. Returns the value of the first rule that didn't return :pass, or :pass if none of them matched."
+	[& rules]
 	(fn [mob player]
-		(let [a (rulea mob player)]
-			(cond
-				(= a :allow) :allow
-				(= a :deny)  :deny
-				:else        (ruleb [mob player])))))
+		(pass-if-nil
+		 (->> (seq rules) ;"seq" is lazy, kinda like a java Stream, so rules are pay-as-you-go. nice.
+		      (map #(% mob player)) 
+		      (filter #(not= % :pass)) 
+		      (first)))))
 
 ;; What is a partial rule?
 ;; A partial rule is a predicate on [mob player]. It returns a Boolean instead of :allow :deny or :pass.
@@ -76,3 +81,10 @@
 	[diff]
 	(let [conv-diff (Api/toDifficulty diff)] ; parse
 		(fn [mob player] (Api/difficultyIs mob conv-diff))))
+
+;;;;;;;;;;;;;;;;;;;
+
+; and on startup, set the rule to the "always pass" one
+(reset-rule!)
+
+(Api/log "This is printed from the bottom of the Clojure script!")

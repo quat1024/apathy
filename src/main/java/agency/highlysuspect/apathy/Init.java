@@ -27,7 +27,7 @@ public class Init implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		//Load the little bootstrap script
-		loadIntoClojure("Initializing Clojure library and loading built-in script", Init.class.getClassLoader().getResourceAsStream("apathy-startup.clj"));
+		loadIntoClojure("Initializing Clojure library and loading built-in script (might take a hot minute)", Init.class.getClassLoader().getResourceAsStream("apathy-startup.clj"));
 		
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override

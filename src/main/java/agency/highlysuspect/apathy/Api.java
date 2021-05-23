@@ -21,7 +21,7 @@ public class Api {
 	public static boolean preventAttackTargetChange(MobEntity attacker, PlayerEntity target) {
 		Object yeet = rule.invoke(attacker, target);
 		Init.LOG.info("Invoked rule and got " + yeet);
-		//lol
+		
 		return yeet.toString().contains("deny");
 	}
 	

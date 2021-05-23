@@ -13,29 +13,29 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
+// Most of the relevant things in here have more natural-looking Clojure bindings defined in apathy-startup.clj. There's no need to import Api yourself.
 public class Api {
-	// (set! (. Api rule) <a rule>)
 	public static IFn rule;
+	public static IFn toPreventTargetChangeBool;
 	
-	//Internal, no benefit from calling from Clojure :)
+	//Internal
 	public static boolean preventAttackTargetChange(MobEntity attacker, PlayerEntity target) {
-		Object yeet = rule.invoke(attacker, target);
-		Init.LOG.info("Invoked rule and got " + yeet);
+		attacker.world.getProfiler().push("apathy-clojure");
 		
-		return yeet.toString().contains("deny");
-	}
-	
-	public static void hello() {
-		log("Hello, world!");
+		Object ruleOutput = rule.invoke(attacker, target);
+		boolean result = (boolean) toPreventTargetChangeBool.invoke(ruleOutput);
+		
+		attacker.world.getProfiler().pop();
+		return result;
 	}
 	
 	public static void log(String s) {
 		Init.LOG.info(s);
 	}
 	
-	public static void testSymbol(Object a) {
-		Init.LOG.info(a);
-		Init.LOG.info(toIdentifier(a));
+	public static void inspect(Object o) {
+		//I have a debugger breakpoint on this in my IDE
+		Init.LOG.info(o);
 	}
 	
 	//Coerce various objects into Minecraft identifiers, including identifiers themselves, Clojure symbols and keywords, and strings.

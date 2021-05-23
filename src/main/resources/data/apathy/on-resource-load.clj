@@ -1,13 +1,28 @@
 (ns apathy.load
 	(:use apathy.api))
 
-(log-msg "Hello, resource load!")
+;(reset-rule!)
 
-(def noisy-rule (fn [mob player] (do (log-msg "Hello from noisy-rule") false)))
+;(inspect (get-rule!))
+;
+;(add-rule!
+; (debug-rule "easy" (deny-if (difficulty 'easy)))
+; (debug-rule "hard" (allow-if (difficulty 'hard))))
+;
+;(inspect (get-rule!))
+;
+;(add-rule!
+; (debug-rule "attacker" (deny-if (attacker-is 'minecraft/creeper))))
+;
+;(inspect (get-rule!))
 
-(set-rule!
-	(rule-chain
-	 (deny-if (difficulty 'easy))
-	 (deny-if (difficulty 'normal))
-	 (deny-if (attacker-is 'minecraft/creeper))
-	 (deny-if noisy-rule)))
+;(set-rule! (debug-rule "always-deny" always-deny))
+
+(log-msg "poggers!")
+(inspect (get-rule!))
+
+(set-rule! always-deny)
+(inspect (get-rule!))
+
+(set-rule! always-pass always-deny)
+(inspect (get-rule!))

@@ -1,46 +1,46 @@
-; Defines symbols for use in your apathy config files.
-; Not overridable with a datapack, sorry!
+; Defines symbols for use in your apathy config files. Not overridable with a datapack, sorry!
 ; See the mod's README for examples.
 
 (ns apathy.api
 	(:import agency.highlysuspect.apathy.Api))
 
-(Api/log "This is printed from the top of the Clojure script :)")
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; stuff
+
+(Api/log "hello from Clojure!")
 
 (defn log-msg
 	"Log a message from the mod's logger as a side effect."
 	[x]
 	(Api/log x))
 
-(defn set-rule! [fn]
-	"What is a rule?
-	A rule is a function of two arguments: [mob player]
-	where 'mob' is the mob thinking about performing an attack, and 'player' is the prospective target.
-	A rule returns one of three keywords:
-	:allow - The mob is allowed to attack the player.
-	:deny  - The mob is not allowed to attack the player.
-	:pass  - This rule doesn't apply right now."
-	(set! (. Api rule) fn))
+(defn inspect [x] (Api/inspect x)) ; debugger breakpoint
 
-(defn reset-rule!
-	"Reset the rule to 'all mobs can attack anyone'."
-	[]
-	(set-rule! (fn [mob player] :allow)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule combinators
 
-(defn current-rule [] (Api/rule))
-
-(defn if-pass [thing val] (if (= thing :pass) val thing))
-(defn pass-if-nil [thing] (if (= thing nil) :pass thing))
-
-(defn rule-chain
-	"A rule that sequences other rules together. Returns the value of the first rule that didn't return :pass, or :pass if none of them matched."
+(defn chain-rule
+	"A rule combinator that sequences other rules together. Evaluates rules one-by-one, returning the value of the first one that didn't return nil. Returns nil itself if none matched."
 	[& rules]
 	(fn [mob player]
-		(pass-if-nil
-		 (->> (seq rules) ;"seq" is lazy, kinda like a java Stream, so rules are pay-as-you-go. nice.
-		      (map #(% mob player)) 
-		      (filter #(not= % :pass)) 
-		      (first)))))
+		(->> rules
+		     (map #(% mob player))
+		     (filter #(not= % nil))
+		     (first))))
+
+(defn debug-rule
+	"Wraps another rule, logs a message when it's invoked, and logs whatever it output."
+	[message rule]
+	(fn [mob player]
+		(do
+			(log-msg message)
+			(let [result (rule mob player)]
+				(log-msg (str "Result: " result))
+				result))))
+
+(def always-allow (fn [mob player] :allow))
+(def always-deny (fn [mob player] :deny))
+(def always-pass (fn [mob player] nil))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; partial rules
 
 ;; What is a partial rule?
 ;; A partial rule is a predicate on [mob player]. It returns a Boolean instead of :allow :deny or :pass.
@@ -48,16 +48,16 @@
 ;; allow-if and deny-if can lift a partial rule into a rule, following those steps.
 
 (defn allow-if
-	"Lifts a partial rule (predicate) into a rule. The rule returns :allow if the predicate is true, and :pass if it's not.
+	"Lifts a partial rule (predicate) into a rule. The rule returns :allow if the predicate is true, and nil if it's not.
 	Example: (allow-if (attacker-has-tag 'mymodpack:bosses))"
 	[a]
-	(fn [mob player] (if (a mob player) :allow :pass)))
+	(fn [mob player] (if (a mob player) :allow nil)))
 
 (defn deny-if
 	"Lifts a partial rule (predicate) into a rule. The rule returns :deny if the predicate is true, and :pass if it's not.
 	Example: (deny-if (difficulty 'easy))"
 	[a]
-	(fn [mob player] (if (a mob player) :deny :pass)))
+	(fn [mob player] (if (a mob player) :deny nil)))
 
 
 (defn attacker-has-tag
@@ -82,9 +82,39 @@
 	(let [conv-diff (Api/toDifficulty diff)] ; parse
 		(fn [mob player] (Api/difficultyIs mob conv-diff))))
 
-;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule state
 
-; and on startup, set the rule to the "always pass" one
+(defn set-rule!
+	"Sets the current rule. Calling with more than one parameter chains them together using rule-chain."
+	([fn] (set! (Api/rule) fn))
+	([first & more] (set! (Api/rule) (apply chain-rule first more))))
+
+(defn get-rule!
+	"Thunk that gets the current rule."
+	; Clojurians help me here, idk how "getters" work in clj especially because it's a functional language and there aren't really getters anyway.
+	[]
+	(Api/rule))
+
+(defn reset-rule!
+	"Resets the rule to 'all mobs can attack anyone'."
+	[]
+	(set-rule! (fn [mob player] nil)))
+
+(defn add-rule!
+	"Chains this rule onto the end of the current rule. Calling with more than one parameter chains them on as well, in order."
+	[& next-rules]
+	(let [cur (get-rule!)]
+		(set-rule! cur next-rules)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; startup bits and bobs
+
+; rule starts as null in java, game will summarily crash without this
 (reset-rule!)
 
-(Api/log "This is printed from the bottom of the Clojure script!")
+; called from java
+(set! (Api/toPreventTargetChangeBool)
+	(fn [thing]
+		(cond
+			(= thing :allow) false ; don't prevent the mob from changing its target
+			(= thing :deny)  true  ; prevent the mob from changing its target
+			:else            false)))

@@ -19,5 +19,7 @@
 (reset-rule!)
 
 (set-rule!
- (allow-if (difficulty 'normal 'hard))
- (always-deny))
+ (allow-if (difficulty "hard"))
+ (deny-if  (difficulty "easy"))
+ (allow-if (boss))
+)

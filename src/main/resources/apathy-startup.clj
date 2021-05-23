@@ -116,6 +116,12 @@
 	(let [cur (get-rule!)]
 		(set-rule! cur next-rules)))
 
+; Can't hurt
+(def set-rules! set-rule!)
+(def get-rules! get-rule!)
+(def reset-rules! reset-rule!)
+(def add-rules! add-rule!)
+
 (defn set-recheck-interval!
 	"As an optimization, mobs that are currently targeting a player don't recheck that it's still okay to do so, every single tick.
 	This number, which defaults to 20 (once a second), is how often they will do that."

@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class ClojureSupport {
 	public static final Logger LOG = LogManager.getLogger(Init.MODID + "-clojure");

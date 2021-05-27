@@ -4,9 +4,8 @@
   "package": "agency.highlysuspect.apathy.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-		"MobEntityMixin"
-  ],
-  "client": [
+		"MobEntityMixin",
+		"ServerPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

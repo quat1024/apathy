@@ -5,11 +5,11 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
+import agency.highlysuspect.apathy.list.PlayerList;
 import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -22,17 +22,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
+@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "OptionalUsedAsFieldOrParameterType"})
 public class Config implements Opcodes {
 	private static int CURRENT_CONFIG_VERSION = 0;
 	@NoDefault public int configVersion = CURRENT_CONFIG_VERSION;
 	
+	///////////////////
 	@Section("Clojure")
+	///////////////////
 	
-	@Comment("Enable the Clojure API for configuring the mod. See the README on github for more information.")
+	@Comment({
+		"Enable the Clojure API for configuring the mod. See the README on github for more information.",
+		"Rules configured through Clojure take precedence over this config file."
+	})
 	public boolean useClojure = false; //False by default. Sorry Eutro.
 	
+	///////////////////////
 	@Section("Performance")
+	///////////////////////
 	
 	@Comment({
 		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
@@ -41,15 +48,22 @@ public class Config implements Opcodes {
 	@AtLeast(1)
 	public int recheckInterval = 20;
 	
+	////////////////
 	@Section("Rule")
+	////////////////
 	
 	@Comment({
-		"Comma-separated list of difficulties that the mod applies in.",
-		"If empty, the mod will apply in all difficulties."
+		"Comma-separated list of difficulties.",
+		"See the next config option for the purpose of this.",
 	})
 	@Example("easy, normal")
 	@Use("difficultySet")
-	public Set<Difficulty> difficulties = Collections.emptySet();
+	public Set<Difficulty> difficultyLock = Collections.emptySet();
+	
+	@Comment({
+		"If 'true', when 'difficultyLock' does not include the current world difficulty, mobs will always be allowed to attack the player."
+	})
+	public boolean difficultyLockEnabled = false;
 	
 	@Comment({
 		"Should bosses always be allowed to attack the player?",
@@ -66,17 +80,56 @@ public class Config implements Opcodes {
 	@Comment({
 		"How the mobSet is interpreted.",
 		"May be one of:",
-		"allow-list - The mobs in mobSet will be allowed to attack the player.",
-		"deny-list  - The mobs in mobSet will be prevented from attacking the player.",
+		"allow-list - The mobs in mobSet will always be allowed to attack the player.",
+		"deny-list  - The mobs in mobSet will never be allowed to attack the player.",
 		"disabled   - The mobSet will be ignored."
 	})
-	@Use("mobSetMode")
+	@Use("triStateAllowDenyDisabled")
 	public TriState mobSetMode = TriState.DEFAULT;
 	
+	@Comment({
+		"The name of a list of players that might exist.",
+		"If this option is not provided, a player list is not created.",
+		"The meaning of the player list is explained in the next two options."
+	})
+	@Use("optionalString")
+	private Optional<String> playerListName = Optional.of("no-mobs");
+	
+	@Comment({
+		"If 'true', players can add themselves to the list, using /apathy list join <playerListName>.",
+		"If 'false', only an operator can add them to the list, using /apathy list-admin join <player selector> <playerListName>."
+	})
+	private boolean playerListSelfSelect = true;
+	
+	@Comment({
+		"What happens to players on the player list?",
+		"May be one of:",
+		"allow-list - Mobs are always allowed to attack players in the player list.",
+		"deny-list  - Mobs are never allowed to attack players in the player list.",
+		"disabled   - The player list will be ignored."
+	})
+	@Use("triStateAllowDenyDisabled")
+	public TriState playerListMode = TriState.FALSE;
+	
+	@Comment({
+		"What happens when none of the previous rules apply?",
+		"May be one of:",
+		"allow - By default, mobs are allowed to attack players.",
+		"deny  - By default, mobs are not allowed to attack players."
+	})
+	@Use("boolAllowDeny")
+	public boolean fallthrough;
+	
+	///////////////////////////////////////
+	
+	//Keys in the config file that I don't know how to parse.
 	private transient HashMap<String, String> unknownKeys;
 	
+	//The player list, constructed from playerListName and playerListMode, if it exists.
+	public transient @Nullable PlayerList configPlayerList;
+	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
-	public boolean allowedToTargetPlayer(MobEntity attacker, PlayerEntity player) {
+	public boolean allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity player) {
 		if(attacker.world.isClient) throw new IllegalStateException("Do not call on the client, please");
 		
 		if(useClojure) {
@@ -89,19 +142,22 @@ public class Config implements Opcodes {
 		return DefaultRule.allowedToAttackPlayer(this, attacker, player);
 	}
 	
+	//Read the config file from this path, or save the default one to it.
 	public static Config fromPath(Path configFilePath) throws IOException {
 		if(Files.exists(configFilePath)) {
 			//The config file exists, go load it.
-			return parse(configFilePath).upgrade();
+			//Save over the original file as well.
+			return parse(configFilePath).upgrade().save(configFilePath).finish();
 		} else {
 			//The config file does not exist (first time starting game?). Create one.
 			Config defaultConfig = new Config();
 			defaultConfig.save(configFilePath);
 			
-			return defaultConfig.upgrade();
+			return new Config().save(configFilePath).finish();
 		}
 	}
 	
+	//Update the config to the latest values.
 	public Config upgrade() {
 		if(unknownKeys != null) {
 			//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
@@ -112,16 +168,16 @@ public class Config implements Opcodes {
 		
 		configVersion = CURRENT_CONFIG_VERSION;
 		
-		try {
-			Path xddd = FabricLoader.getInstance().getConfigDir().resolve("roundtrip.cfg");
-			save(xddd);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		
 		return this;
 	}
 	
+	//Create derived Java values from the config values.
+	public Config finish() {
+		playerListName.ifPresent(s -> configPlayerList = PlayerList.getOrCreate(s, playerListSelfSelect));
+		return this;
+	}
+	
+	//Parse the config from the file at this path.
 	public static Config parse(Path configFilePath) throws IOException {
 		Config config = new Config();
 		
@@ -157,9 +213,9 @@ public class Config implements Opcodes {
 				FieldSerde<?> parser = Types.find(keyField);
 				keyField.set(config, parser.parse(keyField, value));
 			} catch (RuntimeException e) {
-				throw new LinedConfigException("Error in config file on line " + lineNo, e);
+				throw new ConfigParseException("Error in config file on line " + lineNo, e);
 			} catch (IllegalAccessException e) {
-				throw new LinedConfigException("quat's a doofus, line " + lineNo, e);
+				throw new ConfigParseException("quat's a doofus, line " + lineNo, e);
 			}
 		}
 		
@@ -177,7 +233,8 @@ public class Config implements Opcodes {
 		}
 	}
 	
-	public void save(Path configFilePath) throws IOException {
+	//Save the config file to this path.
+	public Config save(Path configFilePath) throws IOException {
 		Config defaultConfig = new Config();
 		
 		List<String> lines = new ArrayList<>();
@@ -222,6 +279,16 @@ public class Config implements Opcodes {
 				}
 			}
 			
+			//If the field has a note, include the note.
+			Note note = field.getDeclaredAnnotation(Note.class);
+			if(note != null) {
+				boolean first = true;
+				for(String noteLine : note.value()) {
+					lines.add((first ? "# Note: " : "#      ") + noteLine);
+					first = false;
+				}
+			}
+			
 			//Find the FieldSerde for this field.
 			FieldSerde<?> ser = Types.find(field);
 			
@@ -244,6 +311,8 @@ public class Config implements Opcodes {
 		
 		//Now, save the file.
 		Files.write(configFilePath, lines);
+		
+		return this;
 	}
 	
 	@Override
@@ -257,7 +326,7 @@ public class Config implements Opcodes {
 		if(useClojure != config.useClojure) return false;
 		if(recheckInterval != config.recheckInterval) return false;
 		if(bossBypass != config.bossBypass) return false;
-		if(!difficulties.equals(config.difficulties)) return false;
+		if(!difficultyLock.equals(config.difficultyLock)) return false;
 		if(!mobSet.equals(config.mobSet)) return false;
 		if(mobSetMode != config.mobSetMode) return false;
 		return unknownKeys.equals(config.unknownKeys);

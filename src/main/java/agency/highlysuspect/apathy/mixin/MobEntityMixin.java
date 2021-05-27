@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.clojure.Api;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +21,7 @@ public class MobEntityMixin {
 		if(thi$.world.isClient) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof PlayerEntity && !Init.config.allowedToTargetPlayer(thi$, (PlayerEntity) newTarget)) {
+		if(newTarget instanceof ServerPlayerEntity && !Init.config.allowedToTargetPlayer(thi$, (ServerPlayerEntity) newTarget)) {
 			//Keep whatever old target was around.
 			ci.cancel();
 		}
@@ -33,8 +34,8 @@ public class MobEntityMixin {
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
 		if((thi$.world.getTime() + thi$.getEntityId()) % Init.config.recheckInterval == 0
-			&& target instanceof PlayerEntity
-			&& !Init.config.allowedToTargetPlayer(thi$, (PlayerEntity) target)) {
+			&& target instanceof ServerPlayerEntity
+			&& !Init.config.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
 			target = null;
 		}
 	}

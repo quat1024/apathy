@@ -28,14 +28,17 @@ public class Types {
 		customParsers.put("difficultySet", new DifficultySerde()
 			.commaSeparatedSet(Comparator.comparingInt(Difficulty::getId)));
 		
-		//customParsers.put("identifierSet", ident.commaSeparatedSet(Comparator.comparing(Identifier::toString)));
-		
 		customParsers.put("entityTypeSet", ident
 			.map(Bijection.create(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getId))
 			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getId))
 		);
 		
-		customParsers.put("mobSetMode", new MobSetModeSerde());
+		customParsers.put("triStateAllowDenyDisabled", new TriStateField.AllowDenyDisabled());
+		customParsers.put("triStateDifficultyListMode", new TriStateField.DifficultyListMode());
+		
+		customParsers.put("optionalString", new StringSerde().optional());
+		
+		customParsers.put("boolAllowDeny", new StringSerde().map(Bijection.create(s -> s.equals("allow"), (Boolean b) -> b ? "allow" : "deny")));
 	}
 	
 	@SuppressWarnings("unchecked")

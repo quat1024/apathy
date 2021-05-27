@@ -4,6 +4,7 @@ import agency.highlysuspect.apathy.clojure.ClojureProxy;
 import agency.highlysuspect.apathy.clojure.ClojureSupport;
 import agency.highlysuspect.apathy.config.Config;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
@@ -27,6 +28,9 @@ public class Init implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		clojureLoaded = FabricLoader.getInstance().isModLoaded("clojurelib");
+		
+		Commands.registerArgumentTypes();
+		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
 		
 		installAndRunReloadListener("reload-config", () -> {
 			try {

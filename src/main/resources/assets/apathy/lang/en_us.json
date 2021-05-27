@@ -1,0 +1,7 @@
+{
+	"apathy.commands.list.notSelfSelect": "List %s is not a self-select list.",
+	"apathy.commands.list.joinSuccess": "Player %s joined list %s.",
+	"apathy.commands.list.alreadyInList": "Player %s is already in list %s.",
+	"apathy.commands.list.partSuccess": "Player %s parted list %s.",
+	"apathy.commands.list.notInList": "Player %s is already not in list %s."
+}

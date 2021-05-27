@@ -9,7 +9,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -23,7 +23,7 @@ public class Api {
 	
 	///////////////// Inward-facing API
 	
-	public static TriState allowedToTargetPlayer(MobEntity attacker, PlayerEntity target) {
+	public static TriState allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity target) {
 		if(attacker.world.isClient) throw new IllegalStateException("No script execution on the client world... bad");
 		
 		Object ruleOutput = clojureRule.invoke(attacker, target);

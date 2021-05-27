@@ -1,21 +1,6 @@
 (ns apathy.load
 	(:use apathy.api))
 
-;(inspect (get-rule!))
-;
-;(add-rule!
-; (debug-rule "easy" (deny-if (difficulty :easy)))
-; (debug-rule "hard" (allow-if (difficulty :hard))))
-;
-;(inspect (get-rule!))
-;
-;(add-rule!
-; (debug-rule "attacker" (deny-if (attacker-is 'minecraft/creeper))))
-;
-;(inspect (get-rule!))
-
-;(set-rule! (debug-rule "always-deny" always-deny))
-
 (reset-rule!)
 
 (set-rule!
@@ -23,3 +8,9 @@
  (deny-if  (difficulty "easy"))
  (allow-if (boss))
 )
+
+;(set-rule!
+; (difficulty-case 
+;  :easy (always-deny)
+;  :normal (chain-rule (allow-if (boss)) (always-deny))
+;  :hard (always-allow)))

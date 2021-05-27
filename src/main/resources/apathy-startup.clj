@@ -18,7 +18,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule combinators
 
 (defn chain-rule
-	"A rule combinator that sequences other rules together. Evaluates rules one-by-one, returning the value of the first one that didn't return nil. Returns nil itself if none matched."
+	"A rule combinator that sequences other rules together.
+	Evaluates rules one-by-one, returning the value of the first one that didn't return nil. Returns nil itself if none matched."
 	[& rules]
 	(fn [mob player]
 		(some #(% mob player) rules)))
@@ -44,6 +45,14 @@
 (defn always-pass
 	"A rule that always returns nil."
 	[] (constantly nil))
+
+(defn difficulty-map [rules]
+	(fn [mob player]
+		(if-let [f (get rules (keyword (Api/difficultyOf mob)))]
+			(f mob player))))
+
+(defn difficulty-case [& cases]
+	(difficulty-map (apply assoc {} cases)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; partial rules
 

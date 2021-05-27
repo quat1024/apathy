@@ -67,7 +67,7 @@ public class Config implements Opcodes {
 	
 	@Comment({
 		"Should bosses always be allowed to attack the player?",
-		"\"Bossness\" is defined by inclusion in the \"apathy:bosses\" tag.",
+		"'Bossness' is defined by inclusion in the 'apathy:bosses' tag.",
 		"By default, the tag includes the Ender Dragon and Wither."
 	})
 	public boolean bossBypass = true;
@@ -96,8 +96,8 @@ public class Config implements Opcodes {
 	private Optional<String> playerListName = Optional.of("no-mobs");
 	
 	@Comment({
-		"If 'true', players can add themselves to the list, using /apathy list join <playerListName>.",
-		"If 'false', only an operator can add them to the list, using /apathy list-admin join <player selector> <playerListName>."
+		"If 'true', players can add themselves to the list, using '/apathy list join <playerListName>'.",
+		"If 'false', only an operator can add them to the list, using '/apathy list-admin join <player selector> <playerListName>'."
 	})
 	private boolean playerListSelfSelect = true;
 	

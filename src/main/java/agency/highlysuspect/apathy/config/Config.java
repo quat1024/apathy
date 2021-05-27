@@ -32,11 +32,11 @@ public class Config implements Opcodes {
 	@Comment("Enable the Clojure API for configuring the mod. See the README on github for more information.")
 	public boolean useClojure = false; //False by default. Sorry Eutro.
 	
-	@Section("Optimization")
+	@Section("Performance")
 	
 	@Comment({
-		"As an optimization, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
-		"This is how often the mob will check. Set this to 1, to check every tick."
+		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
+		"This is how often the mob will check. (Set this to 1 to check every tick.)"
 	})
 	@AtLeast(1)
 	public int recheckInterval = 20;
@@ -111,6 +111,13 @@ public class Config implements Opcodes {
 		}
 		
 		configVersion = CURRENT_CONFIG_VERSION;
+		
+		try {
+			Path xddd = FabricLoader.getInstance().getConfigDir().resolve("roundtrip.cfg");
+			save(xddd);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		
 		return this;
 	}

@@ -2,7 +2,7 @@
 ; See the mod's README for examples.
 
 (ns apathy.api
-	(:import agency.highlysuspect.apathy.Api))
+	(:import agency.highlysuspect.apathy.clojure.Api))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; stuff
 
@@ -105,22 +105,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule state
 
 (defn set-rule!
-	"Sets the current rule. Calling with more than one parameter chains them together using chain-rule."
-	([rule] (set! (Api/rule) rule))
-	([first & more] (set! (Api/rule) (apply chain-rule first more))))
+	"Sets the current Clojure rule.
+	A rule is a function that takes two arguments - the attacking mob and the defending player - and returns one of :allow, :deny, or nil.
+	
+	An :allow return means the mob is allowed to attack the player.
+	A :deny return means the mob is not allowed to attack the player.
+	A nil return means 'I dunno, pass to the next rule'. The 'next rule' could be the next in a chain-rule, or
+	if all rules have been exhausted and there's still no non-nil returns, it is the rule defined in the mod's config file."
+	([rule] (set! (Api/clojureRule) rule))
+	([first & more] (set! (Api/clojureRule) (apply chain-rule first more))))
 
 ; Clojurians help me here, idk how "getters" work in clj especially because it's a functional language and there aren't really getters anyway.
 (defn get-rule!
-	"Thunk that gets the current rule."
-	[] (Api/rule))
+	"Thunk that gets the current Clojure rule."
+	[] (Api/clojureRule))
 
 (defn reset-rule!
-	"Resets the rule to 'all mobs can attack anyone'."
+	"Removes the current Clojure rule. Now, every 'can this mob attack this player' question is answered by the config file only."
 	[]
 	(set-rule! (fn [mob player] nil)))
 
 (defn add-rule!
-	"Chains this rule onto the end of the current rule. Calling with more than one parameter chains them on as well, in order."
+	"Chains this rule onto the end of the current Clojure rule. Calling with more than one parameter chains them on as well, in order."
 	[& next-rules]
 	(let [cur (get-rule!)]
 		(set-rule! cur next-rules)))
@@ -131,27 +137,7 @@
 (def reset-rules! reset-rule!)
 (def add-rules! add-rule!)
 
-(defn set-recheck-interval!
-	"As an optimization, mobs that are currently targeting a player don't recheck that it's still okay to do so, every single tick.
-	This number, which defaults to 20 (once a second), is how often they will do that."
-	[interval]
-	(set! (Api/recheckInterval) interval))
-
-(defn get-recheck-interval!
-	"Thunk that gets the current recheck interval."
-	[] (Api/recheckInterval))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; startup bits and bobs
 
 ; rule starts as null in java, game will summarily crash without this
 (reset-rule!)
-
-(set-recheck-interval! 20)
-
-; called from java
-(set! (Api/ruleOutputToBool)
-	(fn [thing]
-		(case thing
-			:deny  true  ; prevent the mob from changing its target
-			:allow false ; don't prevent the mob from changing its target
-			false)))

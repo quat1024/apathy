@@ -1,64 +1,75 @@
 package agency.highlysuspect.apathy;
 
-import clojure.java.api.Clojure;
+import agency.highlysuspect.apathy.clojure.ClojureProxy;
+import agency.highlysuspect.apathy.clojure.ClojureSupport;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.resource.Resource;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.List;
+import java.util.function.Consumer;
 
 public class Init implements ModInitializer {
 	public static final String MODID = "apathy";
 	public static final Logger LOG = LogManager.getLogger(MODID);
+	public static final String CONFIG_FILENAME = Init.MODID + ".cfg";
+	
+	public static Config config;
+	public static ClojureProxy clojureProxy = ClojureProxy.NO_CLOJURE;
+	public static boolean clojureLoaded = false;
+	
+	@Override
+	public void onInitialize() {
+		clojureLoaded = FabricLoader.getInstance().isModLoaded("clojurelib");
+		
+		installAndRunReloadListener("reload-config", () -> {
+			try {
+				config = Config.fromPath(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILENAME));
+			} catch (Exception e) {
+				throw new RuntimeException("Problem loading config file.");
+			}
+		});
+		
+		if(config.clojureEnabled()) {
+			if(clojureLoaded) {
+				LOG.info("Clojure is enabled in config and ClojureLib is present. Enabling Clojure support");
+				ClojureSupport.onInitialize();
+			} else {
+				LOG.error("Clojure support is enabled in config, but ClojureLib is not present. Please install ClojureLib to make use of the Clojure API.");
+			}
+		}
+	}
 	
 	public static Identifier id(String path) {
 		return new Identifier(MODID, path);
 	}
 	
-	@Override
-	public void onInitialize() {
-		//Load the little bootstrap script
-		loadIntoClojure("Initializing Clojure library and loading built-in script (might take a hot minute)", Init.class.getClassLoader().getResourceAsStream("apathy-startup.clj"));
-		
+	//quick wrapper, so i don't need a giant anonymous class for every reload listener.
+	public static void installReloadListener(String name, Consumer<ResourceManager> funny) {
+		Identifier id = id(name);
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public Identifier getFabricId() {
-				return Init.id("load_clojure");
+				return id;
 			}
 			
 			@Override
 			public void apply(ResourceManager manager) {
-				List<Resource> resources;
-				try {
-					resources = manager.getAllResources(Init.id("on-resource-load.clj"));
-				} catch (IOException e) {
-					LOG.error("Problem loading list of Clojure scripts", e);
-					return;
-				}
-				
-				resources.forEach(resource -> loadIntoClojure("Loading Clojure script from " + resource.getId().toString(), resource.getInputStream()));
+				funny.accept(manager);
 			}
 		});
 	}
 	
-	private static void loadIntoClojure(String message, InputStream yea) {
-		try(InputStreamReader reader = new InputStreamReader(yea)) {
-			LOG.info(message);
-			Clojure.var("clojure.core", "load-reader").invoke(reader);
-			LOG.info("Success!");
-		} catch (RuntimeException | IOException e) {
-			LOG.error("Failure.");
-			LOG.error("Problem loading clojure file", e);
-			throw new RuntimeException(e);
-		}
+	public static void installAndRunReloadListener(String name, Runnable funny) {
+		//run now
+		funny.run();
+		//and on resource reload.
+		installReloadListener(name, (ignoredManager) -> funny.run());
+		//Can't be a Consumer<ResourceManager> since I don't have one right now
 	}
 }

@@ -1,9 +1,11 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.clojure;
 
+import agency.highlysuspect.apathy.Init;
 import clojure.lang.IFn;
 import clojure.lang.Keyword;
 import clojure.lang.Symbol;
 import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -17,19 +19,34 @@ import net.minecraft.world.Difficulty;
 public class Api {
 	//These are initialized in the startup clojure script
 	//I'd love to give them sensible defaults Java-side but hoo, IFn has 20 methods to implement for different arities lmao
-	public static IFn rule;
-	public static IFn ruleOutputToBool;
+	public static IFn clojureRule = null;
 	
-	//How often a mob that is currently targeting a player rechecks that it's still okay to do so
-	public static int recheckInterval;
+	///////////////// Inward-facing API
 	
-	//Internal
-	public static boolean notAllowedToTargetPlayer(MobEntity attacker, PlayerEntity target) {
+	public static TriState allowedToTargetPlayer(MobEntity attacker, PlayerEntity target) {
 		if(attacker.world.isClient) throw new IllegalStateException("No script execution on the client world... bad");
 		
-		Object ruleOutput = rule.invoke(attacker, target);
-		return (boolean) ruleOutputToBool.invoke(ruleOutput);
+		Object ruleOutput = clojureRule.invoke(attacker, target);
+		if(ruleOutput == null) {
+			return TriState.DEFAULT;
+		} else if(ruleOutput instanceof Keyword) {
+			return blah(((Keyword) ruleOutput).getName());
+		} else if(ruleOutput instanceof Symbol) {
+			return blah(((Symbol) ruleOutput).getName());
+		} else {
+			return blah(ruleOutput.toString());
+		}
 	}
+	
+	private static TriState blah(String yea) {
+		switch(yea) {
+			case "deny": return TriState.FALSE;
+			case "allow": return TriState.TRUE;
+			default: return TriState.DEFAULT;
+		}
+	}
+	
+	///////////////// Outward-facing API
 	
 	public static void log(String s) {
 		Init.LOG.info(s);

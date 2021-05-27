@@ -1,10 +1,10 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Api;
+import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.clojure.Api;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,7 +20,7 @@ public class MobEntityMixin {
 		if(thi$.world.isClient) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof PlayerEntity && Api.notAllowedToTargetPlayer(thi$, (PlayerEntity) newTarget)) {
+		if(newTarget instanceof PlayerEntity && !Init.config.allowedToTargetPlayer(thi$, (PlayerEntity) newTarget)) {
 			//Keep whatever old target was around.
 			ci.cancel();
 		}
@@ -32,9 +32,9 @@ public class MobEntityMixin {
 		if(thi$.world.isClient) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.world.getTime() + thi$.getEntityId()) % Api.recheckInterval == 0 //This check doesn't need to be done super often.
+		if((thi$.world.getTime() + thi$.getEntityId()) % Init.config.recheckInterval == 0
 			&& target instanceof PlayerEntity
-			&& Api.notAllowedToTargetPlayer(thi$, (PlayerEntity) target)) {
+			&& !Init.config.allowedToTargetPlayer(thi$, (PlayerEntity) target)) {
 			target = null;
 		}
 	}

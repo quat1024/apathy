@@ -1,8 +1,16 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.config;
 
+import agency.highlysuspect.apathy.DefaultRule;
+import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.config.annotation.*;
+import agency.highlysuspect.apathy.config.types.FieldSerde;
+import agency.highlysuspect.apathy.config.types.Types;
 import net.fabricmc.fabric.api.util.TriState;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.Difficulty;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Opcodes;
@@ -12,23 +20,20 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public class Config implements Opcodes {
-	@SuppressWarnings("unused")
-	public int configVersion = 0;
-	@Blankline
+	private static int CURRENT_CONFIG_VERSION = 0;
+	@NoDefault public int configVersion = CURRENT_CONFIG_VERSION;
+	
 	@Section("Clojure")
-	@Comment({
-		"Enable the Clojure API for configuring the mod. See the README on github for more information."
-	})
+	
+	@Comment("Enable the Clojure API for configuring the mod. See the README on github for more information.")
 	public boolean useClojure = false; //False by default. Sorry Eutro.
 	
-	@Blankline
 	@Section("Optimization")
+	
 	@Comment({
 		"As an optimization, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
 		"This is how often the mob will check. Set this to 1, to check every tick."
@@ -36,7 +41,39 @@ public class Config implements Opcodes {
 	@AtLeast(1)
 	public int recheckInterval = 20;
 	
-	private transient HashMap<String, String> unknownKeys = new HashMap<>();
+	@Section("Rule")
+	
+	@Comment({
+		"Comma-separated list of difficulties that the mod applies in.",
+		"If empty, the mod will apply in all difficulties."
+	})
+	@Example("easy, normal")
+	@Use("difficultySet")
+	public Set<Difficulty> difficulties = Collections.emptySet();
+	
+	@Comment({
+		"Should bosses always be allowed to attack the player?",
+		"\"Bossness\" is defined by inclusion in the \"apathy:bosses\" tag.",
+		"By default, the tag includes the Ender Dragon and Wither."
+	})
+	public boolean bossBypass = true;
+	
+	@Comment("A comma-separated list of mobs. See the next config option for how this gets interpreted.")
+	@Example("minecraft:creeper, minecraft:spider")
+	@Use("entityTypeSet")
+	public Set<EntityType<?>> mobSet = Collections.emptySet();
+	
+	@Comment({
+		"How the mobSet is interpreted.",
+		"May be one of:",
+		"allow-list - The mobs in mobSet will be allowed to attack the player.",
+		"deny-list  - The mobs in mobSet will be prevented from attacking the player.",
+		"disabled   - The mobSet will be ignored."
+	})
+	@Use("mobSetMode")
+	public TriState mobSetMode = TriState.DEFAULT;
+	
+	private transient HashMap<String, String> unknownKeys;
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
 	public boolean allowedToTargetPlayer(MobEntity attacker, PlayerEntity player) {
@@ -49,7 +86,7 @@ public class Config implements Opcodes {
 			}
 		}
 		
-		return false;
+		return DefaultRule.allowedToAttackPlayer(this, attacker, player);
 	}
 	
 	public static Config fromPath(Path configFilePath) throws IOException {
@@ -60,15 +97,21 @@ public class Config implements Opcodes {
 			//The config file does not exist (first time starting game?). Create one.
 			Config defaultConfig = new Config();
 			defaultConfig.save(configFilePath);
+			
 			return defaultConfig.upgrade();
 		}
 	}
 	
 	public Config upgrade() {
-		//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
-		unknownKeys.forEach((key, value) -> Init.LOG.warn("Unknown config field: " + key));
-		//We don't need to keep track of them anymore.
-		unknownKeys = null;
+		if(unknownKeys != null) {
+			//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
+			unknownKeys.forEach((key, value) -> Init.LOG.warn("Unknown config field: " + key));
+			//We don't need to keep track of them anymore.
+			unknownKeys = null;
+		}
+		
+		configVersion = CURRENT_CONFIG_VERSION;
+		
 		return this;
 	}
 	
@@ -96,26 +139,16 @@ public class Config implements Opcodes {
 				//Find the field associated with this key.
 				Field keyField = findConfigField(key);
 				if(keyField == null) {
-					//Maybe this key was from an older version of the config file, and an upgrader will take care of it?
+					//Maybe this key was from an older version of the config file, and an upgrader knows what to do with it?
+					if(config.unknownKeys == null) {
+						config.unknownKeys = new HashMap<>();
+					}
 					config.unknownKeys.put(key, value);
 					continue;
 				}
 				
-				//Parse the value and set it in the built config.
-				if(keyField.getType() == Boolean.TYPE) keyField.setBoolean(config, parseBool(value));
-				else if(keyField.getType() == Integer.TYPE) {
-					int val = parseInt(value);
-					AtLeast atLeast = keyField.getDeclaredAnnotation(AtLeast.class);
-					if(atLeast != null && val < atLeast.value()) {
-						Init.LOG.warn("Value " + key + " not at least " + atLeast.value());
-						val = atLeast.value();
-					}
-					
-					keyField.setInt(config, val);
-				}
-				else if(keyField.getType() == String.class) keyField.set(config, value);
-				else throw new RuntimeException("dunno how to parse " + keyField.toGenericString() + ", ruh roh");
-				
+				FieldSerde<?> parser = Types.find(keyField);
+				keyField.set(config, parser.parse(keyField, value));
 			} catch (RuntimeException e) {
 				throw new LinedConfigException("Error in config file on line " + lineNo, e);
 			} catch (IllegalAccessException e) {
@@ -134,20 +167,6 @@ public class Config implements Opcodes {
 			else return field;
 		} catch (ReflectiveOperationException e) {
 			return null;
-		}
-	}
-	
-	private static boolean parseBool(String value) {
-		if(value.equalsIgnoreCase("true")) return true;
-		else if(value.equalsIgnoreCase("false")) return false;
-		else throw new RuntimeException("Cannot parse " + value + " as a bool");
-	}
-	
-	private static int parseInt(String value) {
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException e) {
-			throw new RuntimeException("Cannot parse " + value + " as an integer", e);
 		}
 	}
 	
@@ -172,7 +191,6 @@ public class Config implements Opcodes {
 				lines.add(bar);
 				lines.add("## " + s + " ##");
 				lines.add(bar);
-				lines.add("");
 			}
 			
 			//If the field has a comment, write that out first, prefixed with a comment character.
@@ -189,12 +207,26 @@ public class Config implements Opcodes {
 				lines.add("# Must be at least " + atLeast.value() + ".");
 			}
 			
+			//If the field has an example, include that too.
+			Example example = field.getDeclaredAnnotation(Example.class);
+			if(example != null) {
+				for(String commentLine : example.value()) {
+					lines.add("# Example: " + commentLine);
+				}
+			}
+			
+			//Find the FieldSerde for this field.
+			FieldSerde<?> ser = Types.find(field);
+			
 			try {
-				//Write the "default" comment for this config field.
-				lines.add("# Default: " + field.get(defaultConfig).toString());
+				if(field.getDeclaredAnnotation(NoDefault.class) == null) {
+					//Write the "default" comment for this config field.
+					String defaultValue = ser.writeErased(field, field.get(defaultConfig));
+					lines.add("# Default: " + (defaultValue.isEmpty() ? "<empty>" : defaultValue));
+				}
 				
 				//Write the field's name, a colon-space, then the field's value.
-				lines.add(field.getName() + ": " + field.get(this).toString());
+				lines.add(field.getName() + ": " + ser.writeErased(field, field.get(this)));
 			} catch (ReflectiveOperationException e) {
 				throw new RuntimeException("Uh oh", e);
 			}
@@ -207,29 +239,20 @@ public class Config implements Opcodes {
 		Files.write(configFilePath, lines);
 	}
 	
-	//Prints a big section header.
-	public @interface Section {
-		String value();
-	}
-	
-	//Prints a comment before printing this config value.
-	public @interface Comment {
-		String[] value();
-	}
-	
-	//Prints a blank line before this config option.
-	public @interface Blankline {}
-	
-	//Require the integer to be at least this much.
-	public @interface AtLeast {
-		int value();
-	}
-	
-	//This exception is always a rethrow of another exception, my own stacktrace is noise in this case.
-	static class LinedConfigException extends RuntimeException {
-		public LinedConfigException(String message, Throwable cause) {
-			super(message, cause);
-			setStackTrace(null);
-		}
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(o == null || getClass() != o.getClass()) return false;
+		
+		Config config = (Config) o;
+		
+		if(configVersion != config.configVersion) return false;
+		if(useClojure != config.useClojure) return false;
+		if(recheckInterval != config.recheckInterval) return false;
+		if(bossBypass != config.bossBypass) return false;
+		if(!difficulties.equals(config.difficulties)) return false;
+		if(!mobSet.equals(config.mobSet)) return false;
+		if(mobSetMode != config.mobSetMode) return false;
+		return unknownKeys.equals(config.unknownKeys);
 	}
 }

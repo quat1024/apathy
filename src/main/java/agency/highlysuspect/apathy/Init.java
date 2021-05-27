@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.clojure.ClojureProxy;
 import agency.highlysuspect.apathy.clojure.ClojureSupport;
+import agency.highlysuspect.apathy.config.Config;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
@@ -31,11 +32,11 @@ public class Init implements ModInitializer {
 			try {
 				config = Config.fromPath(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILENAME));
 			} catch (Exception e) {
-				throw new RuntimeException("Problem loading config file.");
+				throw new RuntimeException("Problem loading config file.", e);
 			}
 		});
 		
-		if(config.clojureEnabled()) {
+		if(config.useClojure) {
 			if(clojureLoaded) {
 				LOG.info("Clojure is enabled in config and ClojureLib is present. Enabling Clojure support");
 				ClojureSupport.onInitialize();

@@ -54,17 +54,7 @@ public class ClojureSupport {
 			}
 		});
 		
-		Init.clojureProxy = new ClojureProxy() {
-			@Override
-			public boolean isClojure() {
-				return true;
-			}
-			
-			@Override
-			public TriState allowedToTargetPlayer(MobEntity attacker, PlayerEntity player) {
-				return Api.allowedToTargetPlayer(attacker, player);
-			}
-		};
+		Init.clojureProxy = Api::allowedToTargetPlayer;
 	}
 	
 	private static void loadIntoClojure(String message, InputStream yea, boolean hardFail) {

@@ -2,6 +2,17 @@
 
 Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 
+## TODO:
+
+* Expose player-lists to Clojure
+* Save player-lists to NBT
+* Implement revenge timer
+* Expose "attacker tagged with ____" rule to regular config
+* Check that the config behaves like Apathetic Mobs's config file
+* Implement special behavior for bosses
+
+Also maybe there is a better config idiom?
+
 ## Clojure?
 
 If [Clojure Lib](https://www.curseforge.com/minecraft/mc-mods/clojure-lib) is installed and Clojure integration is enabled in the config file, a Clojure config API is made available.

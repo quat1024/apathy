@@ -61,7 +61,8 @@ public class Config implements Opcodes {
 	public Set<Difficulty> difficultyLock = Collections.emptySet();
 	
 	@Comment({
-		"If 'true', when 'difficultyLock' does not include the current world difficulty, mobs will always be allowed to attack the player."
+		"If 'true', when 'difficultyLock' does not include the current world difficulty,",
+		"mobs will always be allowed to attack the player."
 	})
 	public boolean difficultyLockEnabled = false;
 	

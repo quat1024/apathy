@@ -1,11 +1,14 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.config.Config;
+import agency.highlysuspect.apathy.list.PlayerSet;
+import agency.highlysuspect.apathy.list.PlayerSetManager;
 import agency.highlysuspect.apathy.revenge.VengeanceHandler;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 
@@ -29,8 +32,24 @@ public class DefaultRule {
 		}
 		
 		//Rule priority 3: PlayerWhitelistRule
-		if(config.playerListMode != TriState.DEFAULT && config.configPlayerList != null && config.configPlayerList.contains(player)) {
-			return config.playerListMode.get();
+		if(config.playerSetMode != TriState.DEFAULT && config.playerSetName.isPresent()) {
+			String name = config.playerSetName.get();
+			MinecraftServer server = player.getServer();
+			assert server != null;
+			
+			PlayerSetManager setManager = PlayerSetManager.getFor(server);
+			PlayerSet set;
+			if(setManager.hasSet(name)) {
+				set = setManager.get(name);
+				//Make sure that (the player-set named in the config file)'s "self-select" option always matches the config file.
+				set.setSelfSelect(config.playerSetSelfSelect);
+			} else {
+				set = setManager.createSet(name, config.playerSetSelfSelect);
+			}
+			
+			if(set.contains(player)) {
+				return config.playerSetMode.get();
+			}
 		}
 		
 		//Rule priority 4: RevengeRule

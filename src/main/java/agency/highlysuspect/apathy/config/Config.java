@@ -5,7 +5,6 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
-import agency.highlysuspect.apathy.list.PlayerList;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -89,28 +88,28 @@ public class Config implements Opcodes {
 	public TriState mobSetMode = TriState.DEFAULT;
 	
 	@Comment({
-		"The name of a list of players that might exist.",
-		"If this option is not provided, a player list is not created.",
-		"The meaning of the player list is explained in the next two options."
+		"The name of a set of players that might exist.",
+		"If this option is not provided, a player set is not created.",
+		"The meaning of the player set is explained in the next two options."
 	})
 	@Use("optionalString")
-	private Optional<String> playerListName = Optional.of("no-mobs");
+	public Optional<String> playerSetName = Optional.of("no-mobs");
 	
 	@Comment({
-		"If 'true', players can add themselves to the list, using '/apathy list join <playerListName>'.",
-		"If 'false', only an operator can add them to the list, using '/apathy list-admin join <player selector> <playerListName>'."
+		"If 'true', players can add themselves to the set, using '/apathy set join <playerListName>'.",
+		"If 'false', only an operator can add them to the set, using '/apathy set-admin join <selector> <playerListName>'."
 	})
-	private boolean playerListSelfSelect = true;
+	public boolean playerSetSelfSelect = true;
 	
 	@Comment({
-		"What happens to players on the player list?",
+		"What happens to players on the player set?",
 		"May be one of:",
-		"allow-list - Mobs are always allowed to attack players in the player list.",
-		"deny-list  - Mobs are never allowed to attack players in the player list.",
-		"disabled   - The player list will be ignored."
+		"allow-list - Mobs are always allowed to attack players in the player set.",
+		"deny-list  - Mobs are never allowed to attack players in the player set.",
+		"disabled   - The player set will be ignored, and not created."
 	})
 	@Use("triStateAllowDenyDisabled")
-	public TriState playerListMode = TriState.FALSE;
+	public TriState playerSetMode = TriState.FALSE;
 	
 	@Comment({
 		"When you attack a mob, for how many ticks are they allowed to attack back?",
@@ -138,9 +137,6 @@ public class Config implements Opcodes {
 	
 	//Keys in the config file that I don't know how to parse.
 	private transient HashMap<String, String> unknownKeys;
-	
-	//The player list, constructed from playerListName and playerListMode, if it exists.
-	public transient @Nullable PlayerList configPlayerList;
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
 	public boolean allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity player) {
@@ -187,7 +183,6 @@ public class Config implements Opcodes {
 	
 	//Create derived Java values from the config values.
 	public Config finish() {
-		playerListName.ifPresent(s -> configPlayerList = PlayerList.getOrCreate(s, playerListSelfSelect));
 		return this;
 	}
 	

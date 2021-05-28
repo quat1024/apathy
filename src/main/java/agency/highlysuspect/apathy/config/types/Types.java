@@ -21,6 +21,7 @@ public class Types {
 		builtinParsers.put(Identifier.class, ident);
 		builtinParsers.put(Integer.TYPE, new IntSerde());
 		builtinParsers.put(Boolean.TYPE, new BooleanSerde());
+		builtinParsers.put(Long.TYPE, new LongSerde());
 		
 		//Basically this thing exists because I can't put custom expressions in Java annotations.
 		//So I annotate the field in the config file with @Use("difficultySet") and that bounces over to here.

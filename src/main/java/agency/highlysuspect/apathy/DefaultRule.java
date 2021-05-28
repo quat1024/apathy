@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.config.Config;
+import agency.highlysuspect.apathy.revenge.VengeanceHandler;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
@@ -18,20 +19,24 @@ public class DefaultRule {
 		}
 		
 		//Rule priority 1: BossRule
-		if(config.bossBypass && isBoss(attacker)) return true;
+		if(config.bossBypass && isBoss(attacker)) {
+			return true;
+		}
 		
 		//Rule priority 2: TargeterTypeRule
-		if(config.mobSetMode != TriState.DEFAULT) {
-			if(config.mobSet.contains(attacker.getType())) return config.mobSetMode.get();
+		if(config.mobSetMode != TriState.DEFAULT && config.mobSet.contains(attacker.getType())) {
+			return config.mobSetMode.get();
 		}
 		
 		//Rule priority 3: PlayerWhitelistRule
-		if(config.playerListMode != TriState.DEFAULT && config.configPlayerList != null) {
-			if(config.configPlayerList.contains(player)) return config.playerListMode.get();
+		if(config.playerListMode != TriState.DEFAULT && config.configPlayerList != null && config.configPlayerList.contains(player)) {
+			return config.playerListMode.get();
 		}
 		
 		//Rule priority 4: RevengeRule
-		//TODO: Not implemented.
+		if(config.revengeTimer > -1 && VengeanceHandler.wasProvoked(attacker) && VengeanceHandler.timeSinceProvocation(attacker) <= config.revengeTimer) {
+			return true;
+		}
 		
 		//TODO: In the original, what happens when you exhaust all the rules?
 		return config.fallthrough;

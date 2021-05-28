@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy;
 import agency.highlysuspect.apathy.clojure.ClojureProxy;
 import agency.highlysuspect.apathy.clojure.ClojureSupport;
 import agency.highlysuspect.apathy.config.Config;
+import agency.highlysuspect.apathy.revenge.VengeanceHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -31,6 +32,8 @@ public class Init implements ModInitializer {
 		
 		Commands.registerArgumentTypes();
 		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
+		
+		VengeanceHandler.onInitialize();
 		
 		installAndRunReloadListener("reload-config", () -> {
 			try {

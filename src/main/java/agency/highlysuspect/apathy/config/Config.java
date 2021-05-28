@@ -45,7 +45,7 @@ public class Config implements Opcodes {
 		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
 		"This is how often the mob will check. (Set this to 1 to check every tick.)"
 	})
-	@AtLeast(1)
+	@AtLeast(minInt = 1)
 	public int recheckInterval = 20;
 	
 	////////////////
@@ -111,6 +111,19 @@ public class Config implements Opcodes {
 	})
 	@Use("triStateAllowDenyDisabled")
 	public TriState playerListMode = TriState.FALSE;
+	
+	@Comment({
+		"When you attack a mob, for how many ticks are they allowed to attack back?",
+		"Or, set to -1 to disable this 'revenge' mechanic."
+	})
+	@Note({
+		"The exact duration of the attack may be up to (<revengeTimer> + <recheckInterval>) ticks.",
+		"Btw, the original mod had an option for 'eternal revenge', with an uncapped timer.",
+		"I didn't port that, but the maximum value of the timer is " + Long.MAX_VALUE + " ticks.",
+		"Make of that information what you will ;)"
+	})
+	@AtLeast(minLong = -1)
+	public long revengeTimer = -1;
 	
 	@Comment({
 		"What happens when none of the previous rules apply?",
@@ -269,7 +282,11 @@ public class Config implements Opcodes {
 			//If the field has bounds, describe them in the comment.
 			AtLeast atLeast = field.getDeclaredAnnotation(AtLeast.class);
 			if(atLeast != null) {
-				lines.add("# Must be at least " + atLeast.value() + ".");
+				if(atLeast.minInt() != Integer.MIN_VALUE) {
+					lines.add("# Must be at least " + atLeast.minInt() + ".");
+				} else if(atLeast.minLong() != Long.MIN_VALUE) {
+					lines.add("# Must be at least " + atLeast.minLong() + ".");
+				}
 			}
 			
 			//If the field has an example, include that too.
@@ -285,7 +302,7 @@ public class Config implements Opcodes {
 			if(note != null) {
 				boolean first = true;
 				for(String noteLine : note.value()) {
-					lines.add((first ? "# Note: " : "#      ") + noteLine);
+					lines.add((first ? "# Note: " : "#       ") + noteLine);
 					first = false;
 				}
 			}

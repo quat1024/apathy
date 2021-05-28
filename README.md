@@ -35,7 +35,7 @@ A rule either says "yes, you are **allowed** to attack", "no, you are **denied**
 
 ## Config file
 
-The config file allows you to configure rules in this (fixed) order.
+The config file allows you to configure these rules.
 
 * *difficulty rule*: The attacker can target depending on the world difficulty.
 * *boss rule*: The attacker can target if it is a "boss" (i.e. in the `apathy:bosses` tag.)
@@ -44,7 +44,12 @@ The config file allows you to configure rules in this (fixed) order.
 * *revenge rule*: The attacker can target if they were recently provoked.
 * *last resort rule*: If *all* of the previous rules returned "pass", this determines their behavior.
 
-If you need rules in a different order, see the Clojure scripting documentation below.
+Rules are evaluated top-to-bottom (in an order you specify) and the first one that doesn't `pass` is the end result.
+
+If you need more control over rules, such as AND/ORing, getting more copies of each rule, or applying radically different rules for each difficulty:
+
+* let me get the JSON system in :)
+* also see the Clojure scripting documentation below.
 
 ## Clojure?
 

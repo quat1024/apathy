@@ -17,22 +17,31 @@ public class DefaultRule {
 		//Rule priorities and class names correspond to the original Apathetic Mobs source.
 		
 		//Rule priority 0: DifficultyLockRule
-		if(config.difficultyLockEnabled && !config.difficultyLock.contains(attacker.world.getDifficulty())) {
-			return true;
+		if(config.difficultySetIncluded != TriState.DEFAULT || config.difficultySetExcluded != TriState.DEFAULT) {
+			if(config.difficultySet.contains(attacker.world.getDifficulty())) {
+				if(config.difficultySetIncluded != TriState.DEFAULT) return config.difficultySetIncluded.get();
+			} else {
+				if(config.difficultySetExcluded != TriState.DEFAULT) return config.difficultySetExcluded.get();
+			}
 		}
 		
 		//Rule priority 1: BossRule
-		if(config.bossBypass && isBoss(attacker)) {
-			return true;
+		if(config.bossBypass != TriState.DEFAULT && isBoss(attacker)) {
+			return config.bossBypass.get();
 		}
 		
 		//Rule priority 2: TargeterTypeRule
-		if(config.mobSetMode != TriState.DEFAULT && config.mobSet.contains(attacker.getType())) {
-			return config.mobSetMode.get();
+		if(config.mobSetIncluded != TriState.DEFAULT || config.mobSetExcluded != TriState.DEFAULT) {
+			if(config.mobSet.contains(attacker.getType())) {
+				if(config.mobSetIncluded != TriState.DEFAULT) return config.mobSetIncluded.get();
+			} else {
+				if(config.mobSetExcluded != TriState.DEFAULT) return config.mobSetExcluded.get();
+			}
 		}
 		
 		//Rule priority 3: PlayerWhitelistRule
-		if(config.playerSetMode != TriState.DEFAULT && config.playerSetName.isPresent()) {
+		if(config.playerSetName.isPresent() && (config.playerSetIncluded != TriState.DEFAULT || config.playerSetExcluded != TriState.DEFAULT)) {
+			//Locate the relevant player-set.
 			String name = config.playerSetName.get();
 			MinecraftServer server = player.getServer();
 			assert server != null;
@@ -41,14 +50,16 @@ public class DefaultRule {
 			PlayerSet set;
 			if(setManager.hasSet(name)) {
 				set = setManager.get(name);
-				//Make sure that (the player-set named in the config file)'s "self-select" option always matches the config file.
+				//Make sure that (the player-set named in the config file)'s "self-select" option is always up-to-date with the config file.
 				set.setSelfSelect(config.playerSetSelfSelect);
 			} else {
 				set = setManager.createSet(name, config.playerSetSelfSelect);
 			}
 			
 			if(set.contains(player)) {
-				return config.playerSetMode.get();
+				if(config.playerSetIncluded != TriState.DEFAULT) return config.playerSetIncluded.get();
+			} else {
+				if(config.playerSetExcluded != TriState.DEFAULT) return config.playerSetExcluded.get();
 			}
 		}
 		

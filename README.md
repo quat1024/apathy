@@ -10,7 +10,26 @@ Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 * Check that the config behaves like Apathetic Mobs's config file
 * Implement special behavior for bosses
 
-Also maybe there is a better config idiom?
+Maybe there is a better config idiom? Spirit mentioned JSON.
+
+## Concepts
+
+This mod is based around a list of rules. Whenever a mob (the "attacker") thinks about targeting a player (the "defender"), it first checks the list of rules to see if it is allowed to do so.
+
+A rule either says "yes, you are **allowed** to attack", "no, you are **denied** from attacking", or **pass**es to the next rule in the sequence.
+
+## Config file
+
+The config file allows you to configure rules in this (fixed) order.
+
+* *difficulty rule*: The attacker can target depending on the world difficulty.
+* *boss rule*: The attacker can target if it is a "boss" (i.e. in the `apathy:bosses` tag.)
+* *mob set rule*: The attacker can target depending on whether its ID appears in a list of mob IDs.
+* *player set rule*: The attacker can target players depending on their inclusion in a player set.
+* *revenge rule*: The attacker can target if they were recently provoked.
+* *last resort rule*: If *all* of the previous rules returned "pass", this determines their behavior.
+
+If you need rules in a different order, see the Clojure scripting documentation below.
 
 ## Clojure?
 
@@ -19,7 +38,7 @@ If [Clojure Lib](https://www.curseforge.com/minecraft/mc-mods/clojure-lib) is in
 Apathy will read Clojure files from:
 
 * `config/apathy.clj` in the config directory,
-* any `.clj` files placed in the "apathy" directory of a datapack (todo example).
+* any `.clj` files placed in the "apathy" directory of a datapack (todo test this and provide example).
 
 These files are re-submitted to the Clojure runtime on every world load and `/reload` command. Errors while parsing these files will be printed to the log.
 

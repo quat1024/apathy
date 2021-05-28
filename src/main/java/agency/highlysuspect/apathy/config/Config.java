@@ -36,61 +36,89 @@ public class Config implements Opcodes {
 	})
 	public boolean useClojure = false; //False by default. Sorry Eutro.
 	
-	///////////////////////
-	@Section("Performance")
-	///////////////////////
-	
-	@Comment({
-		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
-		"This is how often the mob will check. (Set this to 1 to check every tick.)"
-	})
-	@AtLeast(minInt = 1)
-	public int recheckInterval = 20;
-	
-	////////////////
-	@Section("Rule")
-	////////////////
+	///////////////////////////
+	@Section("Difficulty Rule")
+	///////////////////////////
 	
 	@Comment({
 		"Comma-separated list of difficulties.",
-		"See the next config option for the purpose of this.",
 	})
 	@Example("easy, normal")
 	@Use("difficultySet")
-	public Set<Difficulty> difficultyLock = Collections.emptySet();
+	public Set<Difficulty> difficultySet = Collections.emptySet();
 	
 	@Comment({
-		"If 'true', when 'difficultyLock' does not include the current world difficulty,",
-		"mobs will always be allowed to attack the player."
+		"What happens when the current world difficulty appears in difficultySet?",
+		"May be one of:",
+		"allow - Every mob is always allowed to attack everyone.",
+		"deny  - No mob is ever allowed to attack anyone.",
+		"pass  - Defer to the next rule, 'Boss Rule'.",
 	})
-	public boolean difficultyLockEnabled = false;
+	@Use("triStateAllowDenyPass")
+	public TriState difficultySetIncluded = TriState.DEFAULT;
 	
 	@Comment({
-		"Should bosses always be allowed to attack the player?",
+		"What happens when the current world difficulty does *not* appear in difficultySet?",
+		"May be one of:",
+		"allow - Every mob is always allowed to attack everyone.",
+		"deny  - No mob is ever allowed to attack anyone.",
+		"pass  - Defer to the next rule, 'Boss Rule'.",
+	})
+	@Use("triStateAllowDenyPass")
+	public TriState difficultySetExcluded = TriState.DEFAULT;
+	
+	/////////////////////
+	@Section("Boss Rule")
+	/////////////////////
+	
+	@Comment({
+		"What happens when the attacker is a boss?",
 		"'Bossness' is defined by inclusion in the 'apathy:bosses' tag.",
-		"By default, the tag includes the Ender Dragon and Wither."
+		"May be one of:",
+		"allow - Every boss is allowed to attack everyone.",
+		"deny  - No boss is allowed to attack anyone.",
+		"pass  - Defer to the next rule, 'Mob Set Rule'."
 	})
-	public boolean bossBypass = true;
+	@Note("If the current attacker is *not* a boss, always passes to the next rule.")
+	@Use("triStateAllowDenyPass")
+	public TriState bossBypass = TriState.TRUE;
 	
-	@Comment("A comma-separated list of mobs. See the next config option for how this gets interpreted.")
+	////////////////////////
+	@Section("Mob Set Rule")
+	////////////////////////
+	
+	@Comment("A comma-separated set of mob IDs.")
 	@Example("minecraft:creeper, minecraft:spider")
 	@Use("entityTypeSet")
 	public Set<EntityType<?>> mobSet = Collections.emptySet();
 	
 	@Comment({
-		"How the mobSet is interpreted.",
+		"What happens when the attacker's entity ID appears in mobSet?",
 		"May be one of:",
-		"allow-list - The mobs in mobSet will always be allowed to attack the player.",
-		"deny-list  - The mobs in mobSet will never be allowed to attack the player.",
-		"disabled   - The mobSet will be ignored."
+		"allow - The mob will be allowed to attack the player.",
+		"deny  - The mob will not be allowed to attack the player.",
+		"pass  - Defer to the next rule, 'Player Set Rule'."
 	})
-	@Use("triStateAllowDenyDisabled")
-	public TriState mobSetMode = TriState.DEFAULT;
+	@Use("triStateAllowDenyPass")
+	public TriState mobSetIncluded = TriState.DEFAULT;
 	
 	@Comment({
-		"The name of a set of players that might exist.",
-		"If this option is not provided, a player set is not created.",
-		"The meaning of the player set is explained in the next two options."
+		"What happens when the attacker's entity ID does *not* appear in mobSet?",
+		"May be one of:",
+		"allow - The mob will be allowed to attack the player.",
+		"deny  - The mob will not be allowed to attack the player.",
+		"pass  - Defer to the next rule, 'Player Set Rule'."
+	})
+	@Use("triStateAllowDenyPass")
+	public TriState mobSetExcluded = TriState.DEFAULT;
+	
+	///////////////////////////
+	@Section("Player Set Rule")
+	///////////////////////////
+	
+	@Comment({
+		"The name of a set of players.",
+		"If this option is not provided, a player set is not created and this whole rule's a no-op.",
 	})
 	@Use("optionalString")
 	public Optional<String> playerSetName = Optional.of("no-mobs");
@@ -102,18 +130,33 @@ public class Config implements Opcodes {
 	public boolean playerSetSelfSelect = true;
 	
 	@Comment({
-		"What happens to players on the player set?",
+		"What happens when a mob tries to attack someone who appears in the playerSet?",
 		"May be one of:",
-		"allow-list - Mobs are always allowed to attack players in the player set.",
-		"deny-list  - Mobs are never allowed to attack players in the player set.",
-		"disabled   - The player set will be ignored, and not created."
+		"allow - The mob is allowed to attack the player.",
+		"deny  - The mob is not allowed to attack the player.",
+		"pass  - Defer to the next rule, 'Revenge Rule'."
 	})
-	@Use("triStateAllowDenyDisabled")
-	public TriState playerSetMode = TriState.FALSE;
+	@Use("triStateAllowDenyPass")
+	public TriState playerSetIncluded = TriState.FALSE;
 	
 	@Comment({
-		"When you attack a mob, for how many ticks are they allowed to attack back?",
-		"Or, set to -1 to disable this 'revenge' mechanic."
+		"What happens when a mob tries to attack someone who does *not* appear in the playerSet?",
+		"May be one of:",
+		"allow - The mob is allowed to attack the player.",
+		"deny  - The mob is not allowed to attack the player.",
+		"pass  - Defer to the next rule, 'Revenge Rule'."
+	})
+	@Use("triStateAllowDenyPass")
+	public TriState playerSetExcluded = TriState.DEFAULT;
+	
+	////////////////////////
+	@Section("Revenge Rule")
+	////////////////////////
+	
+	@Comment({
+		"For how many ticks is a mob allowed to retaliate after being attacked?",
+		"Set to -1 to disable this 'revenge' mechanic.",
+		"When this timer is expired, defers to the next rule, 'Last Resort Rule'."
 	})
 	@Note({
 		"The exact duration of the attack may be up to (<revengeTimer> + <recheckInterval>) ticks.",
@@ -124,14 +167,30 @@ public class Config implements Opcodes {
 	@AtLeast(minLong = -1)
 	public long revengeTimer = -1;
 	
+	////////////////////////////
+	@Section("Last Resort Rule")
+	////////////////////////////
+	
 	@Comment({
-		"What happens when none of the previous rules apply?",
+		"If absolutely none of the previous rules applied, what happens?",
 		"May be one of:",
 		"allow - By default, mobs are allowed to attack players.",
-		"deny  - By default, mobs are not allowed to attack players."
+		"deny  - By default, mobs are not allowed to attack players.",
+		"May *not* be set to 'pass'."
 	})
 	@Use("boolAllowDeny")
-	public boolean fallthrough;
+	public boolean fallthrough = true;
+	
+	////////////////////////
+	@Section("Optimization")
+	////////////////////////
+	
+	@Comment({
+		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
+		"This is how often the mob will check. (Set this to 1 to check every tick.)"
+	})
+	@AtLeast(minInt = 1)
+	public int recheckInterval = 20;
 	
 	///////////////////////////////////////
 	
@@ -339,9 +398,9 @@ public class Config implements Opcodes {
 		if(useClojure != config.useClojure) return false;
 		if(recheckInterval != config.recheckInterval) return false;
 		if(bossBypass != config.bossBypass) return false;
-		if(!difficultyLock.equals(config.difficultyLock)) return false;
+		if(!difficultySet.equals(config.difficultySet)) return false;
 		if(!mobSet.equals(config.mobSet)) return false;
-		if(mobSetMode != config.mobSetMode) return false;
+		if(mobSetExcluded != config.mobSetExcluded) return false;
 		return unknownKeys.equals(config.unknownKeys);
 	}
 }

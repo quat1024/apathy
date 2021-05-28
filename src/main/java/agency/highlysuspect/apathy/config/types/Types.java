@@ -34,8 +34,7 @@ public class Types {
 			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getId))
 		);
 		
-		customParsers.put("triStateAllowDenyDisabled", new TriStateField.AllowDenyDisabled());
-		customParsers.put("triStateDifficultyListMode", new TriStateField.DifficultyListMode());
+		customParsers.put("triStateAllowDenyPass", new TriStateField.AllowDenyPass());
 		
 		customParsers.put("optionalString", new StringSerde().optional());
 		

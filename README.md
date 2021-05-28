@@ -4,13 +4,28 @@ Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 
 ## TODO:
 
-* Expose player-lists to Clojure
-* Expose revenge timer to Clojure
-* Expose "attacker tagged with ____" rule to regular config
-* Check that the config behaves like Apathetic Mobs's config file
-* Implement special behavior for bosses
+* ~~Expose player-sets to Clojure~~
+* ~~Expose revenge timer rule to Clojure~~
+* Consider directly exporting the `Rule` interface to Clojure and removing the clojure-side combinators since they now exist in Java
+* Expose "attacker tagged with my:custom_tag" rule to regular config
+* Check that the default config behavior is like Apathetic Mobs's default config
+* Implement the special behavior for bosses
+* `/apathy set-admin` commands for:
+    * adding and removing player-sets (not *super* useful since they won't be plugged in to anything, but eh)
+        * guard against removing the one specified in the config file
+    * listing the people in a player-set
+* while i'm at it how about `/apathy reload` to refresh the config file and stuff. Not too hard to add
+* Spirit's JSON idea
 
-Maybe there is a better config idiom? Spirit mentioned JSON.
+## Wishlist (maybe out of scope)
+
+* "No boss" config options that remove the associated fight.
+    * no Wither -> Building the Wither multiblock just gives you a nether star
+    * no dragon -> Exit end portal is already open. Place 4 nether crystals to spawn an End gateway
+
+### Known bug
+
+* Ever since changing player-sets from being "weird ad-hoc strings stored on the player" to "a Real Thing that uses PersistentData and stuff", the config file hasn't been able to automatically generate its player-set. There's no server available at config parse time. Shouldn't be too hard, just get like, a server tick handler or something.
 
 ## Concepts
 

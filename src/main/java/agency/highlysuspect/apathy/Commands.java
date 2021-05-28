@@ -1,14 +1,14 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.list.*;
+import agency.highlysuspect.apathy.list.PlayerSet;
+import agency.highlysuspect.apathy.list.PlayerSetArgumentType;
+import agency.highlysuspect.apathy.list.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 
@@ -16,9 +16,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.BiFunction;
 
-import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.*;
-import static net.minecraft.command.argument.EntityArgumentType.*;
-import static net.minecraft.server.command.CommandManager.*;
+import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.getPlayerSet;
+import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.playerSet;
+import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
+import static net.minecraft.command.argument.EntityArgumentType.players;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class Commands {
 	public static void registerArgumentTypes() {

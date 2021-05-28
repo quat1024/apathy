@@ -1,12 +1,9 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
-import agency.highlysuspect.apathy.clojure.Api;
 import agency.highlysuspect.apathy.revenge.MobEntityExt;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;

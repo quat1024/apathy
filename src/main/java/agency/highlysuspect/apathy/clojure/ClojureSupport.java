@@ -2,10 +2,7 @@ package agency.highlysuspect.apathy.clojure;
 
 import agency.highlysuspect.apathy.Init;
 import clojure.java.api.Clojure;
-import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;

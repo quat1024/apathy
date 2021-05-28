@@ -12,6 +12,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +52,10 @@ public class PlayerList {
 		return ((ServerPlayerEntityExt) player).apathy$partList(this);
 	}
 	
+	public Text toText() {
+		return new TranslatableText(selfSelect ? "apathy.list.show.selfSelect" : "apathy.list.show.notSelfSelect", name);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;
@@ -74,7 +80,7 @@ public class PlayerList {
 			PlayerList list = playerLists.get(listName);
 			if(list == null) {
 				reader.setCursor(start);
-				throw new SimpleCommandExceptionType(new LiteralText("lkasdlaskjd " + listName)).createWithContext(reader); //TODO
+				throw new SimpleCommandExceptionType(new TranslatableText("apathy.commands.arg.notList", listName)).createWithContext(reader);
 			} else return list;
 		}
 		

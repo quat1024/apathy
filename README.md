@@ -5,7 +5,6 @@ Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 ## TODO:
 
 * Expose player-lists to Clojure
-* Save player-lists to NBT
 * Expose revenge timer to Clojure
 * Expose "attacker tagged with ____" rule to regular config
 * Check that the config behaves like Apathetic Mobs's config file

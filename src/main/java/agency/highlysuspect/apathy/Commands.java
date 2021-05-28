@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.list.PlayerList;
+import agency.highlysuspect.apathy.list.ServerPlayerEntityExt;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,10 +11,13 @@ import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.BiFunction;
 
 import static agency.highlysuspect.apathy.list.PlayerList.Arg.*;
@@ -33,7 +37,9 @@ public class Commands {
 						.executes(cmd -> join(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerList(cmd, "list"), true))))
 				.then(literal("part")
 					.then(argument("list", playerList()).suggests(PlayerList.Arg::suggestSelfSelectLists)
-						.executes(cmd -> part(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerList(cmd, "list"), true)))))
+						.executes(cmd -> part(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerList(cmd, "list"), true))))
+				.then(literal("show")
+					.executes(cmd -> show(cmd, Collections.singletonList(cmd.getSource().getPlayer())))))
 			.then(literal("list-admin")
 				.requires(src -> src.hasPermissionLevel(2))
 				.then(literal("join")
@@ -80,5 +86,30 @@ public class Commands {
 			cmd.getSource().sendError(new TranslatableText(fail, player.getName(), list.name));
 			return 0;
 		}
+	}
+	
+	private static int show(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players) {
+		Collection<PlayerList> lists = PlayerList.playerLists.values();
+		if(lists.isEmpty()) {
+			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.list.available.none"), false);
+		} else {
+			Text haha = Texts.join(lists, PlayerList::toText);
+			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.list.available", haha), false);
+		}
+		
+		int success = 0;
+		
+		for(ServerPlayerEntity player : players) {
+			Collection<PlayerList> yea = ((ServerPlayerEntityExt) player).apathy$allLists();
+			if(yea.isEmpty()) {
+				cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.list.show.none", player.getName()), false);
+			} else {
+				Text haha = Texts.join(yea, PlayerList::toText);
+				cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.list.show", player.getName(), haha), false);
+				success++;
+			}
+		}
+		
+		return success;
 	}
 }

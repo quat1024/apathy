@@ -1,10 +1,12 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.DefaultRule;
 import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
+import agency.highlysuspect.apathy.rule.Partial;
+import agency.highlysuspect.apathy.rule.Rule;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -31,10 +33,23 @@ public class Config implements Opcodes {
 	///////////////////
 	
 	@Comment({
-		"Enable the Clojure API for configuring the mod. See the README on github for more information.",
-		"Rules configured through Clojure take precedence over this config file."
+		"Enable the Clojure API for configuring the mod. See the README on github for more information."
 	})
 	public boolean useClojure = false; //False by default. Sorry Eutro.
+	
+	///////////////////////////////
+	@Section("Built In Rule Order")
+	///////////////////////////////
+	
+	@Comment({
+		"Which order should the rules in this config file be evaluated in?",
+		"Comma-separated list built out of any or all of the following keywords, in any order:",
+		"clojure, difficulty, boss, mobSet, playerSet, revenge"
+	})
+	@Note("If a rule is not listed in the rule order, it will not be checked.")
+	@Example("difficulty, revenge, playerSet")
+	@Use("stringList")
+	public List<String> ruleOrder = ImmutableList.of("clojure", "difficulty", "boss", "mobSet", "playerSet", "revenge");
 	
 	///////////////////////////
 	@Section("Difficulty Rule")
@@ -52,7 +67,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - Every mob is always allowed to attack everyone.",
 		"deny  - No mob is ever allowed to attack anyone.",
-		"pass  - Defer to the next rule, 'Boss Rule'.",
+		"pass  - Defer to the next rule.",
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState difficultySetIncluded = TriState.DEFAULT;
@@ -62,7 +77,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - Every mob is always allowed to attack everyone.",
 		"deny  - No mob is ever allowed to attack anyone.",
-		"pass  - Defer to the next rule, 'Boss Rule'.",
+		"pass  - Defer to the next rule.",
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState difficultySetExcluded = TriState.DEFAULT;
@@ -77,7 +92,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - Every boss is allowed to attack everyone.",
 		"deny  - No boss is allowed to attack anyone.",
-		"pass  - Defer to the next rule, 'Mob Set Rule'."
+		"pass  - Defer to the next rule."
 	})
 	@Note("If the current attacker is *not* a boss, always passes to the next rule.")
 	@Use("triStateAllowDenyPass")
@@ -97,7 +112,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - The mob will be allowed to attack the player.",
 		"deny  - The mob will not be allowed to attack the player.",
-		"pass  - Defer to the next rule, 'Player Set Rule'."
+		"pass  - Defer to the next rule."
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState mobSetIncluded = TriState.DEFAULT;
@@ -107,7 +122,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - The mob will be allowed to attack the player.",
 		"deny  - The mob will not be allowed to attack the player.",
-		"pass  - Defer to the next rule, 'Player Set Rule'."
+		"pass  - Defer to the next rule."
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState mobSetExcluded = TriState.DEFAULT;
@@ -118,7 +133,7 @@ public class Config implements Opcodes {
 	
 	@Comment({
 		"The name of a set of players.",
-		"If this option is not provided, a player set is not created and this whole rule's a no-op.",
+		"If this option is not provided, a player set is not created, and this whole rule always passes.",
 	})
 	@Use("optionalString")
 	public Optional<String> playerSetName = Optional.of("no-mobs");
@@ -134,7 +149,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - The mob is allowed to attack the player.",
 		"deny  - The mob is not allowed to attack the player.",
-		"pass  - Defer to the next rule, 'Revenge Rule'."
+		"pass  - Defer to the next rule."
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState playerSetIncluded = TriState.FALSE;
@@ -144,7 +159,7 @@ public class Config implements Opcodes {
 		"May be one of:",
 		"allow - The mob is allowed to attack the player.",
 		"deny  - The mob is not allowed to attack the player.",
-		"pass  - Defer to the next rule, 'Revenge Rule'."
+		"pass  - Defer to the next rule."
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState playerSetExcluded = TriState.DEFAULT;
@@ -156,7 +171,7 @@ public class Config implements Opcodes {
 	@Comment({
 		"For how many ticks is a mob allowed to retaliate after being attacked?",
 		"Set to -1 to disable this 'revenge' mechanic.",
-		"When this timer is expired, defers to the next rule, 'Last Resort Rule'."
+		"When the timer expires, defers to the next rule."
 	})
 	@Note({
 		"The exact duration of the attack may be up to (<revengeTimer> + <recheckInterval>) ticks.",
@@ -197,18 +212,16 @@ public class Config implements Opcodes {
 	//Keys in the config file that I don't know how to parse.
 	private transient HashMap<String, String> unknownKeys;
 	
+	//The rule, as defined by all the above config options!
+	private transient Rule rule;
+	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
 	public boolean allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity player) {
 		if(attacker.world.isClient) throw new IllegalStateException("Do not call on the client, please");
 		
-		if(useClojure) {
-			TriState result = Init.clojureProxy.allowedToTargetPlayer(attacker, player);
-			if(result != TriState.DEFAULT) {
-				return result.get();
-			}
-		}
-		
-		return DefaultRule.allowedToAttackPlayer(this, attacker, player);
+		TriState result = rule.apply(attacker, player);
+		if(result != TriState.DEFAULT) return result.get();
+		else return fallthrough;
 	}
 	
 	//Read the config file from this path, or save the default one to it.
@@ -242,6 +255,33 @@ public class Config implements Opcodes {
 	
 	//Create derived Java values from the config values.
 	public Config finish() {
+		ArrayList<Rule> rules = new ArrayList<>();
+		for(String ruleName : ruleOrder) {
+			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
+				case "clojure":
+					rules.add(Rule.clojure());
+					break;
+				case "difficulty":
+					rules.add(Rule.predicated(Partial.inDifficultySet(difficultySet), difficultySetIncluded, difficultySetExcluded));
+					break;
+				case "boss":
+					rules.add(Rule.predicated(Partial.isBoss(), bossBypass, TriState.DEFAULT));
+					break;
+				case "mobset":
+					rules.add(Rule.predicated(Partial.inMobSet(mobSet), mobSetIncluded, mobSetExcluded));
+					break;
+				case "playerset":
+					rules.add(playerSetName.map(s -> Rule.predicated(Partial.inPlayerSetNamed(s), playerSetIncluded, playerSetExcluded)).orElse(Rule.ALWAYS_PASS));
+					break;
+				case "revenge":
+					rules.add(revengeTimer == -1 ? Rule.ALWAYS_PASS : Rule.predicated(Partial.revengeTimer(revengeTimer), TriState.TRUE, TriState.DEFAULT));
+					break;
+				default: Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+			}
+		}
+		
+		rule = Rule.chain(rules); //Lotsa magic in here to optimize this rule down to the same rule you would have handwritten.
+		
 		return this;
 	}
 	
@@ -323,6 +363,7 @@ public class Config implements Opcodes {
 				lines.add(bar);
 				lines.add("## " + s + " ##");
 				lines.add(bar);
+				lines.add("");
 			}
 			
 			//If the field has a comment, write that out first, prefixed with a comment character.

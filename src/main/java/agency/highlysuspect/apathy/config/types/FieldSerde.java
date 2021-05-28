@@ -62,6 +62,31 @@ public interface FieldSerde<T> {
 		};
 	}
 	
+	default FieldSerde<List<T>> commaSeparatedList() {
+		FieldSerde<T> me = this;
+		
+		return new FieldSerde<List<T>>() {
+			@Override
+			public String write(Field targetField, List<T> value) {
+				StringBuilder bob = new StringBuilder();
+				for(int i = 0; i < value.size(); i++) {
+					bob.append(me.write(targetField, value.get(i)));
+					if(i != value.size() - 1) bob.append(", ");
+				}
+				return bob.toString();
+			}
+			
+			@Override
+			public List<T> parse(Field sourceField, String value) {
+				return Arrays.stream(value.split(","))
+					.map(String::trim)
+					.filter(s -> !s.isEmpty())
+					.map(s -> me.parse(sourceField, s))
+					.collect(Collectors.toList());
+			}
+		};
+	}
+	
 	default FieldSerde<Optional<T>> optional() {
 		FieldSerde<T> me = this;
 		

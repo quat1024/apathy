@@ -39,6 +39,8 @@ public class Types {
 		customParsers.put("optionalString", new StringSerde().optional());
 		
 		customParsers.put("boolAllowDeny", new StringSerde().map(Bijection.create(s -> s.equals("allow"), (Boolean b) -> b ? "allow" : "deny")));
+		
+		customParsers.put("stringList", new StringSerde().commaSeparatedList());
 	}
 	
 	@SuppressWarnings("unchecked")

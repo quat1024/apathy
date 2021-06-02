@@ -106,13 +106,6 @@ public interface Partial extends BiPredicate<MobEntity, ServerPlayerEntity> {
 	static Partial odd(Collection<Partial> partials) {
 		if(partials.size() == 0) return ALWAYS_FALSE;
 		if(partials.size() == 1) return RuleUtil.extractSingleton(partials);
-		if(partials.size() == 2) {
-			//sigh
-			Iterator<Partial> partialerator = partials.iterator();
-			Partial a = partialerator.next();
-			Partial b = partialerator.next();
-			return a.xor(b);
-		}
 		return partials.stream().reduce(Partial::xor).get();
 	}
 	

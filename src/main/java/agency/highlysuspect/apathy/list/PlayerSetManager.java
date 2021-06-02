@@ -1,5 +1,7 @@
 package agency.highlysuspect.apathy.list;
 
+import agency.highlysuspect.apathy.Init;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -8,6 +10,7 @@ import net.minecraft.world.PersistentState;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class PlayerSetManager extends PersistentState {
@@ -21,7 +24,8 @@ public class PlayerSetManager extends PersistentState {
 		return server.getOverworld().getPersistentStateManager().getOrCreate(PlayerSetManager::new, KEY);
 	}
 	
-	private final Map<String, PlayerSet> playerSets = new HashMap<>();
+	//Idk if it needs to be a concurrent map really but.... okay
+	private final ConcurrentHashMap<String, PlayerSet> playerSets = new ConcurrentHashMap<>();
 	
 	public boolean hasSet(String name) {
 		return playerSets.containsKey(name);
@@ -83,5 +87,15 @@ public class PlayerSetManager extends PersistentState {
 		for(String name : allSets.getKeys()) {
 			playerSets.put(name, PlayerSet.fromTag(this, name, allSets.getCompound(name)));
 		}
+	}
+	
+	public static void onInitialize() {
+		ServerTickEvents.START_SERVER_TICK.register(server -> {
+			PlayerSetManager mgr = PlayerSetManager.getFor(server);
+			Init.config.playerSetName.ifPresent(s -> {
+				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Init.config.playerSetSelfSelect);
+				else mgr.createSet(s, Init.config.playerSetSelfSelect);
+			});
+		});
 	}
 }

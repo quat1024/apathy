@@ -28,14 +28,15 @@ public class Config implements Opcodes {
 	private static int CURRENT_CONFIG_VERSION = 0;
 	@NoDefault public int configVersion = CURRENT_CONFIG_VERSION;
 	
-	///////////////////
-	@Section("Clojure")
-	///////////////////
+	//////////////////////////
+	@Section("Nuclear Option")
+	//////////////////////////
 	
 	@Comment({
-		"Enable the Clojure API for configuring the mod. See the README on github for more information."
+		"If set to 'true', no mob will ever attack anyone.",
+		"Use this option if you don't want to deal with the rest of the config file."
 	})
-	public boolean useClojure = false; //False by default. Sorry Eutro.
+	public boolean nuclearOption = false;
 	
 	///////////////////////////////
 	@Section("Built In Rule Order")
@@ -96,7 +97,7 @@ public class Config implements Opcodes {
 	})
 	@Note("If the current attacker is *not* a boss, always passes to the next rule.")
 	@Use("triStateAllowDenyPass")
-	public TriState bossBypass = TriState.TRUE;
+	public TriState boss = TriState.TRUE;
 	
 	////////////////////////
 	@Section("Mob Set Rule")
@@ -207,6 +208,15 @@ public class Config implements Opcodes {
 	@AtLeast(minInt = 1)
 	public int recheckInterval = 20;
 	
+	///////////////////
+	@Section("Clojure")
+	///////////////////
+	
+	@Comment({
+		"Enable the Clojure API for configuring the mod. See the README on github for more information."
+	})
+	public boolean useClojure = false; //False by default. Sorry Eutro.
+	
 	///////////////////////////////////////
 	
 	//Keys in the config file that I don't know how to parse.
@@ -255,17 +265,25 @@ public class Config implements Opcodes {
 	
 	//Create derived Java values from the config values.
 	public Config finish() {
+		if(nuclearOption) {
+			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			rule = Rule.ALWAYS_DENY;
+			return this;
+		}
+		
 		ArrayList<Rule> rules = new ArrayList<>();
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
 				case "clojure":
-					rules.add(Rule.clojureIfItsEnabled());
+					if(Init.clojureModLoaded && useClojure) {
+						rules.add(Rule.clojure());
+					}
 					break;
 				case "difficulty":
 					rules.add(Rule.predicated(Partial.difficultyIsAny(difficultySet), difficultySetIncluded, difficultySetExcluded));
 					break;
 				case "boss":
-					rules.add(Rule.predicated(Partial.attackerIsBoss(), bossBypass, TriState.DEFAULT));
+					rules.add(Rule.predicated(Partial.attackerIsBoss(), boss, TriState.DEFAULT));
 					break;
 				case "mobset":
 					rules.add(Rule.predicated(Partial.attackerIsAny(mobSet), mobSetIncluded, mobSetExcluded));
@@ -438,7 +456,7 @@ public class Config implements Opcodes {
 		if(configVersion != config.configVersion) return false;
 		if(useClojure != config.useClojure) return false;
 		if(recheckInterval != config.recheckInterval) return false;
-		if(bossBypass != config.bossBypass) return false;
+		if(boss != config.boss) return false;
 		if(!difficultySet.equals(config.difficultySet)) return false;
 		if(!mobSet.equals(config.mobSet)) return false;
 		if(mobSetExcluded != config.mobSetExcluded) return false;

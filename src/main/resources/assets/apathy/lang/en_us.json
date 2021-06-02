@@ -1,5 +1,5 @@
 {
-	"apathy.commands.arg.notList": "No set named %s.",
+	"apathy.commands.arg.notSet": "No set named %s.",
 	"apathy.commands.set.notSelfSelect": "Set %s is not a self-select set, use /apathy set-admin.",
 	"apathy.commands.set.joinSuccess": "%s joined set %s.",
 	"apathy.commands.set.alreadyInSet": "%s already joined set %s.",
@@ -9,6 +9,16 @@
 	"apathy.commands.set.available.none": "No player sets are available.",
 	"apathy.commands.set.show": "%s is in these sets: %s",
 	"apathy.commands.set.show.none": "%s is not in any sets.",
+	"apathy.commands.reload": "Reloaded Apathy config file (and any scripts). Check the server log for any errors",
+	"apathy.commands.show-all.none": "No player sets exist.",
+	"apathy.commands.show-all.list": "The following player sets exist: %s",
+	"apathy.commands.show-all.set": "Set %s contains %s members.",
+	"apathy.commands.show-all.set.member": "  - %s",
+	"apathy.commands.show-all.set.member.offline-player": "a currently logged-out player (UUID %s)",
+	"apathy.commands.show-all.set.member.online-player": "%s (UUID %s)",
+	"apathy.commands.delete.success": "Player set %s deleted.",
+	"apathy.commands.delete.fail.noSet": "Player set %s doesn't exist.",
+	"apathy.commands.delete.fail.config": "Player set %s cannot be deleted because it'd just get recreated by the config file.",
 	"apathy.set.show.selfSelect": "%s (self-select)",
 	"apathy.set.show.notSelfSelect": "%s"
 }

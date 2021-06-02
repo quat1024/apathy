@@ -52,6 +52,6 @@ That's completely understandable - I did overengineer this mod quite a bit...
 
 Open an issue or hit me up on [discord](https://highlysuspect.agency/discord) with your questions, I'll try to get back to you.
 
-###license yadda yadda
+### license yadda yadda
 
 lgpl 3 or later

@@ -4,9 +4,9 @@
 (reset-rule!)
 
 (set-rule!
- (allow-if (difficulty "hard"))
- (deny-if  (difficulty "easy"))
- (allow-if (boss))
+ (allow-if (difficulty-is "hard"))
+ (deny-if  (difficulty-is "easy"))
+ (allow-if (attacker-is-boss))
 )
 
 ;(set-rule!

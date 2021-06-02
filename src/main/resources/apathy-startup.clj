@@ -2,7 +2,10 @@
 ; See the mod's README for examples.
 
 (ns apathy.api
-	(:import agency.highlysuspect.apathy.clojure.Api))
+	(:import agency.highlysuspect.apathy.clojure.Api
+	         agency.highlysuspect.apathy.rule.Rule
+	         agency.highlysuspect.apathy.rule.Partial
+	         net.fabricmc.fabric.api.util.TriState))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; stuff
 
@@ -15,92 +18,114 @@
 
 (defn inspect [x] (Api/inspect x)) ; debugger breakpoint
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule combinators
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rules and rule combinators
+
+(def allow
+	"Return 'allow' from a rule to specify that the attacker is allowed to attack the defender."
+	(. TriState/TRUE))
+
+(def deny
+	"Return 'deny' from a rule to specify that the attacker is to be prevented from attacking the player."
+	(. TriState/FALSE))
+
+(def pass
+	"Return 'pass' from a rule if the rule does not have anything to say about whether the attacker should be able to attack the player."
+	(. TriState/DEFAULT))
 
 (defn chain-rule
 	"A rule combinator that sequences other rules together.
 	Evaluates rules one-by-one, returning the value of the first one that didn't return nil. Returns nil itself if none matched."
 	[& rules]
-	(fn [mob player]
-		(some #(% mob player) rules)))
+	(. Rule/chainMany rules))
 
 (defn debug-rule
 	"Wraps another rule, logs a message when it's invoked, and logs whatever it output."
 	[message rule]
-	(fn [mob player]
-		(do
-			(log-msg message)
-			(let [result (rule mob player)]
-				(log-msg (str "Result: " result))
-				result))))
+	(. Rule/debug message rule))
 
 (defn always-allow
-	"A rule that always returns :allow ."
-	[] (constantly :allow))
+	"A rule that always returns allow.
+	Prefer this over making your own rule, the rule engine knows how to optimize this."
+	[] (. Rule/ALWAYS_ALLOW))
 
-(defn always-deny 
-	"A rule that always returns :deny ."
-	[] (constantly :deny))
+(defn always-deny
+	"A rule that always returns deny.
+	Prefer this over making your own rule, the rule engine knows how to optimize this."
+	[] (. Rule/ALWAYS_DENY))
 
 (defn always-pass
-	"A rule that always returns nil."
-	[] (constantly nil))
-
-(defn difficulty-map [rules]
-	(fn [mob player]
-		(if-let [f (get rules (keyword (Api/difficultyOf mob)))]
-			(f mob player))))
-
-(defn difficulty-case [& cases]
-	(difficulty-map (apply assoc {} cases)))
+	"A rule that always returns pass.
+	Prefer this over making your own rule, the rule engine knows how to optimize this."
+	[] (. Rule/ALWAYS_PASS))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; partial rules
 
-;; What is a partial rule?
-;; A partial rule is a predicate on [mob player]. It returns a Boolean instead of :allow :deny or nil.
-;; Many predicates over [mob player] can be interpreted to mean "true means 'yes, attack'" or "true means 'yes, don't attack'".
-;; allow-if and deny-if lift a partial rule into a rule, following one of those two interpretations.
+(defn predicated
+	"Lift a Partial into a Rule. The rule returns ifTrue if the partial succeeds, and ifFalse if it fails."
+	[partial ifTrue ifFalse]
+	(. Rule/predicated partial ifTrue ifFalse))
 
-(defn allow-if
-	"Lifts a partial rule (predicate) into a rule. The rule returns :allow if the predicate is true, and nil if it's not.
-	Example: (allow-if (attacker-has-tag 'mymodpack:bosses))"
-	[partial]
-	(fn [mob player] (if (partial mob player) :allow nil)))
+; (predicated (x) allow pass) 
+(defn allow-if [partial] (. Rule/allowIf partial))
+; (predicated (x) deny pass)
+(defn deny-if [partial] (. Rule/denyIf partial))
 
-(defn deny-if
-	"Lifts a partial rule (predicate) into a rule. The rule returns :deny if the predicate is true, and nil if it's not.
-	Example: (deny-if (difficulty 'easy))"
-	[partial]
-	(fn [mob player] (if (partial mob player) :deny nil)))
+(defn always-true
+	"A partial that always succeeds.
+	Prefer this over making your own partial, the rule engine knows how to optimize this."
+	[] (. Partial/ALWAYS_TRUE))
+
+(defn always-false
+	"A partial that always fails.
+	Prefer this over making your own partial, the rule engine knows how to optimize this."
+	[] (. Partial/ALWAYS_FALSE))
+
+; Inverts a partial
+(defn not [partial] (. Partial/not partial))
+; True if all its arguments return true
+(defn all [& partials] (. Partial/all (set partials)))
+; True if any of its arguments return true
+(defn any [& partials] (. Partial/any (set partials)))
+; True if an odd number of its arguments return true, aka "xor"
+(defn odd [& partials] (. Partial/odd (set partials)))
+
+(defn difficulty-is
+	"A partial that succeeds if the world difficulty is set to one of the given values.
+	Difficulties can be specified as strings, Clojure symbols, or Clojure keywords.
+	Example: (difficulty-is :easy :hard)"
+	[& diffs]
+	(. Partial/difficultyIsAny (set (map #(Api/parseDifficulty %) diffs))))
 
 (defn attacker-has-tag
-	"Partial rule. true if the attacker has this entity tag, false if they don't.
-	Example: (attacker-has-tag 'minecraft:raiders)"
+	"A partial that succeeds if the attacker has any of the given entity tags.
+	Tags can be specified as strings, Clojure symbols, or Clojure keywords.
+	Example: (attacker-has-tag :minecraft/raiders)"
 	[& tags]
-	(let [tagset (set (map #(Api/parseEntityTypeTag %) tags))]
-		(fn [mob player] (some #(Api/entityHasTag mob %) tagset))))
+	(. Partial/attackerTaggedWithAny (set (map #(Api/parseEntityTypeTag %) tags))))
+
+(defn attacker-is-boss
+	"Synonym for (attacker-has-tag :apathy/bosses)."
+	[]
+	(. Partial/attackerIsBoss))
 
 (defn attacker-is
-	"Partial rule. true if the argument list contains the attacker's entity ID, false if it doesn't.
-	Pass entity IDs as keywords, symbols, or strings.
-	Example: (attacker-is 'minecraft:creeper)"
+	"A partial that succeeds if the attacker is of one of the given entity types.
+	Entity types can be specified as strings, Clojure symbols, or Clojure keywords.
+	Example: (attacker-has-tag :minecraft/creeper :minecraft/spider)"
 	[& types]
-	(let [typeset (set (map #(Api/parseEntityType %) types))]
-		(fn [mob player] (contains? typeset (Api/entityTypeOf mob)))))
+	(. Partial/attackerIsAny (set (map #(Api/parseEntityType %) types))))
 
-(defn difficulty
-	"Partial rule. true if the argument list contains the world's current difficulty, false if it doesn't.
-	Pass difficulties as keywords, symbols, or strings.
-	Example: (difficulty :hard)
-	Example: (difficulty 'easy :normal)"
-	[& diffs]
-	(let [diffset (set (map #(Api/parseDifficulty %) diffs))]
-		(fn [mob player] (contains? diffset (Api/difficultyOf mob)))))
+(defn player-in-set
+	"A partial that succeeds if the player is in the given player set.
+	Player sets are specified as strings.
+	Example: (player-in-set \"no-mobs\")"
+	[& sets]
+	(. Partial/inAnyPlayerSetNamed (set sets)))
 
-(defn boss
-	"Partial rule. Returns true if the entity is a boss. Bossness is determined via inclusion in the apathy:bosses entity type tag." 
-	[]
-	(attacker-has-tag 'apathy:bosses))
+(defn revenge
+	"A partial that succeeds if the attacker has themselves been attacked some time within the last 'timer' ticks."
+	[timer]
+	(. Partial/revengeTimer timer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; rule state
 

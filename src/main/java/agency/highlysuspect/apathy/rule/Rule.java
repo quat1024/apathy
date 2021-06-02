@@ -28,7 +28,7 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 	
 	// Combinators
 	
-	default Rule andThen(Rule next) {
+	default Rule chain(Rule next) {
 		if(this == ALWAYS_ALLOW) return this;
 		else if(this == ALWAYS_DENY) return this;
 		else if(this == ALWAYS_PASS) return next;
@@ -40,11 +40,11 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 		};
 	}
 	
-	static Rule chain(Collection<Rule> rules) {
-		return chain(rules.toArray(new Rule[0]));
+	static Rule chainMany(Collection<Rule> rules) {
+		return chainMany(rules.toArray(new Rule[0]));
 	}
 	
-	static Rule chain(Rule... rules) {
+	static Rule chainMany(Rule... rules) {
 		//Try to remove as many rules as possible from the chain
 		if(rules.length == 0) return ALWAYS_PASS;
 		else if(rules.length == 1) return rules[0];
@@ -61,7 +61,7 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 		
 		if(filteredRules.size() == 0) return ALWAYS_PASS;
 		else if(filteredRules.size() == 1) return filteredRules.get(0);
-		else if(filteredRules.size() == 2) return filteredRules.get(0).andThen(filteredRules.get(1));
+		else if(filteredRules.size() == 2) return filteredRules.get(0).chain(filteredRules.get(1));
 		
 		Rule[] filteredRuleArray = filteredRules.toArray(new Rule[0]);
 		//This is the heart of it; everything before there should be meaning-preserving transformations
@@ -71,6 +71,15 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 				if(result != TriState.DEFAULT) return result;
 			}
 			return TriState.DEFAULT;
+		};
+	}
+	
+	static Rule debug(String message, Rule rule) {
+		return (attacker, defender) -> {
+			Init.LOG.info("rule: " + message);
+			TriState result = rule.apply(attacker, defender);
+			Init.LOG.info("returned: " + RuleUtil.showTriState(result));
+			return result;
 		};
 	}
 	
@@ -87,12 +96,23 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 	
 	// Builtin rules
 	
-	static Rule clojure() {
-		return (attacker, defender) -> Init.clojureProxy.allowedToTargetPlayer(attacker, defender);
+	static Rule clojureIfItsEnabled() {
+		if(Init.clojureLoaded && Init.config.useClojure) return (attacker, defender) -> Init.clojureProxy.apply(attacker, defender);
+		else return ALWAYS_PASS;
 	}
 	
 	static Rule predicated(Partial partial, TriState ifTrue, TriState ifFalse) {
 		if(ifTrue == ifFalse) return alwaysRule(ifTrue);
+		else if(partial == Partial.ALWAYS_TRUE) return alwaysRule(ifTrue);
+		else if(partial == Partial.ALWAYS_FALSE) return alwaysRule(ifFalse);
 		else return (attacker, defender) -> partial.test(attacker, defender) ? ifTrue : ifFalse;
+	}
+	
+	static Rule allowIf(Partial partial) {
+		return predicated(partial, TriState.TRUE, TriState.DEFAULT);
+	}
+	
+	static Rule denyIf(Partial partial) {
+		return predicated(partial, TriState.FALSE, TriState.DEFAULT);
 	}
 }

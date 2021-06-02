@@ -25,7 +25,7 @@ public class ClojureSupport {
 			Init.class.getClassLoader().getResourceAsStream("apathy-startup.clj"), true);
 		
 		//Load the apathy.clj file, and reload it on every /reload.
-		Init.installAndRunReloadListener("clojure-config", () -> {
+		Init.installReloadAndRunNow("clojure-config", () -> {
 			try {
 				Path clojurePath = FabricLoader.getInstance().getConfigDir().resolve(CLOJURE_CONFIG_FILENAME);
 				if(Files.exists(clojurePath)) {
@@ -39,7 +39,7 @@ public class ClojureSupport {
 		});
 		
 		//Load apathy/____.clj files from datapacks.
-		Init.installReloadListener("clojure-datapacks", (manager) -> {
+		Init.installReload("clojure-datapacks", (manager) -> {
 			try {
 				for(Identifier id : manager.findResources(Init.MODID, (path) -> path.endsWith(".clj"))) {
 					Resource resource = manager.getResource(id);

@@ -259,16 +259,16 @@ public class Config implements Opcodes {
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
 				case "clojure":
-					rules.add(Rule.clojure());
+					rules.add(Rule.clojureIfItsEnabled());
 					break;
 				case "difficulty":
-					rules.add(Rule.predicated(Partial.inDifficultySet(difficultySet), difficultySetIncluded, difficultySetExcluded));
+					rules.add(Rule.predicated(Partial.difficultyIsAny(difficultySet), difficultySetIncluded, difficultySetExcluded));
 					break;
 				case "boss":
-					rules.add(Rule.predicated(Partial.isBoss(), bossBypass, TriState.DEFAULT));
+					rules.add(Rule.predicated(Partial.attackerIsBoss(), bossBypass, TriState.DEFAULT));
 					break;
 				case "mobset":
-					rules.add(Rule.predicated(Partial.inMobSet(mobSet), mobSetIncluded, mobSetExcluded));
+					rules.add(Rule.predicated(Partial.attackerIsAny(mobSet), mobSetIncluded, mobSetExcluded));
 					break;
 				case "playerset":
 					rules.add(playerSetName.map(s -> Rule.predicated(Partial.inPlayerSetNamed(s), playerSetIncluded, playerSetExcluded)).orElse(Rule.ALWAYS_PASS));
@@ -280,7 +280,7 @@ public class Config implements Opcodes {
 			}
 		}
 		
-		rule = Rule.chain(rules); //Lotsa magic in here to optimize this rule down to the same rule you would have handwritten.
+		rule = Rule.chainMany(rules); //Lotsa magic in here to optimize this rule down to the same rule you would have handwritten.
 		
 		return this;
 	}

@@ -4,24 +4,22 @@ Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 
 ## TODO:
 
-* ~~Expose player-sets to Clojure~~
-* ~~Expose revenge timer rule to Clojure~~
-* Consider directly exporting the `Rule` interface to Clojure and removing the clojure-side combinators since they now exist in Java
 * Expose "attacker tagged with my:custom_tag" rule to regular config
-* Check that the default config behavior is like Apathetic Mobs's default config
-* Implement the special behavior for bosses
+* Check that the default config behavior is the same as Apathetic Mobs's default config
+* Implement the special handling for bosses
 * `/apathy set-admin` commands for:
     * adding and removing player-sets (not *super* useful since they won't be plugged in to anything, but eh)
         * guard against removing the one specified in the config file
     * listing the people in a player-set
 * while i'm at it how about `/apathy reload` to refresh the config file and stuff. Not too hard to add
-* Spirit's JSON idea
+* impl Spirit's JSON concept!
 
-## Wishlist (maybe out of scope)
+## Wishlist
 
 * "No boss" config options that remove the associated fight.
     * no Wither -> Building the Wither multiblock just gives you a nether star
     * no dragon -> Exit end portal is already open. Place 4 nether crystals to spawn an End gateway
+* (internal note) Might be worth it to transition from TriState to a dedicated enum with better names. I'm a bit entrenched though
 
 ### Known bug
 

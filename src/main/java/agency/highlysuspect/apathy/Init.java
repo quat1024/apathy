@@ -11,10 +11,13 @@ import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class Init implements ModInitializer {
@@ -26,6 +29,9 @@ public class Init implements ModInitializer {
 	public static ClojureProxy clojureProxy = ClojureProxy.NO_CLOJURE;
 	public static boolean clojureLoaded = false;
 	
+	//Keeping these in a separate list so the /apathy reload command can get to it. (Not implemented yet)
+	public static List<Consumer<ResourceManager>> reloaders = new ArrayList<>();
+	
 	@Override
 	public void onInitialize() {
 		clojureLoaded = FabricLoader.getInstance().isModLoaded("clojurelib");
@@ -35,7 +41,7 @@ public class Init implements ModInitializer {
 		
 		VengeanceHandler.onInitialize();
 		
-		installAndRunReloadListener("reload-config", () -> {
+		installReloadAndRunNow("reload-config", () -> {
 			try {
 				config = Config.fromPath(FabricLoader.getInstance().getConfigDir().resolve(CONFIG_FILENAME));
 			} catch (Exception e) {
@@ -57,13 +63,13 @@ public class Init implements ModInitializer {
 		return new Identifier(MODID, path);
 	}
 	
-	//quick wrapper, so i don't need a giant anonymous class for every reload listener.
-	public static void installReloadListener(String name, Consumer<ResourceManager> funny) {
-		Identifier id = id(name);
+	public static void installReload(String name, Consumer<ResourceManager> funny) {
+		reloaders.add(funny);
+		
 		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public Identifier getFabricId() {
-				return id;
+				return id(name);
 			}
 			
 			@Override
@@ -73,11 +79,10 @@ public class Init implements ModInitializer {
 		});
 	}
 	
-	public static void installAndRunReloadListener(String name, Runnable funny) {
+	public static void installReloadAndRunNow(String name, Runnable funny) {
 		//run now
 		funny.run();
 		//and on resource reload.
-		installReloadListener(name, (ignoredManager) -> funny.run());
-		//Can't be a Consumer<ResourceManager> since I don't have one right now
+		installReload(name, (ignoredManager) -> funny.run());
 	}
 }

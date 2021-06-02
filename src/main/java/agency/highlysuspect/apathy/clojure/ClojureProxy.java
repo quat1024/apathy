@@ -1,13 +1,9 @@
 package agency.highlysuspect.apathy.clojure;
 
-import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
+import agency.highlysuspect.apathy.rule.Rule;
 
-public interface ClojureProxy {
-	TriState allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity player);
-	
+public interface ClojureProxy extends Rule {
 	ClojureProxy NO_CLOJURE = (attacker, player) -> {
-		throw new IllegalStateException("allowedToTargetPlayer on NO_CLOJURE proxy; call through config");
+		throw new IllegalStateException("calling clojure proxy but clojure is disabled?");
 	};
 }

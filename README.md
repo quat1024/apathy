@@ -4,11 +4,11 @@ Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
 
 # quat, this config file is too long. How do I ______?
 
-#### ...disable all mob aggression?
+## ...disable all mob aggression?
 
 I added an option specifically for people who don't want to deal with the config file. Set `nuclearOption` to `true` and go about your day.
 
-#### ...make mobs only attack players on Hard?
+## ...make mobs only attack players on Hard?
 
 Mess with the options in the "difficulty rule" category. 
 
@@ -22,13 +22,13 @@ Equivalently:
 * Set `difficultySetIncluded` to `deny`.
 * Set `difficultySetExcluded` to `allow`.
 
-#### ...only allow *bosses* to attack players?
+## ...only allow *bosses* to attack players?
 
 * Set `boss` to `allow`.
 
 (By the way, this is when we get into the weeds with "rule priorities" and stuff. If you want boss-fights to *take priority over* difficulty, e.g. "No mobs can attack on Easy, except for bosses", change `ruleOrder` so that "boss" comes before "difficulty".)
 
-#### ...emulate the "player whitelist" option from Apathetic Mobs?
+## ...emulate the "player whitelist" option from Apathetic Mobs?
 
 I have a "player sets" option, which is like, a generalized version of the player whitelist.
 
@@ -52,6 +52,6 @@ That's completely understandable - I did overengineer this mod quite a bit...
 
 Open an issue or hit me up on [discord](https://highlysuspect.agency/discord) with your questions, I'll try to get back to you.
 
-####license yadda yadda
+###license yadda yadda
 
 lgpl 3 or later

@@ -14,7 +14,4 @@
 
 ## Wishlist
 
-* "No boss" config options that remove the associated fight.
-	* no Wither -> Building the Wither multiblock just gives you a nether star
-	* no dragon -> Exit end portal is already open. Place 4 nether crystals to spawn an End gateway
 * (internal note) Might be worth it to transition from TriState to a dedicated enum with better names. I'm a bit entrenched though

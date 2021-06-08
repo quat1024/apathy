@@ -30,8 +30,9 @@ public class BossConfig extends Config {
 	////////////////////////
 	
 	@Comment({
-		"Set to 'true' to completely remove the Ender Dragon fight sequence from the game.",
-		"When you first visit the End, the exit portal will already be open."
+		"Set to 'true' to remove the Ender Dragon fight sequence.",
+		"When you first visit the End, the exit portal will already be open, with an egg.",
+		"Placing four End Crystals on the exit portal will generate an End Gateway."
 	})
 	public boolean noDragon;
 }

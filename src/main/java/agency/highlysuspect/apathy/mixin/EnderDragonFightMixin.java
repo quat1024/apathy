@@ -2,18 +2,17 @@ package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonSpawnState;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Unit;
+import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.feature.EndPortalFeature;
@@ -29,11 +28,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Mixin(EnderDragonFight.class)
 public abstract class EnderDragonFightMixin {
 	//@Shadow @Final private static Logger LOGGER;
-	//@Shadow @Final private static Predicate<Entity> VALID_ENTITY;
+	@Shadow @Final private static Predicate<Entity> VALID_ENTITY;
 	@Shadow @Final private ServerBossBar bossBar;
 	@Shadow @Final private ServerWorld world;
 	@Shadow @Final private List<Integer> gateways;
@@ -46,7 +46,7 @@ public abstract class EnderDragonFightMixin {
 	//@Shadow private boolean previouslyKilled;
 	@Shadow private UUID dragonUuid;
 	@Shadow private boolean doLegacyCheck;
-	//@Shadow private BlockPos exitPortalLocation;
+	@Shadow private BlockPos exitPortalLocation;
 	@Shadow private EnderDragonSpawnState dragonSpawnState;
 	//@Shadow private int spawnStateTimer;
 	@Shadow private List<EndCrystalEntity> crystals;
@@ -55,14 +55,21 @@ public abstract class EnderDragonFightMixin {
 	@Shadow protected abstract boolean loadChunks();
 	@Shadow protected abstract void generateNewEndGateway();
 	
-	@Shadow private BlockPos exitPortalLocation;
 	@Unique private boolean createdApathyPortal;
-	@Unique private int specialCreateGatewayTimer;
+	@Unique private int gatewayTimer = NOT_RUNNING;
+	@Unique private static final int NOT_RUNNING = -100;
+	
+	@Unique private static final String APATHY_CREATEDPORTAL = "apathy-created-exit-portal";
+	@Unique private static final String APATHY_GATEWAYTIMER = "apathy-gateway-timer";
 	
 	@Inject(method = "<init>", at = @At("TAIL"))
 	void onInit(ServerWorld world, long l, CompoundTag tag, CallbackInfo ci) {
-		createdApathyPortal = tag.getBoolean("apathy-createdPortal");
-		specialCreateGatewayTimer = tag.getInt("apathy-specialGatewayCreate");
+		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
+		if(tag.contains(APATHY_GATEWAYTIMER)) {
+			gatewayTimer = tag.getInt(APATHY_GATEWAYTIMER);
+		} else {
+			gatewayTimer = NOT_RUNNING;
+		}
 		
 		if(Init.bossConfig.noDragon) {
 			dragonKilled = true; //sigh
@@ -76,8 +83,8 @@ public abstract class EnderDragonFightMixin {
 	void whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
 		CompoundTag tag = cir.getReturnValue();
 		
-		tag.putBoolean("apathy-createdPortal", createdApathyPortal);
-		tag.putInt("apathy-specialGatewayCreate", specialCreateGatewayTimer);
+		tag.putBoolean(APATHY_CREATEDPORTAL, createdApathyPortal);
+		tag.putInt(APATHY_GATEWAYTIMER, gatewayTimer);
 	}
 	
 	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
@@ -85,7 +92,7 @@ public abstract class EnderDragonFightMixin {
 		if(Init.bossConfig.noDragon) {
 			ci.cancel();
 			
-			//Just to be sure...
+			//Just to be like triple sure there's no ender dragons around
 			this.bossBar.clearPlayers();
 			this.bossBar.setVisible(false);
 			
@@ -93,15 +100,26 @@ public abstract class EnderDragonFightMixin {
 				dragon.remove();
 			}
 			
-			createApathyPortal();
-			specialGatewayTick();
+			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
+			//Special mechanics like the apathy exit portal & the gateway mechanic require chunks to be loaded.
+			boolean anyoneHere = !world.getPlayers(VALID_ENTITY).isEmpty();
+			if(anyoneHere) {
+				this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+			} else {
+				this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+			}
+			
+			boolean chunksReady = loadChunks();
+			if(chunksReady) {
+				createApathyPortal();
+				gatewayTimerTick();
+			}
 		}
 	}
 	
 	@Inject(method = "setSpawnState", at = @At("HEAD"), cancellable = true)
 	void dontSetSpawnState(EnderDragonSpawnState enderDragonSpawnState, CallbackInfo ci) {
-		//This mixin is required if createDragon is overridden to return 'null'
-		//it calls createDragon and would NPE
+		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
 		if(Init.bossConfig.noDragon) {
 			this.dragonSpawnState = null;
 			ci.cancel();
@@ -117,31 +135,42 @@ public abstract class EnderDragonFightMixin {
 	
 	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
 	void dontRespawnDragon(List<EndCrystalEntity> crystals, CallbackInfo ci) {
+		//respawnDragon-no-args handles detecting the 4 end crystals by the exit portal.
+		//respawnDragon-list-arg gets called with the list of end crystals, if there are four, and normally actually summons the boss.
 		if(Init.bossConfig.noDragon) {
 			ci.cancel();
 			
-			trySpecialGatewayCreate(crystals);
+			tryEnderCrystalGateway(crystals);
 		}
 	}
 	
 	@Unique private void createApathyPortal() {
-		if(!createdApathyPortal && loadChunks()) {
+		//Generate a readymade exit End portal, just like after the boss fight.
+		//("generateEndPortal" updates the "exit portal location" blockpos variable btw.)
+		//Ensure chunks are loaded before calling this, or the portal will generate at y = -1 for some reason.
+		if(!createdApathyPortal) {
 			generateEndPortal(true);
 			this.world.setBlockState(this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN), Blocks.DRAGON_EGG.getDefaultState());
 			createdApathyPortal = true;
 		}
 	}
 	
-	@Unique private void specialGatewayTick() {
-		if(specialCreateGatewayTimer > 0 && loadChunks()) {
-			specialCreateGatewayTimer--;
-			if(specialCreateGatewayTimer == 0) {
-				doSpecialGatewaySpawn();
+	@Unique private void gatewayTimerTick() {
+		//Tick down the timer for the "special gateway creation" timer.
+		//Spawns the gateway when it reaches 0.
+		//Ensure chunks are loaded before calling this.
+		if(gatewayTimer != NOT_RUNNING) {
+			if(gatewayTimer > 0) {
+				gatewayTimer--;
+			} else {
+				doGatewaySpawn();
+				gatewayTimer = NOT_RUNNING;
 			}
 		}
 	}
 	
-	@Unique private void doSpecialGatewaySpawn() {
+	//The end of the "spawn gateway" cutscene
+	@Unique private void doGatewaySpawn() {
 		generateNewEndGateway(); //Actually generate it now
 		
 		//Blow up the crystals located on the end portal.
@@ -157,24 +186,23 @@ public abstract class EnderDragonFightMixin {
 		}
 	}
 	
-	@Unique private void trySpecialGatewayCreate(List<EndCrystalEntity> crystalsAroundEndPortal) {
-		BlockPos pos = gatewayDryRun();
-		if(pos != null) {
-			//The "gateway position" as returned by that method, is the top piece of bedrock.
-			//Shift down to the actual location of the gateway portal block.
-			//(Makes it look a tiny bit better.)
-			BlockPos downABit = pos.down(2);
-			for(EndCrystalEntity crystal : crystalsAroundEndPortal) {
-				crystal.setBeamTarget(downABit);
+	@Unique private void tryEnderCrystalGateway(List<EndCrystalEntity> crystalsAroundEndPortal) {
+		if(gatewayTimer == NOT_RUNNING) {
+			BlockPos pos = gatewayDryRun();
+			if(pos != null) {
+				BlockPos downABit = pos.down(2); //where the actual gateway block will be
+				for(EndCrystalEntity crystal : crystalsAroundEndPortal) {
+					crystal.setBeamTarget(downABit);
+				}
+				
+				this.crystals = crystalsAroundEndPortal;
+				gatewayTimer = 100; //5 seconds
 			}
-			
-			this.crystals = crystalsAroundEndPortal;
-			specialCreateGatewayTimer = 100;
 		}
 	}
 	
-	//Based on "createNewEndGateway" ,but simply returns the BlockPos instead of creating a gateway there.
-	//Also peeks the gateway list with "get" instead of calling "remove".
+	//Copypaste of "createNewEndGateway", but simply returns the BlockPos instead of actually creating a gateway there.
+	//Also peeks the gateway list with "get" instead of popping with "remove".
 	@Unique private @Nullable BlockPos gatewayDryRun() {
 		if(this.gateways.isEmpty()) return null;
 		else {

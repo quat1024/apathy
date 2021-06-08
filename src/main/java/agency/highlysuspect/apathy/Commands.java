@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.list.PlayerSetArgumentType;
 import agency.highlysuspect.apathy.list.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.server.PlayerManager;
@@ -24,6 +25,11 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class Commands {
+	public static void onInitialize() {
+		Commands.registerArgumentTypes();
+		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
+	}
+	
 	public static void registerArgumentTypes() {
 		ArgumentTypes.register(Init.id("player_set").toString(), PlayerSetArgumentType.class, new ConstantArgumentSerializer<>(PlayerSetArgumentType::playerSet));
 	}
@@ -147,7 +153,7 @@ public class Commands {
 	private static int delete(CommandContext<ServerCommandSource> cmd, PlayerSet set) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
 		
-		Optional<String> yeayehhehh = Init.config.playerSetName;
+		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
 		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
 			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.delete.fail.config", set.getName()), false);
 			return 0;

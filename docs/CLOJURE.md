@@ -6,7 +6,7 @@ If [Clojure Lib](https://www.curseforge.com/minecraft/mc-mods/clojure-lib) is in
 
 Apathy will read Clojure files from:
 
-* `config/apathy.clj` in the config directory,
+* `config/apathy/script.clj` in the config directory,
 * any `.clj` files placed in the "apathy" directory of a datapack (todo test this and provide example).
 
 These files are re-submitted to the Clojure runtime on every world load and `/reload` command. Errors while parsing these files will be printed to the log.

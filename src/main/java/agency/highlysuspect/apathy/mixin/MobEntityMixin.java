@@ -22,7 +22,7 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayerEntity && !Init.config.allowedToTargetPlayer(thi$, (ServerPlayerEntity) newTarget)) {
+		if(newTarget instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) newTarget)) {
 			//Keep whatever old target was around.
 			ci.cancel();
 		}
@@ -34,9 +34,9 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.world.getTime() + thi$.getEntityId()) % Init.config.recheckInterval == 0
+		if((thi$.world.getTime() + thi$.getEntityId()) % Init.mobConfig.recheckInterval == 0
 			&& target instanceof ServerPlayerEntity
-			&& !Init.config.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
+			&& !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
 			target = null;
 		}
 	}

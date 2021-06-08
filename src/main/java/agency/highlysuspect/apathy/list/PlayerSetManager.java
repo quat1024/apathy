@@ -8,7 +8,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -92,9 +91,9 @@ public class PlayerSetManager extends PersistentState {
 	public static void onInitialize() {
 		ServerTickEvents.START_SERVER_TICK.register(server -> {
 			PlayerSetManager mgr = PlayerSetManager.getFor(server);
-			Init.config.playerSetName.ifPresent(s -> {
-				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Init.config.playerSetSelfSelect);
-				else mgr.createSet(s, Init.config.playerSetSelfSelect);
+			Init.mobConfig.playerSetName.ifPresent(s -> {
+				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Init.mobConfig.playerSetSelfSelect);
+				else mgr.createSet(s, Init.mobConfig.playerSetSelfSelect);
 			});
 		});
 	}

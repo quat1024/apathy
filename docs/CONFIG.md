@@ -1,5 +1,7 @@
 # Config File
 
+The mob config file lives at `/config/apathy/mobs.cfg`.
+
 ## When is the config file parsed?
 
 * Once at startup

@@ -17,9 +17,11 @@ import java.nio.file.Path;
 public class ClojureSupport {
 	public static final Logger LOG = LogManager.getLogger(Init.MODID + "-clojure");
 	
-	public static final String CLOJURE_CONFIG_FILENAME = Init.MODID + ".clj";
-	
-	public static void onInitialize() {
+	public static void onInitialize(Path clojureConfigPath) {
+		//Since Clojure is loaded it's safe to classload now.
+		//Point the clojure proxy at the method in the clojure api class.
+		Init.clojureProxy = Api::allowedToTargetPlayer;
+		
 		//Load the standard library stored in the mod .jar .
 		loadIntoClojure("Loading apathy's standard library, might take a little bit",
 			Init.class.getClassLoader().getResourceAsStream("apathy-startup.clj"), true);
@@ -27,11 +29,10 @@ public class ClojureSupport {
 		//Load the apathy.clj file, and reload it on every /reload.
 		Init.installReloadAndRunNow("clojure-config", () -> {
 			try {
-				Path clojurePath = FabricLoader.getInstance().getConfigDir().resolve(CLOJURE_CONFIG_FILENAME);
-				if(Files.exists(clojurePath)) {
-					loadIntoClojure("Loading apathy.clj config", Files.newInputStream(clojurePath), false);
+				if(Files.exists(clojureConfigPath)) {
+					loadIntoClojure("Loading apathy.clj config", Files.newInputStream(clojureConfigPath), false);
 				} else {
-					LOG.error("Looked for apathy Clojure config at " + clojurePath + ", but the file does not exist.");
+					LOG.error("Looked for apathy Clojure config at " + clojureConfigPath + ", but the file does not exist.");
 				}
 			} catch (IOException e) {
 				throw new RuntimeException("Problem initializing Clojure config script", e);
@@ -49,8 +50,6 @@ public class ClojureSupport {
 				LOG.error("Problem loading list of Clojure scripts", e);
 			}
 		});
-		
-		Init.clojureProxy = Api::allowedToTargetPlayer;
 	}
 	
 	private static void loadIntoClojure(String message, InputStream yea, boolean hardFail) {

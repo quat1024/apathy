@@ -34,7 +34,7 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.world.getTime() + thi$.getEntityId()) % Init.mobConfig.recheckInterval == 0
+		if((thi$.world.getTime() + thi$.getEntityId()) % Init.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayerEntity
 			&& !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
 			target = null;

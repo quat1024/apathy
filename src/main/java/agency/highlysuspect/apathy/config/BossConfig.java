@@ -35,4 +35,14 @@ public class BossConfig extends Config {
 		"Placing four End Crystals on the exit portal will generate an End Gateway."
 	})
 	public boolean noDragon;
+	
+	//////////////////
+	@Section("Wither")
+	//////////////////
+	
+	@Comment({
+		"Set to 'true' to remove the Wither fight sequence.",
+		"Building the Wither formation will simply spawn a Nether Star item."
+	})
+	public boolean noWither;
 }

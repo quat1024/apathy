@@ -91,13 +91,6 @@ public class Init implements ModInitializer {
 				}
 			}
 		});
-		
-		//TODO: Mixin injection debugging
-		try {
-			EnderDragonFight classload = new EnderDragonFight(null, 0, new CompoundTag());
-		} catch (RuntimeException ignored) {
-			//NPE expected
-		}
 	}
 	
 	//Resource reloady bits

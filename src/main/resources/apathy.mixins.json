@@ -6,7 +6,9 @@
   "mixins": [
 		"MobEntityMixin",
 		"MinecraftServerAccessor",
-		"EnderDragonFightMixin"
+		"EnderDragonFightMixin",
+		"WitherSkullBlockMixin",
+		"LivingEntityInvoker"
   ],
   "injectors": {
     "defaultRequire": 1

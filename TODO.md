@@ -7,6 +7,11 @@
 * Check rule optimizer behavior for things like "mobSet is empty, mobSetExcluded isn't pass"
 * Write tests for the rule optimizer
 
+## no dragon
+
+* Grant the "The End." advancement
+* Add some way to get dragon's breath
+
 ## Wishlist
 
 * "No boss" config options that remove the associated fight.

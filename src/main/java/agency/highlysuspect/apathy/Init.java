@@ -12,6 +12,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -89,6 +91,13 @@ public class Init implements ModInitializer {
 				}
 			}
 		});
+		
+		//TODO: Mixin injection debugging
+		try {
+			EnderDragonFight classload = new EnderDragonFight(null, 0, new CompoundTag());
+		} catch (RuntimeException ignored) {
+			//NPE expected
+		}
 	}
 	
 	//Resource reloady bits

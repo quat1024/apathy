@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 		"MobEntityMixin",
-		"MinecraftServerAccessor"
+		"MinecraftServerAccessor",
+		"EnderDragonFightMixin"
   ],
   "injectors": {
     "defaultRequire": 1

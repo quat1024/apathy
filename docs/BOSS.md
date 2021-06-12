@@ -39,3 +39,4 @@ Several options to control the Wither boss:
 * Whether the Wither is allowed to target mobs.
 * Whether the Wither is allowed to fire black skulls at the things it targets.
 * Whether the Wither is allowed to fire blue skulls on Normal and Hard difficulty.
+* Whether the Wither breaks blocks around itself after it gets damaged.

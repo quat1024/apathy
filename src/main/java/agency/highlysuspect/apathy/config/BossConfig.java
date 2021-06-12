@@ -34,16 +34,10 @@ public class BossConfig extends Config {
 	})
 	public boolean noWither;
 	
-	@Comment({
-		"Is the Wither allowed to intentionally target players?",
-		"(Even with this off, players might get caught in the crossfire.)"
-	})
+	@Comment("Is the Wither allowed to intentionally target players?")
 	public boolean witherTargetsPlayers = true;
 	
-	@Comment({
-		"Is the Wither allowed to intentionally target non-players?",
-		"(Even with this off, mobs might get caught in the crossfire.)"
-	})
+	@Comment("Is the Wither allowed to intentionally target non-players?")
 	public boolean witherTargetsMobs = true;
 	
 	@Comment("Can the Wither fire black wither skulls?")
@@ -51,4 +45,7 @@ public class BossConfig extends Config {
 	
 	@Comment("Can the Wither fire blue ('charged') wither skulls on Normal and Hard difficulty?")
 	public boolean blueWitherSkulls = true;
+	
+	@Comment("Does the Wither break nearby blocks after it gets damaged?")
+	public boolean witherBreaksBlocks = true;
 }

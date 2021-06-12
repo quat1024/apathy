@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,13 @@ public class WitherEntityMixin {
 				cir.setReturnValue(false);
 			}
 		} else if(!Init.bossConfig.witherTargetsMobs) cir.setReturnValue(false);
+	}
+	
+	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)
+	private static void cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
+		if(!Init.bossConfig.witherBreaksBlocks) {
+			cir.setReturnValue(false);
+		}
 	}
 	
 	@Inject(method = "method_6877", at = @At("HEAD"), cancellable = true)

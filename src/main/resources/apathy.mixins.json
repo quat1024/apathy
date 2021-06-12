@@ -8,6 +8,7 @@
 		"MinecraftServerAccessor",
 		"dragon.EnderDragonFightMixin",
 		"dragon.PhaseManagerMixin",
+		"dragon.EnderDragonEntityMixin",
 		"wither.WitherSkullBlockMixin",
 		"wither.LivingEntityInvoker",
 		"wither.WitherEntityMixin"

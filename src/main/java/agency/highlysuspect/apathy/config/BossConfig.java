@@ -9,7 +9,7 @@ public class BossConfig extends Config {
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////
-	@Section("Ender Dragon")
+	@Section("Ender Dragon - all of these except noDragon are untested, sorry!")
 	////////////////////////
 	
 	@Comment({
@@ -24,8 +24,7 @@ public class BossConfig extends Config {
 		"Can the Dragon perform the 'strafe_player' or 'charging_player' actions?",
 		"strafe_player is the one where she shoots a fireball.",
 		"charge_player is the one where she tries to fly into you.",
-		"If 'false', she will perform the 'landing_approach' action instead, which will cause her to perch on the portal.",
-		"(NOT TESTED - I CANNOT TEST THE DRAGON FIGHT)"
+		"If 'false', she will perform the 'landing_approach' action instead, which will cause her to perch on the portal."
 	})
 	public boolean dragonFlies = true;
 	
@@ -33,10 +32,15 @@ public class BossConfig extends Config {
 		"Can the Dragon perform the 'sitting_flaming' or 'sitting_attacking' actions?",
 		"sitting_flaming is the one where she perches on the End portal and pours out a puddle of dragon's breath.",
 		"sitting_attacking is when she roars at you.",
-		"If 'false', she will perform the 'sitting_scanning' action instead, which will soon lead to her leaving her perch.",
-		"(NOT TESTED - I CANNOT TEST THE DRAGON FIGHT)"
+		"If 'false', she will perform the 'sitting_scanning' action instead, which will soon lead to her leaving her perch."
 	})
 	public boolean dragonSits = true;
+	
+	@Comment("Does the Dragon deal contact damage?")
+	public boolean dragonDamage = true;
+	
+	@Comment("Does the Dragon knock back nearby entities, and damage them while she's sitting?")
+	public boolean dragonKnockback = true;
 	
 	//////////////////
 	@Section("Wither")

@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.config.types;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 //we have Codec at home.
@@ -16,18 +17,18 @@ public interface FieldSerde<T> {
 		return write(targetField, (T) value);
 	}
 	
-	default <U> FieldSerde<U> map(Bijection<T, U> mapper) {
+	default <U> FieldSerde<U> dimap(Function<T, U> into, Function<U, T> from) {
 		FieldSerde<T> me = this;
 		
 		return new FieldSerde<U>() {
 			@Override
 			public String write(Field targetField, U value) {
-				return me.write(targetField, mapper.from(value));
+				return me.write(targetField, from.apply(value));
 			}
 			
 			@Override
 			public U parse(Field sourceField, String value) {
-				return mapper.into(me.parse(sourceField, value));
+				return into.apply(me.parse(sourceField, value));
 			}
 		};
 	}

@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.Tag;
 import net.minecraft.world.Difficulty;
 
 import java.util.*;
@@ -49,12 +50,12 @@ public class MobConfig extends Config {
 	@Comment({
 		"Which order should the rules in this config file be evaluated in?",
 		"Comma-separated list built out of any or all of the following keywords, in any order:",
-		"clojure, difficulty, boss, mobSet, playerSet, revenge"
+		"clojure, difficulty, boss, mobSet, tagSet, playerSet, revenge"
 	})
 	@Note("If a rule is not listed in the rule order, it will not be checked.")
 	@Example("difficulty, revenge, playerSet")
 	@Use("stringList")
-	public List<String> ruleOrder = ImmutableList.of("clojure", "difficulty", "boss", "mobSet", "playerSet", "revenge");
+	public List<String> ruleOrder = ImmutableList.of("clojure", "difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge");
 	
 	///////////////////////////
 	@Section("Difficulty Rule")
@@ -131,6 +132,35 @@ public class MobConfig extends Config {
 	})
 	@Use("triStateAllowDenyPass")
 	public TriState mobSetExcluded = TriState.DEFAULT;
+	
+	////////////////////////////
+	@Section("Tag Set Rule")
+	////////////////////////////
+	
+	@Comment("A comma-separated set of entity type tags.")
+	@Example("minecraft:raiders, some_datapack:some_tag")
+	@Use("entityTypeTagSet")
+	public Set<Tag<EntityType<?>>> tagSet = Collections.emptySet();
+	
+	@Comment({
+		"What happens when the attacker is tagged with one of the tags in mobTagSet?",
+		"May be one of:",
+		"allow - The mob will be allowed to attack the player.",
+		"deny  - The mob will not be allowed to attack the player.",
+		"pass  - Defer to the next rule."
+	})
+	@Use("triStateAllowDenyPass")
+	public TriState tagSetIncluded = TriState.DEFAULT;
+	
+	@Comment({
+		"What happens when the attacker is *not* tagged with one of the tags in mobTagSet?",
+		"May be one of:",
+		"allow - The mob will be allowed to attack the player.",
+		"deny  - The mob will not be allowed to attack the player.",
+		"pass  - Defer to the next rule."
+	})
+	@Use("triStateAllowDenyPass")
+	public TriState tagSetExcluded = TriState.DEFAULT;
 	
 	///////////////////////////
 	@Section("Player Set Rule")
@@ -242,6 +272,9 @@ public class MobConfig extends Config {
 					break;
 				case "mobset":
 					rules.add(Rule.predicated(Partial.attackerIsAny(mobSet), mobSetIncluded, mobSetExcluded));
+					break;
+				case "tagset":
+					rules.add(Rule.predicated(Partial.attackerTaggedWithAny(tagSet), tagSetIncluded, tagSetExcluded));
 					break;
 				case "playerset":
 					rules.add(playerSetName.map(s -> Rule.predicated(Partial.inPlayerSetNamed(s), playerSetIncluded, playerSetExcluded)).orElse(Rule.ALWAYS_PASS));

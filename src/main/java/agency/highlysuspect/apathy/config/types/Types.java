@@ -1,6 +1,8 @@
 package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.config.annotation.Use;
+import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
@@ -15,7 +17,7 @@ public class Types {
 	static final Map<String, FieldSerde<?>> customParsers = new HashMap<>();
 	
 	static {
-		FieldSerde<Identifier> ident = new StringSerde().map(Bijection.create(Identifier::new, Identifier::toString));
+		FieldSerde<Identifier> ident = new StringSerde().dimap(Identifier::new, Identifier::toString);
 		
 		builtinParsers.put(String.class, new StringSerde());
 		builtinParsers.put(Identifier.class, ident);
@@ -30,7 +32,7 @@ public class Types {
 			.commaSeparatedSet(Comparator.comparingInt(Difficulty::getId)));
 		
 		customParsers.put("entityTypeSet", ident
-			.map(Bijection.create(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getId))
+			.dimap(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getId)
 			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getId))
 		);
 		
@@ -38,9 +40,12 @@ public class Types {
 		
 		customParsers.put("optionalString", new StringSerde().optional());
 		
-		customParsers.put("boolAllowDeny", new StringSerde().map(Bijection.create(s -> s.equals("allow"), (Boolean b) -> b ? "allow" : "deny")));
+		customParsers.put("boolAllowDeny", new StringSerde().dimap(s -> s.equals("allow"), b -> b ? "allow" : "deny"));
 		
 		customParsers.put("stringList", new StringSerde().commaSeparatedList());
+		
+		//bulk of this stuff (going from string -> tag) is untested; it's only used to write the "default value:" comment anyways
+		customParsers.put("entityTypeTagSet", ident.dimap(TagRegistry::entityType, tag -> ((Tag.Identified<?>)tag).getId()).commaSeparatedSet(Comparator.comparing(tag -> ((Tag.Identified<?>)tag).getId())));
 	}
 	
 	@SuppressWarnings("unchecked")

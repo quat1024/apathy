@@ -2,8 +2,6 @@
 
 # Dragon
 
-Sorry there aren't too many options to control the Ender Dragon boss. I added the "no dragon" setting for myself, because the fight is disturbing to me, so I can't test any more granular settings about the fight itself. Pull-requests welcome!
-
 ## No dragon
 
 Disables the Ender Dragon fight.
@@ -14,9 +12,21 @@ Disables the Ender Dragon fight.
 
 Notes:
 
-* Existing Ender Dragons will be deleted.
+* Existing Ender Dragons *will* be deleted.
 * You will get the "Free the End" advancement.
 * Placing four end crystals grants the advancement for resummoning the dragon.
+
+## Dragon control
+
+All of these are untested, unfortunately (I added the "No dragon" option for myself, because I find the fight disturbing). They're relatively simple and should work okay. Let me know if there's issues and I'll try and find someone to fix them for me.
+
+`dragonFlies` - Port of the option from Apathetic Mobs, replaces some flying-attack related dragon phases with an instruction to go perch, dunno the exact gameplay effect.
+
+`dragonSits` - Same, with some different phases tho (replaces perch-attack phases with an instruction to leave the perch)
+
+`dragonDamage` - If false, dragon doesn't deal contact damage.
+
+`dragonKnockback` - If false, dragon doesn't knock-back entities in her hitbox. Also seems to control damage when perched, uses the same method in the code. Separating these is a more complicated mixin that I can't test, so someone will have to write for me.
 
 # Wither
 
@@ -28,7 +38,7 @@ Disables the Wither boss fight.
 
 Notes:
 
-* Existing Withers are *not* deleted. You can still summon Withers using commands.
+* Existing Withers are *not* deleted!
 * The Wither is *created* but never *spawned*.
 * The drops are created by simulating an (anvil) kill. You can use a loot table to further customize drops.
 * You will get the advancement for killing the Wither.
@@ -40,5 +50,5 @@ Several options to control the Wither boss:
 * Whether the Wither is allowed to target players.
 * Whether the Wither is allowed to target mobs.
 * Whether the Wither is allowed to fire black skulls at the things it targets.
-* Whether the Wither is allowed to fire blue skulls on Normal and Hard difficulty.
+* Whether the Wither is allowed to fire blue skulls (on Normal and Hard difficulty.)
 * Whether the Wither breaks blocks around itself after it gets damaged.

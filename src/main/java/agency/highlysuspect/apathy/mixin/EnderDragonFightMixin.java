@@ -1,14 +1,18 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonSpawnState;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
@@ -102,11 +106,18 @@ public abstract class EnderDragonFightMixin {
 			
 			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
 			//Special mechanics like the apathy exit portal & the gateway mechanic require chunks to be loaded.
-			boolean anyoneHere = !world.getPlayers(VALID_ENTITY).isEmpty();
-			if(anyoneHere) {
-				this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
-			} else {
+			List<ServerPlayerEntity> players = world.getPlayers(VALID_ENTITY);
+			if(players.isEmpty()) {
 				this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+			} else {
+				this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+				
+				//Also automatically grant "Free the End" advancement
+				//(this also grants "monster hunter" if you don't have it already but w/e)
+				EnderDragonEntity dummy = EntityType.ENDER_DRAGON.create(world);
+				for(ServerPlayerEntity player : players) {
+					Criteria.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
+				}
 			}
 			
 			boolean chunksReady = loadChunks();
@@ -183,6 +194,12 @@ public abstract class EnderDragonFightMixin {
 				world.createExplosion(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.DestructionType.NONE);
 				crystal.remove();
 			}
+		}
+		
+		//Grant the advancement for resummoning the Ender Dragon (close enough)
+		EnderDragonEntity dummy = EntityType.ENDER_DRAGON.create(world);
+		for(ServerPlayerEntity player : world.getPlayers(VALID_ENTITY)) {
+			Criteria.SUMMONED_ENTITY.trigger(player, dummy);
 		}
 	}
 	

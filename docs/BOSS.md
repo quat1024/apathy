@@ -1,5 +1,7 @@
 # Boss config
 
+# Dragon
+
 ## No dragon
 
 Disables the Ender Dragon fight.
@@ -11,6 +13,10 @@ Disables the Ender Dragon fight.
 Notes:
 
 * Existing Ender Dragons will be deleted.
+* You will get the "Free the End" advancement.
+* Placing four end crystals grants the advancement for resummoning the dragon.
+
+# Wither
 
 ## No wither
 
@@ -23,3 +29,13 @@ Notes:
 * Existing Withers are *not* deleted. You can still summon Withers using commands.
 * The Wither is *created* but never *spawned*.
 * The drops are created by simulating an (anvil) kill. You can use a loot table to further customize drops.
+* You will get the advancement for killing the Wither.
+
+## Wither controls
+
+Several options to control the Wither boss:
+
+* Whether the Wither is allowed to target players.
+* Whether the Wither is allowed to target mobs.
+* Whether the Wither is allowed to fire black skulls at the things it targets.
+* Whether the Wither is allowed to fire blue skulls on Normal and Hard difficulty.

@@ -82,10 +82,12 @@ public class Init implements ModInitializer {
 					}
 				}
 			} catch (Exception e) {
-				if(oldGeneralConfig == null && oldMobConfig == null) throw new RuntimeException("Problem initializing config file.", e);
-				else {
+				if(oldGeneralConfig == null && oldMobConfig == null && oldBossConfig == null) {
+					throw new RuntimeException("Problem initializing config file.", e);
+				} else {
 					generalConfig = oldGeneralConfig;
 					mobConfig = oldMobConfig;
+					bossConfig = oldBossConfig;
 					LOG.error("Problem reloading config file: ", e);
 					LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
 				}

@@ -9,7 +9,6 @@
 
 ## no dragon
 
-* Grant the "The End." advancement
 * Add some way to get dragon's breath
 
 ## Wishlist

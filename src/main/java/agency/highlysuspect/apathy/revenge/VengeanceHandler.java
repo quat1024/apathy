@@ -22,4 +22,8 @@ public class VengeanceHandler {
 	public static long timeSinceProvocation(MobEntity entity) {
 		return ((MobEntityExt) entity).apathy$timeSinceProvocation();
 	}
+	
+	public static boolean lastAttackedWithin(MobEntity entity, long timer) {
+		return wasProvoked(entity) && timeSinceProvocation(entity) <= timer;
+	}
 }

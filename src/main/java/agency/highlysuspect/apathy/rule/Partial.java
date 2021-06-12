@@ -209,6 +209,6 @@ public interface Partial extends BiPredicate<MobEntity, ServerPlayerEntity> {
 	
 	//Revenge timer
 	static Partial revengeTimer(long timer) {
-		return (attacker, defender) -> VengeanceHandler.wasProvoked(attacker) && VengeanceHandler.timeSinceProvocation(attacker) <= timer;
+		return (attacker, defender) -> VengeanceHandler.lastAttackedWithin(attacker, timer);
 	}
 }

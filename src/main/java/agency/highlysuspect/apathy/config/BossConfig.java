@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.config;
 
+import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Section;
@@ -30,9 +31,10 @@ public class BossConfig extends Config {
 	////////////////////////
 	
 	@Comment({
-		"Set to 'true' to remove the Ender Dragon fight sequence.",
-		"When you first visit the End, the exit portal will already be open, with an egg.",
-		"Placing four End Crystals on the exit portal will generate an End Gateway."
+		"Set to 'true' to remove the Ender Dragon fight sequence entirely.",
+		"When you first visit the End, the exit portal will already be open, complete with egg.",
+		"You will earn the 'Free the End' advancement automatically.",
+		"Placing four End Crystals on the exit portal will generate an End Gateway and grant the advancement for respawning the dragon."
 	})
 	public boolean noDragon;
 	
@@ -42,7 +44,25 @@ public class BossConfig extends Config {
 	
 	@Comment({
 		"Set to 'true' to remove the Wither fight sequence.",
-		"Building the Wither formation will simply spawn a Nether Star item."
+		"Building the Wither formation will spawn a Nether Star item and give you the advancement for killing the Wither."
 	})
 	public boolean noWither;
+	
+	@Comment({
+		"Is the Wither allowed to intentionally target players?",
+		"(Even with this off, players might get caught in the crossfire.)"
+	})
+	public boolean witherTargetsPlayers = true;
+	
+	@Comment({
+		"Is the Wither allowed to intentionally target non-players?",
+		"(Even with this off, mobs might get caught in the crossfire.)"
+	})
+	public boolean witherTargetsMobs = true;
+	
+	@Comment("Can the Wither fire black wither skulls?")
+	public boolean blackWitherSkulls = true;
+	
+	@Comment("Can the Wither fire blue ('charged') wither skulls on Normal and Hard difficulty?")
+	public boolean blueWitherSkulls = true;
 }

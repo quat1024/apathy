@@ -10,20 +10,6 @@ import java.nio.file.Path;
 
 public class BossConfig extends Config {
 	protected static int CURRENT_CONFIG_VERSION = 0;
-	
-	protected BossConfig() {
-		super();
-	}
-	
-	public BossConfig(Path configFilePath) throws IOException {
-		super(configFilePath);
-	}
-	
-	@Override
-	protected Config defaultConfig() {
-		return new BossConfig();
-	}
-	
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////

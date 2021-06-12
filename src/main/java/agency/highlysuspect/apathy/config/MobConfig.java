@@ -10,27 +10,11 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.Difficulty;
-
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class MobConfig extends Config {
 	protected static int CURRENT_CONFIG_VERSION = 0;
-	
-	protected MobConfig() {
-		super();
-	}
-	
-	public MobConfig(Path configFilePath) throws IOException {
-		super(configFilePath);
-	}
-	
-	@Override
-	protected Config defaultConfig() {
-		return new MobConfig();
-	}
 	
 	protected transient Rule rule;
 	

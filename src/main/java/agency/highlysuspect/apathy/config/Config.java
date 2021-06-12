@@ -21,25 +21,17 @@ public abstract class Config implements Opcodes {
 	}
 	
 	//Read the config file from this path, or save the default one to it.
-	public Config(Path configFilePath) throws IOException {
-		path = configFilePath;
-		
+	public static <T extends Config> T read(T inst, Path configFilePath) throws IOException {
 		if(Files.exists(configFilePath)) {
 			//The config file exists, go load it. Save over the original file as well.
-			parse(configFilePath)
-				.upgrade()
-				.save(configFilePath)
-				.finish();
+			inst.parse(configFilePath).upgrade().save(configFilePath).finish();
 		} else {
 			//The config file does not exist (first time starting game?). Create one.
-			defaultConfig()
-				.save(configFilePath)
-				.finish();
+			inst.save(configFilePath).finish();
 		}
+		
+		return inst;
 	}
-	
-	//Point this at your zero-argument constructor.
-	protected abstract Config defaultConfig();
 	
 	//Keys in the config file that I don't know how to parse.
 	//Maybe in the "upgrade" method, you can parse these using the older format, or print a warning.
@@ -121,7 +113,12 @@ public abstract class Config implements Opcodes {
 	
 	//Save the config file to this path.
 	protected Config save(Path configFilePath) throws IOException {
-		Config defaultConfig = defaultConfig();
+		Config defaultConfig;
+		try {
+			defaultConfig = this.getClass().getDeclaredConstructor().newInstance();
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Can't instantiate the default copy of " + this.getClass().toGenericString());
+		}
 		
 		List<String> lines = new ArrayList<>();
 		

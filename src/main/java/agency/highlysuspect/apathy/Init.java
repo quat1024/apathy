@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy;
 import agency.highlysuspect.apathy.clojure.ClojureProxy;
 import agency.highlysuspect.apathy.clojure.ClojureSupport;
 import agency.highlysuspect.apathy.config.BossConfig;
+import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.list.PlayerSetManager;
@@ -68,9 +69,9 @@ public class Init implements ModInitializer {
 			BossConfig oldBossConfig = bossConfig;
 			
 			try {
-				generalConfig = new GeneralConfig(CONFIG_FOLDER.resolve("general.cfg"));
-				mobConfig = new MobConfig(CONFIG_FOLDER.resolve("mobs.cfg"));
-				bossConfig = new BossConfig(CONFIG_FOLDER.resolve("boss.cfg"));
+				generalConfig = Config.read(new GeneralConfig(), CONFIG_FOLDER.resolve("general.cfg"));
+				mobConfig = Config.read(new MobConfig(), CONFIG_FOLDER.resolve("mobs.cfg"));
+				bossConfig = Config.read(new BossConfig(), CONFIG_FOLDER.resolve("boss.cfg"));
 				
 				if(!clojureInitialized && generalConfig.useClojure) {
 					if(clojureModLoaded) {

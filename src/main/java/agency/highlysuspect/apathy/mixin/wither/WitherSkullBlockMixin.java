@@ -1,6 +1,7 @@
-package agency.highlysuspect.apathy.mixin;
+package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.mixin.wither.LivingEntityInvoker;
 import net.minecraft.block.WitherSkullBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.boss.WitherEntity;

@@ -2,6 +2,8 @@
 
 # Dragon
 
+Sorry there aren't too many options to control the Ender Dragon boss. I added the "no dragon" setting for myself, because the fight is disturbing to me, so I can't test any more granular settings about the fight itself. Pull-requests welcome!
+
 ## No dragon
 
 Disables the Ender Dragon fight.

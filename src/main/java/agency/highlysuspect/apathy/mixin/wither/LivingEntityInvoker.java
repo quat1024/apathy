@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.mixin;
+package agency.highlysuspect.apathy.mixin.wither;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;

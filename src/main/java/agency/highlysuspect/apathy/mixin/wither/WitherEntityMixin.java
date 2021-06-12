@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.mixin;
+package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Init;
 import net.minecraft.block.BlockState;

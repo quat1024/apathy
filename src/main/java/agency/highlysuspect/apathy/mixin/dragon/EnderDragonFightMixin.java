@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.mixin;
+package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Init;
 import net.minecraft.advancement.criterion.Criteria;

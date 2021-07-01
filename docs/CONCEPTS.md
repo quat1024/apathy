@@ -1,27 +1,29 @@
 # Concepts
 
+## Config Files
+
+Apathy contains 4 config files:
+
+* `config/apathy/general.cfg`: General options.
+* `config/apathy/boss.cfg`: Options for controlling the behavior of the Ender Dragon and Wither.
+* `config/apathy/mobs.cfg`: Describes the main rule of the mod - whether mob X is allowed to attack player Y.
+* `config/apathy/mobs.json`: An auxillary rule. It's more powerful than the `mobs.cfg` system, but more complicated to use.
+
+These are documented in the files `GENERAL.md`, `BOSS.md`, `MOBS.md`, and `JSON.md` respectively.
+
+### When are config files loaded and parsed?
+
+* Once at startup
+* Whenever datapacks are loaded, which happens:
+	* whenever you join a world in singleplayer
+	* whenever you run `/reload`
+* When an admin runs the command `/apathy reload`
+
 ## Rules
 
 This mod is based around a list of *rules*. Whenever a mob (the "attacker") thinks about targeting a player (the "defender"), it first checks the list of rules to see if it is allowed to do so.
 
 A rule either says "yes, you are **allowed** to attack", "no, you are **denied** from attacking", or **pass**es to the next rule in the sequence.
-
-## Config file
-
-The config file allows you to configure these rules.
-
-* *difficulty rule*: The attacker can target depending on the world difficulty.
-* *boss rule*: The attacker can target if it is a "boss" (i.e. in the `apathy:bosses` tag.)
-* *mob set rule*: The attacker can target depending on whether its ID appears in a list of mob IDs.
-* *player set rule*: The attacker can target players depending on their inclusion in a player set.
-* *revenge rule*: The attacker can target if they were recently provoked.
-* *last resort rule*: If *all* of the previous rules returned "pass", this determines their behavior.
-
-Rules are evaluated top-to-bottom (in an order you specify) and the first one that doesn't `pass` is the end result.
-
-If you need more control over rules, such as AND/ORing, getting more copies of each rule, or applying radically different rules for each difficulty:
-
-* see the json system (Not implemented)
 
 ## Player sets
 

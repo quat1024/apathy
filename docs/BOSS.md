@@ -1,4 +1,6 @@
-# Boss config
+# `boss.cfg`
+
+This file contains controls for various boss-fight sequences in Minecraft. You can disable or modify them.
 
 # Dragon
 
@@ -6,15 +8,14 @@
 
 Disables the Ender Dragon fight.
 
-* The Ender Dragon will not spawn when you visit the End.
-* The exit End portal will already be open, and have the Egg on top.
-* Placing four end crystals on the End portal generates a new End Gateway.
-
-Notes:
-
+* When you visit the End for the first time:
+	* The Ender Dragon will not spawn when you visit the End.
+	* You will get the "Free the End" advancement.
+	* The exit End portal will already be open, complete with an Egg on top.
+* If you place four end crystals on the End portal:
+	* A new End Gateway will be generated.
+	* You will get the "The End... Again..." advancement.
 * Existing Ender Dragons *will* be deleted.
-* You will get the "Free the End" advancement.
-* Placing four end crystals grants the advancement for resummoning the dragon.
 
 ## Dragon control
 

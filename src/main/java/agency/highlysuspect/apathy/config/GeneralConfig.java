@@ -28,6 +28,10 @@ public class GeneralConfig extends Config {
 	})
 	public boolean runRuleOptimizer = true;
 	
+	/////////////////
+	@Section("Debug")
+	/////////////////
+	
 	@Comment({
 		"If 'true', Apathy will dump the rule specified in the config file to the file 'comfig/apathy/dumps/builtin-rule.json'.",
 		"It will also dump the automatically optimized rule out to 'config/apathy/dumps/builtin-rule-opt.json'.",

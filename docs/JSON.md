@@ -1,26 +1,14 @@
-# Rule json config
+# `mobs.json`
 
-The rule json file lives at `/config/apathy/mobs.json`. It is not created by default, but will be loaded if it exists.
+The rule json file lives at `/config/apathy/mobs.json`. It is *not created by default*, but will be loaded if it exists.
 
-The rules in the rule JSON file are governed by the `json` rule-order in the main mobs.cfg. If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule located before it in the ordering returns `allow` or `deny`, the rules in the JSON file will not be examined.
-
-## When is the rule JSON file parsed?
-
-* Once at startup
-* Whenever datapacks are loaded, which happens:
-	* whenever you join a world in singleplayer
-	* whenever you run `/reload`
-* When an admin runs the command `/apathy reload`
-
-Erorrs loading, parsing, or decoding the JSON file will be logged at this time.
+If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered before it returns `allow` or `deny`, the rules in the JSON file will not be examined.
 
 ## Dumping
 
-`general.cfg` has options for dumping the built-in rule as a JSON file (in `/config/apathy/dumps/builtin-rule.json` and `builtin-rule-opt.json`), if you would like to see an example.
+`general.cfg` has options for dumping the built-in rule as a JSON file (in `/config/apathy/dumps/builtin-rule.json` and `builtin-rule-opt.json`), if you would like to see an example.  Note that the auto-dumper puts the values in kind of a weird order - like it puts `type` at the bottom and stuff - sorry about that! I don't know why that happens.
 
-Note that the auto-dumper puts the values in kind of a weird order - like it puts `type` at the bottom and stuff - sorry about that! I don't know why that happens.
-
-If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `apathy:evaluate_json_file` rule!!!
+(If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `apathy:evaluate_json_file` rule!)
 
 # Json Format
 

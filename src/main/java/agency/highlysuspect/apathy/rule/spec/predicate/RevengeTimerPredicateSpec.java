@@ -21,6 +21,6 @@ public class RevengeTimerPredicateSpec extends PredicateSpec {
 	
 	@Override
 	public Codec<? extends PredicateSpec> codec() {
-		return null;
+		return CODEC;
 	}
 }

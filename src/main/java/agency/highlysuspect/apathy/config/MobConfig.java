@@ -4,7 +4,14 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Rule;
+import agency.highlysuspect.apathy.rule.spec.*;
+import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -18,6 +25,7 @@ import java.util.*;
 public class MobConfig extends Config {
 	protected static int CURRENT_CONFIG_VERSION = 0;
 	
+	protected transient RuleSpec ruleSpec;
 	protected transient Rule rule;
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
@@ -252,41 +260,51 @@ public class MobConfig extends Config {
 		
 		if(nuclearOption) {
 			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			ruleSpec = new AlwaysSpec(TriState.FALSE);
 			rule = Rule.ALWAYS_DENY;
 			return this;
 		}
 		
-		ArrayList<Rule> rules = new ArrayList<>();
+		ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
 				case "clojure":
 					if(Init.clojureModLoaded && Init.generalConfig.useClojure) {
-						rules.add(Rule.clojure());
+						ruleSpecList.add(new ClojureSpec());
 					}
 					break;
 				case "difficulty":
-					rules.add(Rule.predicated(Partial.difficultyIsAny(difficultySet), difficultySetIncluded, difficultySetExcluded));
+					ruleSpecList.add(new PredicatedSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
 					break;
 				case "boss":
-					rules.add(Rule.predicated(Partial.attackerIsBoss(), boss, TriState.DEFAULT));
+					ruleSpecList.add(new PredicatedSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
 					break;
 				case "mobset":
-					rules.add(Rule.predicated(Partial.attackerIsAny(mobSet), mobSetIncluded, mobSetExcluded));
+					ruleSpecList.add(new PredicatedSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
 					break;
 				case "tagset":
-					rules.add(Rule.predicated(Partial.attackerTaggedWithAny(tagSet), tagSetIncluded, tagSetExcluded));
+					ruleSpecList.add(new PredicatedSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
 					break;
 				case "playerset":
-					rules.add(playerSetName.map(s -> Rule.predicated(Partial.inPlayerSetNamed(s), playerSetIncluded, playerSetExcluded)).orElse(Rule.ALWAYS_PASS));
+					playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
 					break;
 				case "revenge":
-					rules.add(revengeTimer == -1 ? Rule.ALWAYS_PASS : Rule.predicated(Partial.revengeTimer(revengeTimer), TriState.TRUE, TriState.DEFAULT));
+					ruleSpecList.add(new PredicatedSpec.AllowIf(new RevengeTimerPredicateSpec(revengeTimer)));
 					break;
 				default: Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 			}
 		}
 		
-		rule = Rule.chainMany(rules); //Lotsa magic in here to optimize this rule down to the same rule you would have handwritten.
+		if(ruleSpecList.isEmpty()) {
+			ruleSpec = new AlwaysSpec(TriState.DEFAULT);
+		} else if(ruleSpecList.size() == 1) {
+			ruleSpec = ruleSpecList.get(0);
+		} else ruleSpec = new ChainSpec(ruleSpecList);
+		
+		rule = ruleSpec.buildRule();
+		
+		DataResult<JsonElement> pee = RuleSpec.SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpec);
+		Init.LOG.info(new GsonBuilder().setPrettyPrinting().create().toJson(pee.result().get()));
 		
 		return this;
 	}

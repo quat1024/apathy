@@ -62,7 +62,6 @@ public class JsonRule {
 				if(Init.generalConfig.debugJsonRule) dumpSpec("json-rule-opt", spec);
 			}
 			
-			Init.LOG.info("Building rule");
 			jsonRule = spec.build();
 		} catch (Exception e) {
 			Init.LOG.error("Problem finalizing rule", e);
@@ -73,7 +72,7 @@ public class JsonRule {
 		try {
 			Files.createDirectories(DUMP_DIR);
 			Path outPath = DUMP_DIR.resolve(filename + ".json");
-			Init.LOG.info("Attempting to dump a rule to " + outPath);
+			Init.LOG.info("Dumping rule to " + outPath);
 			
 			DataResult<JsonElement> jsonResult = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, spec);
 			JsonElement json = jsonResult.getOrThrow(false, Init.LOG::error);
@@ -81,7 +80,7 @@ public class JsonRule {
 			
 			Files.write(outPath, yes);
 		} catch (Exception e) {
-			Init.LOG.error("Problem dumping rule spec to " + filename, e);
+			Init.LOG.error("Problem dumping rule to " + filename, e);
 		}
 	}
 }

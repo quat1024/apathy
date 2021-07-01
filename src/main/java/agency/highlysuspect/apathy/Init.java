@@ -57,8 +57,6 @@ public class Init implements ModInitializer {
 		
 		//Config file stuff
 		installReloadAndRunNow("reload-config", () -> {
-			LOG.info("Loading config");
-			
 			GeneralConfig oldGeneralConfig = generalConfig;
 			MobConfig oldMobConfig = mobConfig;
 			BossConfig oldBossConfig = bossConfig;

@@ -256,39 +256,38 @@ public class MobConfig extends Config {
 		if(nuclearOption) {
 			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
-			rule = ruleSpec.build();
-			return this;
-		}
-		
-		ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
-		for(String ruleName : ruleOrder) {
-			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
-				case "json":
-					ruleSpecList.add(new JsonRuleSpec());
-					break;
-				case "difficulty":
-					ruleSpecList.add(new PredicatedRuleSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
-					break;
-				case "boss":
-					ruleSpecList.add(new PredicatedRuleSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
-					break;
-				case "mobset":
-					ruleSpecList.add(new PredicatedRuleSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
-					break;
-				case "tagset":
-					ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
-					break;
-				case "playerset":
-					playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
-					break;
-				case "revenge":
-					ruleSpecList.add(new PredicatedRuleSpec.AllowIf(new RevengeTimerPredicateSpec(revengeTimer)));
-					break;
-				default: Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+		} else {
+			ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
+			for(String ruleName : ruleOrder) {
+				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
+					case "json":
+						ruleSpecList.add(new JsonRuleSpec());
+						break;
+					case "difficulty":
+						ruleSpecList.add(new PredicatedRuleSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
+						break;
+					case "boss":
+						ruleSpecList.add(new PredicatedRuleSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
+						break;
+					case "mobset":
+						ruleSpecList.add(new PredicatedRuleSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
+						break;
+					case "tagset":
+						ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
+						break;
+					case "playerset":
+						playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
+						break;
+					case "revenge":
+						ruleSpecList.add(new PredicatedRuleSpec.AllowIf(new RevengeTimerPredicateSpec(revengeTimer)));
+						break;
+					default:
+						Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+				}
 			}
+			
+			ruleSpec = new ChainRuleSpec(ruleSpecList);
 		}
-		
-		ruleSpec = new ChainRuleSpec(ruleSpecList);
 		
 		if(Init.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule", ruleSpec);
 		if(Init.generalConfig.runRuleOptimizer) {

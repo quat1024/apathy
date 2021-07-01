@@ -20,5 +20,11 @@
 	"apathy.commands.delete.fail.noSet": "Player set %s doesn't exist.",
 	"apathy.commands.delete.fail.config": "Player set %s cannot be deleted because it'd just get recreated by the config file.",
 	"apathy.set.show.selfSelect": "%s (self-select)",
-	"apathy.set.show.notSelfSelect": "%s"
+	"apathy.set.show.notSelfSelect": "%s",
+	"apathy.commands.add.fail.already-exists": "Cannot add a new player set named %s, as one already exists with that name.",
+	"apathy.commands.add.success.self-select": "Added new self-select player set named %s.",
+	"apathy.commands.add.success": "Added new player set named %s.",
+	"apathy.commands.edit.success.self-select": "Made set %s a self-select set.",
+	"apathy.commands.edit.success": "Made set %s a non-self-select set.",
+	"apathy.commands.edit.fail.config": "Cannot edit set %s, as its settings would just be reset by the config file."
 }

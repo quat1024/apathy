@@ -22,6 +22,10 @@ import java.util.function.BiFunction;
 
 import static agency.highlysuspect.apathy.playerset.PlayerSetArgumentType.getPlayerSet;
 import static agency.highlysuspect.apathy.playerset.PlayerSetArgumentType.playerSet;
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
 import static net.minecraft.command.argument.EntityArgumentType.players;
 import static net.minecraft.server.command.CommandManager.argument;
@@ -38,38 +42,49 @@ public class Commands {
 	}
 	
 	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+		//Do not trust the indentation lmao
+		//I've been burned before
+		//Be careful
 		dispatcher.register(literal(Init.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestSelfSelectPlayerSets)
-						.executes(cmd -> join(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerSet(cmd, "set"), true))))
+						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerSet(cmd, "set"), true))))
 				.then(literal("part")
 					.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestSelfSelectPlayerSets)
-						.executes(cmd -> part(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerSet(cmd, "set"), true))))
+						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getPlayerSet(cmd, "set"), true))))
 				.then(literal("show")
-					.executes(cmd -> show(cmd, Collections.singletonList(cmd.getSource().getPlayer())))))
+					.executes(cmd -> showSet(cmd, Collections.singletonList(cmd.getSource().getPlayer())))))
 			.then(literal("set-admin")
 				.requires(src -> src.hasPermissionLevel(2))
 				.then(literal("join")
 					.then(argument("who", players())
 						.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestAllPlayerSets)
-							.executes(cmd -> join(cmd, getPlayers(cmd, "who"), getPlayerSet(cmd, "set"), false)))))
+							.executes(cmd -> joinSet(cmd, getPlayers(cmd, "who"), getPlayerSet(cmd, "set"), false)))))
 				.then(literal("part")
 					.then(argument("who", players())
 						.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestAllPlayerSets)
-							.executes(cmd -> part(cmd, getPlayers(cmd, "who"), getPlayerSet(cmd, "set"), false)))))
+							.executes(cmd -> partSet(cmd, getPlayers(cmd, "who"), getPlayerSet(cmd, "set"), false)))))
 				.then(literal("show-all")
 					.executes(Commands::showAll))
 				.then(literal("delete")
 					.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestAllPlayerSets)
-						.executes(cmd -> delete(cmd, getPlayerSet(cmd, "set"))))))
+						.executes(cmd -> deleteSet(cmd, getPlayerSet(cmd, "set")))))
+				.then(literal("create")
+					.then(argument("name", word())
+						.then(argument("self-select", bool())
+							.executes(cmd -> createSet(cmd, getString(cmd, "name"), getBool(cmd, "self-select"))))))
+				.then(literal("edit")
+					.then(argument("set", playerSet()).suggests(PlayerSetArgumentType::suggestAllPlayerSets)
+						.then(argument("self-select", bool())
+							.executes(cmd -> editSet(cmd, getPlayerSet(cmd, "set"), getBool(cmd, "self-select")))))))
 			.then(literal("reload")
 				.requires(src -> src.hasPermissionLevel(2))
 				.executes(Commands::reloadNow))
 		);
 	}
 	
-	private static int join(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, PlayerSet set, boolean requireSelfSelect) {
+	private static int joinSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, PlayerSet set, boolean requireSelfSelect) {
 		if(requireSelfSelect && !set.isSelfSelect()) {
 			cmd.getSource().sendError(new TranslatableText("apathy.commands.set.notSelfSelect", set.getName()));
 			return 0;
@@ -77,12 +92,12 @@ public class Commands {
 		
 		int success = 0;
 		for(ServerPlayerEntity player : players) {
-			success += frobnicate(cmd, player, set, "apathy.commands.set.joinSuccess", "apathy.commands.set.alreadyInSet", PlayerSet::join);
+			success += runOnPlayerSet(cmd, player, set, "apathy.commands.set.joinSuccess", "apathy.commands.set.alreadyInSet", PlayerSet::join);
 		}
 		return success;
 	}
 	
-	private static int part(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, PlayerSet set, boolean requireSelfSelect) {
+	private static int partSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, PlayerSet set, boolean requireSelfSelect) {
 		if(requireSelfSelect && !set.isSelfSelect()) {
 			cmd.getSource().sendError(new TranslatableText("apathy.commands.set.notSelfSelect", set.getName()));
 			return 0;
@@ -90,12 +105,12 @@ public class Commands {
 		
 		int success = 0;
 		for(ServerPlayerEntity player : players) {
-			success += frobnicate(cmd, player, set, "apathy.commands.set.partSuccess", "apathy.commands.set.notInSet", PlayerSet::part);
+			success += runOnPlayerSet(cmd, player, set, "apathy.commands.set.partSuccess", "apathy.commands.set.notInSet", PlayerSet::part);
 		}
 		return success;
 	}
 	
-	private static int frobnicate(CommandContext<ServerCommandSource> cmd, ServerPlayerEntity player, PlayerSet set, String success, String fail, BiFunction<PlayerSet, ServerPlayerEntity, Boolean> thing) {
+	private static int runOnPlayerSet(CommandContext<ServerCommandSource> cmd, ServerPlayerEntity player, PlayerSet set, String success, String fail, BiFunction<PlayerSet, ServerPlayerEntity, Boolean> thing) {
 		if(thing.apply(set, player)) {
 			cmd.getSource().sendFeedback(new TranslatableText(success, player.getName(), set.getName()), true);
 			return 1;
@@ -105,11 +120,11 @@ public class Commands {
 		}
 	}
 	
-	private static int show(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players) {
+	private static int showSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
 		
 		if(setManager.isEmpty()) {
-			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.set.available.none"), false);
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.set.available.none"));
 		} else {
 			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.set.available", Texts.join(setManager.allSets(), PlayerSet::toText)), false);
 		}
@@ -120,7 +135,7 @@ public class Commands {
 			Collection<PlayerSet> yea = setManager.allSetsContaining_KindaSlow_DontUseThisOnTheHotPath(player);
 			
 			if(yea.isEmpty()) {
-				cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.set.show.none", player.getName()), false);
+				cmd.getSource().sendError(new TranslatableText("apathy.commands.set.show.none", player.getName()));
 			} else {
 				cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.set.show", player.getName(), Texts.join(yea, PlayerSet::toText)), false);
 				success++;
@@ -134,7 +149,7 @@ public class Commands {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
 		
 		if(setManager.isEmpty()) {
-			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.show-all.none"), false);
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.show-all.none"));
 		} else {
 			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.show-all.list", Texts.join(setManager.allSets(), PlayerSet::toText)), false);
 			PlayerManager mgr = cmd.getSource().getMinecraftServer().getPlayerManager();
@@ -153,12 +168,37 @@ public class Commands {
 		return 0;
 	}
 	
-	private static int delete(CommandContext<ServerCommandSource> cmd, PlayerSet set) {
+	private static int createSet(CommandContext<ServerCommandSource> cmd, String name, boolean selfSelect) {
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
+		if(setManager.hasSet(name)) {
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.add.fail.already-exists", name));
+			return 0;
+		}
+		
+		setManager.createSet(name, selfSelect);
+		cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.add.success" + (selfSelect ? ".self-select" : ""), name), false);
+		return 1;
+	}
+	
+	private static int editSet(CommandContext<ServerCommandSource> cmd, PlayerSet set, boolean selfSelect) {
+		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
+		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.edit.fail.config", set.getName()));
+			return 0;
+		}
+		
+		set.setSelfSelect(selfSelect);
+		
+		cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.edit.success" + (selfSelect ? ".self-select" : ""), set.getName()), false);
+		return 1;
+	}
+	
+	private static int deleteSet(CommandContext<ServerCommandSource> cmd, PlayerSet set) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
 		
 		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
 		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
-			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.delete.fail.config", set.getName()), false);
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.delete.fail.config", set.getName()));
 			return 0;
 		}
 		
@@ -167,7 +207,7 @@ public class Commands {
 			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.delete.success", set.getName()), false);
 			return 1;
 		} else {
-			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.delete.fail.noSet", set.getName()), false);
+			cmd.getSource().sendError(new TranslatableText("apathy.commands.delete.fail.noSet", set.getName()));
 			return 0;
 		}
 	}

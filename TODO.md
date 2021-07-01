@@ -1,8 +1,9 @@
 # TODO:
 
 * Check that the default config behavior is the same as Apathetic Mobs's default config
-* Check rule optimizer behavior for things like "mobSet is empty, mobSetExcluded isn't pass"
 * Write tests for the rule optimizer
+* Look into adding new game difficulties (will probably need a separate library cuz it's not easy + touches a lot)
+* Sync playersets to client so they can have autocomplete (uggggghhhhh not fun)
 
 ## no dragon
 

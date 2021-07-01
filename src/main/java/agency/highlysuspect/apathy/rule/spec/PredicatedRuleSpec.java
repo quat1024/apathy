@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.rule.spec;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Rule;
+import agency.highlysuspect.apathy.rule.spec.predicate.AlwaysPredicateSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.PredicateSpec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -27,12 +28,12 @@ public class PredicatedRuleSpec implements RuleSpec {
 	
 	@Override
 	public RuleSpec optimize() {
-		if(ifTrue == ifFalse) return RuleSpec.always(ifTrue);
+		if(ifTrue == ifFalse) return AlwaysRuleSpec.always(ifTrue);
 		
 		PredicateSpec predSpecOpt = predSpec.optimize();
 		
-		if(predSpec.isAlwaysTrue()) return RuleSpec.always(ifTrue);
-		if(predSpec.isAlwaysFalse()) return RuleSpec.always(ifFalse);
+		if(predSpec == AlwaysPredicateSpec.TRUE) return AlwaysRuleSpec.always(ifTrue);
+		if(predSpec == AlwaysPredicateSpec.FALSE) return AlwaysRuleSpec.always(ifFalse);
 		
 		return new PredicatedRuleSpec(ifTrue, ifFalse, predSpecOpt);
 	}

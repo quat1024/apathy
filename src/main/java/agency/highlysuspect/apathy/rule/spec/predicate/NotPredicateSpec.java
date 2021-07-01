@@ -18,8 +18,8 @@ public class NotPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(other.isAlwaysFalse()) return ALWAYS_TRUE;
-		if(other.isAlwaysTrue()) return ALWAYS_FALSE;
+		if(other == AlwaysPredicateSpec.FALSE) return AlwaysPredicateSpec.TRUE;
+		if(other == AlwaysPredicateSpec.TRUE) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

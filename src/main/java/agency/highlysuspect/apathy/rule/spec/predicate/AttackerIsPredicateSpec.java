@@ -22,7 +22,7 @@ public class AttackerIsPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(mobSet.isEmpty()) return ALWAYS_FALSE;
+		if(mobSet.isEmpty()) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

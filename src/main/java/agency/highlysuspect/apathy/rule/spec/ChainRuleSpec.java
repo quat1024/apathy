@@ -26,20 +26,20 @@ public class ChainRuleSpec implements RuleSpec {
 		
 		List<RuleSpec> optimizedRules = rules.stream().map(RuleSpec::optimize).collect(Collectors.toList());
 		
-		if(optimizedRules.size() == 0) return ALWAYS_PASS;
+		if(optimizedRules.size() == 0) return AlwaysRuleSpec.ALWAYS_PASS;
 		else if(optimizedRules.size() == 1) return optimizedRules.get(0);
-		else if(optimizedRules.get(0).alwaysAllows()) return ALWAYS_ALLOW;
-		else if(optimizedRules.get(0).alwaysDenies()) return ALWAYS_DENY;
+		else if(optimizedRules.get(0) == AlwaysRuleSpec.ALWAYS_ALLOW) return AlwaysRuleSpec.ALWAYS_ALLOW;
+		else if(optimizedRules.get(0) == AlwaysRuleSpec.ALWAYS_DENY) return AlwaysRuleSpec.ALWAYS_DENY;
 		
 		List<RuleSpec> filteredRules = new ArrayList<>();
 		for(RuleSpec spec : optimizedRules) {
-			if(spec.alwaysPasses()) continue;
+			if(spec == AlwaysRuleSpec.ALWAYS_PASS) continue;
 			filteredRules.add(spec);
-			if(spec.alwaysAllows()) break;
-			if(spec.alwaysDenies()) break;
+			if(spec == AlwaysRuleSpec.ALWAYS_ALLOW) break;
+			if(spec == AlwaysRuleSpec.ALWAYS_DENY) break;
 		}
 		
-		if(filteredRules.size() == 0) return ALWAYS_PASS;
+		if(filteredRules.size() == 0) return AlwaysRuleSpec.ALWAYS_PASS;
 		else if(filteredRules.size() == 1) return filteredRules.get(0);
 		
 		else return new ChainRuleSpec(filteredRules);

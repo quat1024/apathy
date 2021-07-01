@@ -21,7 +21,7 @@ public class DifficultyIsPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(difficulties.isEmpty()) return ALWAYS_FALSE;
+		if(difficulties.isEmpty()) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

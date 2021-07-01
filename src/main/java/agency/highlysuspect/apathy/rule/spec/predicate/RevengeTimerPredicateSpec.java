@@ -17,7 +17,7 @@ public class RevengeTimerPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(timer <= 0) return ALWAYS_FALSE;
+		if(timer <= 0) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

@@ -23,7 +23,7 @@ public class DefenderInPlayerSetPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(playerSetNames.isEmpty()) return ALWAYS_FALSE;
+		if(playerSetNames.isEmpty()) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

@@ -255,7 +255,7 @@ public class MobConfig extends Config {
 		
 		if(nuclearOption) {
 			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
-			ruleSpec = RuleSpec.ALWAYS_DENY;
+			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
 			rule = ruleSpec.build();
 			return this;
 		}

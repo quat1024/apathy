@@ -14,17 +14,6 @@ public interface PredicateSpec {
 	Partial build();
 	Codec<? extends PredicateSpec> codec();
 	
-	PredicateSpec ALWAYS_TRUE = AlwaysPredicateSpec.TRUE;
-	PredicateSpec ALWAYS_FALSE = AlwaysPredicateSpec.FALSE;
-	
-	default boolean isAlwaysTrue() {
-		return this == ALWAYS_TRUE;
-	}
-	
-	default boolean isAlwaysFalse() {
-		return this == ALWAYS_FALSE;
-	}
-	
 	static <X, R, C extends Collection<X>> R sizeSpecializeNotEmpty(C things, Function<X, R> single, Function<C, R> multi) {
 		if(things.size() == 0) {
 			throw new IllegalArgumentException("Empty collection");

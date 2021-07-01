@@ -25,7 +25,7 @@ public class AttackerTaggedWithPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public PredicateSpec optimize() {
-		if(tags.isEmpty()) return ALWAYS_FALSE;
+		if(tags.isEmpty()) return AlwaysPredicateSpec.FALSE;
 		else return this;
 	}
 	

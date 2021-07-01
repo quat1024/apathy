@@ -259,7 +259,7 @@ public class MobConfig extends Config {
 		if(nuclearOption) {
 			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = RuleSpec.ALWAYS_DENY;
-			rule = ruleSpec.optimize().build();
+			rule = ruleSpec.build();
 			return this;
 		}
 		
@@ -290,13 +290,9 @@ public class MobConfig extends Config {
 		
 		ruleSpec = new ChainRuleSpec(ruleSpecList);
 		
-		Init.LOG.info("Raw rule:");
-		DataResult<JsonElement> pee = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpec);
-		Init.LOG.info(new GsonBuilder().setPrettyPrinting().create().toJson(pee.result().get()));
-		
-		Init.LOG.info("Optimized rule:");
-		DataResult<JsonElement> poo = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpec.optimize());
-		Init.LOG.info(new GsonBuilder().setPrettyPrinting().create().toJson(poo.result().get()));
+		if(Init.generalConfig.runRuleOptimizer) {
+			ruleSpec = ruleSpec.optimize();
+		}
 		
 		rule = ruleSpec.build();
 		

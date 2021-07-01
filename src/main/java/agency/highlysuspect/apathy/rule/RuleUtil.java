@@ -29,4 +29,14 @@ public class RuleUtil {
 			return multi.apply(things);
 		}
 	}
+	
+	public static <X, R, C extends Collection<X>> R sizeSpecializeNotEmpty(C things, Function<X, R> single, Function<C, R> multi) {
+		if(things.size() == 0) {
+			throw new IllegalArgumentException("Empty set");
+		} else if(things.size() == 1) {
+			return single.apply(extractSingleton(things));
+		} else {
+			return multi.apply(things);
+		}
+	}
 }

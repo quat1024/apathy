@@ -22,6 +22,11 @@ public class DebugRuleSpec implements RuleSpec {
 	).apply(i, DebugRuleSpec::new));
 	
 	@Override
+	public RuleSpec optimize() {
+		return new DebugRuleSpec(rule.optimize(), message);
+	}
+	
+	@Override
 	public Rule build() {
 		Rule built = rule.build();
 		

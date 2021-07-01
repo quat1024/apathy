@@ -21,9 +21,14 @@ public class DifficultyIsPredicateSpec implements PredicateSpec {
 	).apply(i, DifficultyIsPredicateSpec::new));
 	
 	@Override
+	public PredicateSpec optimize() {
+		if(difficulties.isEmpty()) return ALWAYS_FALSE;
+		else return this;
+	}
+	
+	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecialize(difficulties,
-			() -> Partial.ALWAYS_FALSE,
+		return RuleUtil.sizeSpecializeNotEmpty(difficulties,
 			difficulty -> (attacker, defender) -> attacker.world.getDifficulty() == difficulty,
 			set -> (attacker, defender) -> set.contains(attacker.world.getDifficulty())
 		);

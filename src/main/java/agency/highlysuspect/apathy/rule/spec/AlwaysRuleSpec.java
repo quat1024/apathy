@@ -7,19 +7,19 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 
 public class AlwaysRuleSpec implements RuleSpec {
-	public AlwaysRuleSpec(TriState value) {
+	AlwaysRuleSpec(TriState value) {
 		this.value = value;
 	}
 	
 	public static final Codec<AlwaysRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.TRISTATE_ALLOW_DENY_PASS.fieldOf("value").forGetter(a -> a.value)
-	).apply(i, AlwaysRuleSpec::new));
+	).apply(i, RuleSpec::always));
 	
 	public final TriState value;
 	
 	@Override
 	public Rule build() {
-		return Rule.always(value);
+		return (attacker, defender) -> value;
 	}
 	
 	@Override

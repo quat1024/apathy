@@ -14,14 +14,19 @@ public class NotPredicateSpec implements PredicateSpec {
 	
 	public static final Codec<NotPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.PREDICATE_SPEC_CODEC.fieldOf("value").forGetter(x -> x.other)
-	).apply(i, NotPredicateSpec::new)); 
+	).apply(i, NotPredicateSpec::new));
+	
+	@Override
+	public PredicateSpec optimize() {
+		if(other.isAlwaysFalse()) return ALWAYS_TRUE;
+		if(other.isAlwaysTrue()) return ALWAYS_FALSE;
+		else return this;
+	}
 	
 	@Override
 	public Partial build() {
 		Partial built = other.build();
-		if(built == Partial.ALWAYS_TRUE) return Partial.ALWAYS_FALSE;
-		else if(built == Partial.ALWAYS_FALSE) return Partial.ALWAYS_TRUE;
-		else return (attacker, defender) -> !built.test(attacker, defender);
+		return (attacker, defender) -> !built.test(attacker, defender);
 	}
 	
 	@Override

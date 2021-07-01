@@ -16,9 +16,14 @@ public class RevengeTimerPredicateSpec implements PredicateSpec {
 	).apply(i, RevengeTimerPredicateSpec::new));
 	
 	@Override
+	public PredicateSpec optimize() {
+		if(timer <= 0) return ALWAYS_FALSE;
+		else return this;
+	}
+	
+	@Override
 	public Partial build() {
-		if(timer > 0)	return (attacker, defender) -> VengeanceHandler.lastAttackedWithin(attacker, timer);
-		else return Partial.ALWAYS_FALSE;
+		return (attacker, defender) -> VengeanceHandler.lastAttackedWithin(attacker, timer);
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ public class AlwaysPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return Partial.always(always);
+		return (attacker, defender) -> always;
 	}
 	
 	@Override

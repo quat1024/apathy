@@ -3,12 +3,14 @@ package agency.highlysuspect.apathy.rule.spec;
 import agency.highlysuspect.apathy.etc.CodecUtil;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.world.Difficulty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DifficultyCaseRuleSpec implements RuleSpec {
 	public DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec> ruleSpecs) {
@@ -21,12 +23,20 @@ public class DifficultyCaseRuleSpec implements RuleSpec {
 		.xmap(DifficultyCaseRuleSpec::new, x -> x.ruleSpecs);
 	
 	@Override
+	public RuleSpec optimize() {
+		return new DifficultyCaseRuleSpec(ruleSpecs.entrySet().stream()
+			.collect(Collectors.toMap(Map.Entry::getKey, p -> p.getValue().optimize())));
+	}
+	
+	@Override
 	public Rule build() {
 		Map<Difficulty, Rule> built = new EnumMap<>(Difficulty.class);
 		ruleSpecs.forEach((difficulty, ruleSpec) -> built.put(difficulty, ruleSpec.build()));
 		
-		return (attacker, defender) -> built.getOrDefault(attacker.world.getDifficulty(), Rule.ALWAYS_PASS).apply(attacker, defender); 
+		return (attacker, defender) -> built.getOrDefault(attacker.world.getDifficulty(), alwaysPasses).apply(attacker, defender); 
 	}
+	
+	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;
 	
 	@Override
 	public Codec<? extends RuleSpec> codec() {

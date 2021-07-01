@@ -25,9 +25,14 @@ public class AttackerTaggedWithPredicateSpec implements PredicateSpec {
 	).apply(i, AttackerTaggedWithPredicateSpec::new));
 	
 	@Override
+	public PredicateSpec optimize() {
+		if(tags.isEmpty()) return ALWAYS_FALSE;
+		else return this;
+	}
+	
+	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecialize(tags,
-			() -> Partial.ALWAYS_FALSE,
+		return RuleUtil.sizeSpecializeNotEmpty(tags,
 			tag -> (attacker, defender) -> tag.contains(attacker.getType()),
 			set -> (attacker, defender) -> {
 				for(Tag<EntityType<?>> tag : set) {

@@ -26,13 +26,20 @@ public class PredicatedRuleSpec implements RuleSpec {
 	).apply(i, PredicatedRuleSpec::new));
 	
 	@Override
+	public RuleSpec optimize() {
+		if(ifTrue == ifFalse) return RuleSpec.always(ifTrue);
+		
+		PredicateSpec predSpecOpt = predSpec.optimize();
+		
+		if(predSpec.isAlwaysTrue()) return RuleSpec.always(ifTrue);
+		if(predSpec.isAlwaysFalse()) return RuleSpec.always(ifFalse);
+		
+		return new PredicatedRuleSpec(ifTrue, ifFalse, predSpecOpt);
+	}
+	
+	@Override
 	public Rule build() {
-		if(ifTrue == ifFalse) return Rule.always(ifTrue);
-		
 		Partial builtPred = predSpec.build();
-		if(builtPred == Partial.ALWAYS_TRUE) return Rule.always(ifTrue);
-		else if(builtPred == Partial.ALWAYS_FALSE) return Rule.always(ifFalse);
-		
 		return (attacker, defender) -> builtPred.test(attacker, defender) ? ifTrue : ifFalse;
 	}
 	

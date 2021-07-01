@@ -22,9 +22,14 @@ public class AttackerIsPredicateSpec implements PredicateSpec {
 	).apply(i, AttackerIsPredicateSpec::new));
 	
 	@Override
+	public PredicateSpec optimize() {
+		if(mobSet.isEmpty()) return ALWAYS_FALSE;
+		else return this;
+	}
+	
+	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecialize(mobSet,
-			() -> Partial.ALWAYS_FALSE,
+		return RuleUtil.sizeSpecializeNotEmpty(mobSet,
 			type -> (attacker, defender) -> attacker.getType().equals(type),
 			set -> (attacker, defender) -> set.contains(attacker.getType())
 		);

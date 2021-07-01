@@ -21,27 +21,35 @@ public class ChainRuleSpec implements RuleSpec {
 	).apply(i, ChainRuleSpec::new));
 	
 	@Override
-	public Rule build() {
-		//TODO: flatten multiple layers of ChainRuleSpecs.
+	public RuleSpec optimize() {
+		//TODO: flatten multiple layers of ChainRuleSpecs, maybe?
 		
-		List<Rule> built = rules.stream().map(RuleSpec::build).collect(Collectors.toList());
+		List<RuleSpec> optimizedRules = rules.stream().map(RuleSpec::optimize).collect(Collectors.toList());
 		
-		if(built.size() == 0) return Rule.ALWAYS_PASS;
-		else if(built.size() == 1) return built.get(0);
-		else if(built.get(0) == Rule.ALWAYS_ALLOW) return Rule.ALWAYS_ALLOW;
-		else if(built.get(0) == Rule.ALWAYS_DENY) return Rule.ALWAYS_DENY;
+		if(optimizedRules.size() == 0) return ALWAYS_PASS;
+		else if(optimizedRules.size() == 1) return optimizedRules.get(0);
+		else if(optimizedRules.get(0).alwaysAllows()) return ALWAYS_ALLOW;
+		else if(optimizedRules.get(0).alwaysDenies()) return ALWAYS_DENY;
 		
-		List<Rule> filteredBuiltRules = new ArrayList<>();
-		for(Rule rule : built) {
-			if(rule == Rule.ALWAYS_PASS) continue;
-			filteredBuiltRules.add(rule);
-			if(rule == Rule.ALWAYS_ALLOW) break;
-			if(rule == Rule.ALWAYS_DENY) break;
+		List<RuleSpec> filteredRules = new ArrayList<>();
+		for(RuleSpec spec : optimizedRules) {
+			if(spec.alwaysPasses()) continue;
+			filteredRules.add(spec);
+			if(spec.alwaysAllows()) break;
+			if(spec.alwaysDenies()) break;
 		}
 		
-		Rule[] rulesArray = filteredBuiltRules.toArray(new Rule[0]);
+		if(filteredRules.size() == 0) return ALWAYS_PASS;
+		else if(filteredRules.size() == 1) return filteredRules.get(0);
+		
+		else return new ChainRuleSpec(filteredRules);
+	}
+	
+	@Override
+	public Rule build() {
+		Rule[] built = rules.stream().map(RuleSpec::build).toArray(Rule[]::new);
 		return (attacker, defender) -> {
-			for(Rule rule : rulesArray) {
+			for(Rule rule : built) {
 				TriState result = rule.apply(attacker, defender);
 				if(result != TriState.DEFAULT) return result;
 			}

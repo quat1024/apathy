@@ -23,9 +23,14 @@ public class DefenderInPlayerSetPredicateSpec implements PredicateSpec {
 	).apply(i, DefenderInPlayerSetPredicateSpec::new));
 	
 	@Override
+	public PredicateSpec optimize() {
+		if(playerSetNames.isEmpty()) return ALWAYS_FALSE;
+		else return this;
+	}
+	
+	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecialize(playerSetNames,
-			() -> Partial.ALWAYS_FALSE,
+		return RuleUtil.sizeSpecializeNotEmpty(playerSetNames,
 			playerSetName -> (attacker, defender) -> {
 				MinecraftServer server = defender.getServer();
 				assert server != null; //it's a ServerPlayerEntity

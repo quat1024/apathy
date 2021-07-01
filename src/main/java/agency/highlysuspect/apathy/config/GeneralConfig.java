@@ -27,4 +27,17 @@ public class GeneralConfig extends Config {
 		"And report it too, since it's definitely a bug, lol."
 	})
 	public boolean runRuleOptimizer = true;
+	
+	@Comment({
+		"If 'true', Apathy will dump the rule specified in the config file to the file 'comfig/apathy/dumps/builtin-rule.json'.",
+		"It will also dump the automatically optimized rule out to 'config/apathy/dumps/builtin-rule-opt.json'.",
+		"Maybe this is handy if you'd like to see what the .json format looks like for a particular config file."
+	})
+	public boolean debugBuiltinRule = false;
+	
+	@Comment({
+		"If 'true', Apathy will dump the rule specified in mobs.json to the file 'config/apathy/dumps/json-rule.json'.",
+		"It will also dump the automatically optimized rule out to 'config/apathy/dumps/json-rule-opt.json'."
+	})
+	public boolean debugJsonRule = false;
 }

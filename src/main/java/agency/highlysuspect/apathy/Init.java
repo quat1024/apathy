@@ -67,6 +67,9 @@ public class Init implements ModInitializer {
 				generalConfig = Config.read(new GeneralConfig(), CONFIG_FOLDER.resolve("general.cfg"));
 				mobConfig = Config.read(new MobConfig(), CONFIG_FOLDER.resolve("mobs.cfg"));
 				bossConfig = Config.read(new BossConfig(), CONFIG_FOLDER.resolve("boss.cfg"));
+				
+				//todo this is kinda tacked on
+				JsonRule.loadJson();
 			} catch (Exception e) {
 				if(oldGeneralConfig == null && oldMobConfig == null && oldBossConfig == null) {
 					throw new RuntimeException("Problem initializing config file.", e);

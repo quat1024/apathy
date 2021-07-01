@@ -1,15 +1,12 @@
 package agency.highlysuspect.apathy.config;
 
 import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.*;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
@@ -56,12 +53,12 @@ public class MobConfig extends Config {
 	@Comment({
 		"Which order should the rules in this config file be evaluated in?",
 		"Comma-separated list built out of any or all of the following keywords, in any order:",
-		"difficulty, boss, mobSet, tagSet, playerSet, revenge"
+		"json, difficulty, boss, mobSet, tagSet, playerSet, revenge"
 	})
 	@Note("If a rule is not listed in the rule order, it will not be checked.")
 	@Example("difficulty, revenge, playerSet")
 	@Use("stringList")
-	public List<String> ruleOrder = ImmutableList.of("difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge");
+	public List<String> ruleOrder = ImmutableList.of("json", "difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge");
 	
 	///////////////////////////
 	@Section("Difficulty Rule")
@@ -266,6 +263,9 @@ public class MobConfig extends Config {
 		ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
+				case "json":
+					ruleSpecList.add(new JsonRuleSpec());
+					break;
 				case "difficulty":
 					ruleSpecList.add(new PredicatedRuleSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
 					break;
@@ -290,8 +290,10 @@ public class MobConfig extends Config {
 		
 		ruleSpec = new ChainRuleSpec(ruleSpecList);
 		
+		if(Init.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule", ruleSpec);
 		if(Init.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
+			if(Init.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule-opt", ruleSpec);
 		}
 		
 		rule = ruleSpec.build();

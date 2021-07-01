@@ -17,7 +17,7 @@ public class AllPredicateSpec implements PredicateSpec {
 	private final Set<PredicateSpec> others;
 	
 	public static final Codec<AllPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Specs.PREDICATE_SPEC_CODEC).fieldOf("values").forGetter(x -> x.others)
+		CodecUtil.setOf(Specs.PREDICATE_SPEC_CODEC).fieldOf("predicates").forGetter(x -> x.others)
 	).apply(i, AllPredicateSpec::new));
 	
 	@Override

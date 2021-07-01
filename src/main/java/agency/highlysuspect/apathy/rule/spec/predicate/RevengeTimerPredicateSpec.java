@@ -12,7 +12,7 @@ public class RevengeTimerPredicateSpec implements PredicateSpec {
 	
 	private final long timer;
 	public static final Codec<RevengeTimerPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Codec.LONG.fieldOf("timer").forGetter(x -> x.timer)
+		Codec.LONG.fieldOf("timeout").forGetter(x -> x.timer)
 	).apply(i, RevengeTimerPredicateSpec::new));
 	
 	@Override

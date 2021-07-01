@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.world.Difficulty;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CodecUtil {
@@ -24,10 +25,14 @@ public class CodecUtil {
 		String errorA = "Unknown " + errorName + " \"";
 		String errorB = "\", must be one of " + Arrays.stream(names).map(n -> "\"" + n + "\"").collect(Collectors.joining(", "));
 		
-		return Codec.STRING.comapFlatMap(s -> {
-			for(int i = 0; i < values.length; i++) if(s.equals(names[i])) return DataResult.success(values[i]);
-			return DataResult.error(errorA + s + errorB);
-		}, e -> names[e.ordinal()]);
+		return Codec.of(
+			Codec.STRING.comap(e -> names[e.ordinal()]),
+			Codec.STRING.flatMap(s -> { 
+				for(int i = 0; i < values.length; i++) if(s.equals(names[i])) return DataResult.success(values[i]);
+				return DataResult.error(errorA + s + errorB); 
+			}),
+			"[renamedEnum " + errorName + "]" 
+		);
 	}
 	
 	public static <T> Codec<Set<T>> setOf(Codec<T> codec) {

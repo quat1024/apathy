@@ -13,7 +13,7 @@ public class NotPredicateSpec implements PredicateSpec {
 	private final PredicateSpec other;
 	
 	public static final Codec<NotPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Specs.PREDICATE_SPEC_CODEC.fieldOf("value").forGetter(x -> x.other)
+		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.other)
 	).apply(i, NotPredicateSpec::new));
 	
 	@Override

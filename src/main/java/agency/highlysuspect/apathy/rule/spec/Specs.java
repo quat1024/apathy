@@ -28,6 +28,7 @@ public class Specs {
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("deny_if"), PredicatedRuleSpec.DenyIf.CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("debug"), DebugRuleSpec.CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("difficulty_case"), DifficultyCaseRuleSpec.CODEC);
+		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("evaluate_json_file"), JsonRuleSpec.CODEC);
 		
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Init.id("always"), AlwaysPredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Init.id("attacker_tagged_with"), AttackerTaggedWithPredicateSpec.CODEC);

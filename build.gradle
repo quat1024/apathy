@@ -28,14 +28,6 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
-	// https://www.curseforge.com/minecraft/mc-mods/clojure-lib/files/3034681
-	// tiny-remapper crashes when remapping this jar haha. I don't think it needs to be remapped.
-	//implementation "curse.maven:clojurelib-402772:3034681"
-	//modImplementation "curse.maven:clojurelib-402772:3034681"
-	
-	//Clojure itself
-	//implementation "org.clojure:clojure:1.10.0"
 }
 
 processResources {

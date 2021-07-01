@@ -96,12 +96,6 @@ Few notes:
 
 If every single rule returned `pass`, `fallthrough` controls whether the mob will be allowed to attack. `allow` means they can, `deny` means they can't.
 
-### Clojure
-
-Enable this option to enable the Clojure scripting subsystem. This lets you define rules in the Clojure language. This lets you do things like, define more player-sets, or define one set of rules for Easy and another set for Hard.
-
-More on that in `CLOJURE.md`.
-
 ### Optimization
 
 By default, mobs that are currently attacking a player do not check *every* tick if it's still okay to do so. There's an option to set the interval they'll use instead.

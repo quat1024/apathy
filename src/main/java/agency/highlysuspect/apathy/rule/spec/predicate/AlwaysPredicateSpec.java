@@ -4,8 +4,15 @@ import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class AlwaysPredicateSpec extends PredicateSpec {
-	public AlwaysPredicateSpec(boolean always) {
+public class AlwaysPredicateSpec implements PredicateSpec {
+	public static final AlwaysPredicateSpec TRUE = new AlwaysPredicateSpec(true);
+	public static final AlwaysPredicateSpec FALSE = new AlwaysPredicateSpec(false);
+	
+	public static AlwaysPredicateSpec get(boolean b) {
+		return b ? TRUE : FALSE;
+	}
+	
+	private AlwaysPredicateSpec(boolean always) {
 		this.always = always;
 	}
 	
@@ -13,10 +20,10 @@ public class AlwaysPredicateSpec extends PredicateSpec {
 	
 	public static final Codec<AlwaysPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Codec.BOOL.fieldOf("value").forGetter(x -> x.always)
-	).apply(i, AlwaysPredicateSpec::new));
+	).apply(i, AlwaysPredicateSpec::get));
 	
 	@Override
-	public Partial buildPartial() {
+	public Partial build() {
 		return Partial.always(always);
 	}
 	

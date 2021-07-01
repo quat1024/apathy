@@ -1,10 +1,11 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
+import agency.highlysuspect.apathy.revenge.VengeanceHandler;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class RevengeTimerPredicateSpec extends PredicateSpec {
+public class RevengeTimerPredicateSpec implements PredicateSpec {
 	public RevengeTimerPredicateSpec(long timer) {
 		this.timer = timer;
 	}
@@ -15,8 +16,9 @@ public class RevengeTimerPredicateSpec extends PredicateSpec {
 	).apply(i, RevengeTimerPredicateSpec::new));
 	
 	@Override
-	public Partial buildPartial() {
-		return Partial.revengeTimer(timer);
+	public Partial build() {
+		if(timer > 0)	return (attacker, defender) -> VengeanceHandler.lastAttackedWithin(attacker, timer);
+		else return Partial.ALWAYS_FALSE;
 	}
 	
 	@Override

@@ -3,10 +3,7 @@ package agency.highlysuspect.apathy.config;
 import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.AlwaysSpec;
-import agency.highlysuspect.apathy.rule.spec.ChainSpec;
-import agency.highlysuspect.apathy.rule.spec.PredicatedSpec;
-import agency.highlysuspect.apathy.rule.spec.RuleSpec;
+import agency.highlysuspect.apathy.rule.spec.*;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.GsonBuilder;
@@ -261,7 +258,7 @@ public class MobConfig extends Config {
 		
 		if(nuclearOption) {
 			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
-			ruleSpec = new AlwaysSpec(TriState.FALSE);
+			ruleSpec = new AlwaysRuleSpec(TriState.FALSE);
 			rule = Rule.ALWAYS_DENY;
 			return this;
 		}
@@ -270,36 +267,31 @@ public class MobConfig extends Config {
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
 				case "difficulty":
-					ruleSpecList.add(new PredicatedSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
+					ruleSpecList.add(new PredicatedRuleSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
 					break;
 				case "boss":
-					ruleSpecList.add(new PredicatedSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
+					ruleSpecList.add(new PredicatedRuleSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
 					break;
 				case "mobset":
-					ruleSpecList.add(new PredicatedSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
+					ruleSpecList.add(new PredicatedRuleSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
 					break;
 				case "tagset":
-					ruleSpecList.add(new PredicatedSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
+					ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
 					break;
 				case "playerset":
-					playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
+					playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
 					break;
 				case "revenge":
-					ruleSpecList.add(new PredicatedSpec.AllowIf(new RevengeTimerPredicateSpec(revengeTimer)));
+					ruleSpecList.add(new PredicatedRuleSpec.AllowIf(new RevengeTimerPredicateSpec(revengeTimer)));
 					break;
 				default: Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 			}
 		}
 		
-		if(ruleSpecList.isEmpty()) {
-			ruleSpec = new AlwaysSpec(TriState.DEFAULT);
-		} else if(ruleSpecList.size() == 1) {
-			ruleSpec = ruleSpecList.get(0);
-		} else ruleSpec = new ChainSpec(ruleSpecList);
+		ruleSpec = new ChainRuleSpec(ruleSpecList);
+		rule = ruleSpec.build();
 		
-		rule = ruleSpec.buildRule();
-		
-		DataResult<JsonElement> pee = RuleSpec.SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpec);
+		DataResult<JsonElement> pee = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpec);
 		Init.LOG.info(new GsonBuilder().setPrettyPrinting().create().toJson(pee.result().get()));
 		
 		return this;

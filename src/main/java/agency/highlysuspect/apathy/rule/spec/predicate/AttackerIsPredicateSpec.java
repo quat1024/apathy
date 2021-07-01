@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.rule.spec.predicate;
 
 import agency.highlysuspect.apathy.etc.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
+import agency.highlysuspect.apathy.rule.RuleUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.EntityType;
@@ -9,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Set;
 
-public class AttackerIsPredicateSpec extends PredicateSpec {
+public class AttackerIsPredicateSpec implements PredicateSpec {
 	public AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) {
 		this.mobSet = mobSet;
 	}
@@ -21,8 +22,12 @@ public class AttackerIsPredicateSpec extends PredicateSpec {
 	).apply(i, AttackerIsPredicateSpec::new));
 	
 	@Override
-	public Partial buildPartial() {
-		return Partial.attackerIsAny(mobSet);
+	public Partial build() {
+		return RuleUtil.sizeSpecialize(mobSet,
+			() -> Partial.ALWAYS_FALSE,
+			type -> (attacker, defender) -> attacker.getType().equals(type),
+			set -> (attacker, defender) -> set.contains(attacker.getType())
+		);
 	}
 	
 	@Override

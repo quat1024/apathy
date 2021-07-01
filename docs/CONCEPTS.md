@@ -22,7 +22,6 @@ Rules are evaluated top-to-bottom (in an order you specify) and the first one th
 If you need more control over rules, such as AND/ORing, getting more copies of each rule, or applying radically different rules for each difficulty:
 
 * see the json system (Not implemented)
-* also see the Clojure scripting documentation below.
 
 ## Player sets
 
@@ -31,4 +30,3 @@ A player set is... well, it's a set of players. Each player may either be in the
 The *player set rule* determines what happens when players are in a particular set.
 
 You can choose to make player sets *self-select*, where players can add themselves to the set using `/apathy set join <set name>`. Server operators can add anyone to the set using `/apathy set-admin join <player selector> <set name>`.
-

@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.registry.Registry;
-import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Set;
 

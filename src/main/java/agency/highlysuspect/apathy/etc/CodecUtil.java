@@ -14,14 +14,7 @@ public class CodecUtil {
 	
 	public static <E extends Enum<E>> Codec<E> enumCodec(String errorName, Class<E> classs) {
 		E[] values = classs.getEnumConstants();
-		
-		String errorA = "Unknown " + errorName + " \"";
-		String errorB = "\", must be one of " + Arrays.stream(values).map(e -> "\"" + e.name() + "\"").collect(Collectors.joining(", "));
-		
-		return Codec.STRING.comapFlatMap(s -> {
-			for(E e : values) if(e.name().equals(s)) return DataResult.success(e);
-			return DataResult.error(errorA + s + errorB);
-		}, E::name);
+		return renamedEnumCodec(errorName, classs, Arrays.stream(values).map(e -> e.name().toLowerCase(Locale.ROOT)).toArray(String[]::new));
 	}
 	
 	public static <E extends Enum<E>> Codec<E> renamedEnumCodec(String errorName, Class<E> classs, String... names) {

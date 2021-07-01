@@ -8,7 +8,6 @@ public class Specs {
 	public static void onInitialize() {
 		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("always"), AlwaysSpec.CODEC);
 		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("chain"), ChainSpec.CODEC);
-		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("clojure"), ClojureSpec.CODEC);
 		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("predicated"), PredicatedSpec.CODEC);
 		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("allow_if"), PredicatedSpec.AllowIf.CODEC);
 		Registry.register(RuleSpec.CODEC_REGISTRY, Init.id("deny_if"), PredicatedSpec.DenyIf.CODEC);

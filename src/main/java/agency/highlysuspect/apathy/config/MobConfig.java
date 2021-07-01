@@ -2,12 +2,13 @@ package agency.highlysuspect.apathy.config;
 
 import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.config.annotation.*;
-import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.*;
+import agency.highlysuspect.apathy.rule.spec.AlwaysSpec;
+import agency.highlysuspect.apathy.rule.spec.ChainSpec;
+import agency.highlysuspect.apathy.rule.spec.PredicatedSpec;
+import agency.highlysuspect.apathy.rule.spec.RuleSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.DataResult;
@@ -58,12 +59,12 @@ public class MobConfig extends Config {
 	@Comment({
 		"Which order should the rules in this config file be evaluated in?",
 		"Comma-separated list built out of any or all of the following keywords, in any order:",
-		"clojure, difficulty, boss, mobSet, tagSet, playerSet, revenge"
+		"difficulty, boss, mobSet, tagSet, playerSet, revenge"
 	})
 	@Note("If a rule is not listed in the rule order, it will not be checked.")
 	@Example("difficulty, revenge, playerSet")
 	@Use("stringList")
-	public List<String> ruleOrder = ImmutableList.of("clojure", "difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge");
+	public List<String> ruleOrder = ImmutableList.of("difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge");
 	
 	///////////////////////////
 	@Section("Difficulty Rule")
@@ -268,11 +269,6 @@ public class MobConfig extends Config {
 		ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
 		for(String ruleName : ruleOrder) {
 			switch (ruleName.trim().toLowerCase(Locale.ROOT)) {
-				case "clojure":
-					if(Init.clojureModLoaded && Init.generalConfig.useClojure) {
-						ruleSpecList.add(new ClojureSpec());
-					}
-					break;
 				case "difficulty":
 					ruleSpecList.add(new PredicatedSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
 					break;

@@ -96,10 +96,6 @@ public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState
 	
 	// Builtin rules
 	
-	static Rule clojure() {
-		return (attacker, defender) -> Init.clojureProxy.apply(attacker, defender);
-	}
-	
 	static Rule predicated(Partial partial, TriState ifTrue, TriState ifFalse) {
 		if(ifTrue == ifFalse) return alwaysRule(ifTrue);
 		else if(partial == Partial.ALWAYS_TRUE) return alwaysRule(ifTrue);

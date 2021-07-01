@@ -31,7 +31,7 @@ dependencies {
 	
 	// https://www.curseforge.com/minecraft/mc-mods/clojure-lib/files/3034681
 	// tiny-remapper crashes when remapping this jar haha. I don't think it needs to be remapped.
-	implementation "curse.maven:clojurelib-402772:3034681"
+	//implementation "curse.maven:clojurelib-402772:3034681"
 	//modImplementation "curse.maven:clojurelib-402772:3034681"
 	
 	//Clojure itself

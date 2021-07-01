@@ -14,7 +14,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.BiFunction;
 
 import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.getPlayerSet;

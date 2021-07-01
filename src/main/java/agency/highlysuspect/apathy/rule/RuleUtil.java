@@ -1,11 +1,8 @@
 package agency.highlysuspect.apathy.rule;
 
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 

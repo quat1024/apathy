@@ -10,15 +10,6 @@ public class GeneralConfig extends Config {
 	
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
-	///////////////////
-	@Section("Clojure")
-	///////////////////
-	
-	@Comment({
-		"Enable the Clojure API for configuring the mod. See the README on github for more information."
-	})
-	public boolean useClojure = false; //False by default. Sorry Eutro.
-	
 	////////////////////////
 	@Section("Optimization")
 	////////////////////////

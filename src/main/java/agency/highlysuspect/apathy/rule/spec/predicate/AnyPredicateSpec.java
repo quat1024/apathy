@@ -25,10 +25,10 @@ public class AnyPredicateSpec implements PredicateSpec {
 		Set<PredicateSpec> loweredSpecs = others.stream().map(PredicateSpec::optimize).collect(Collectors.toSet());
 		
 		//If an always-true spec is present, surely this spec is also always true.
-		if(loweredSpecs.stream().anyMatch(predicateSpec -> predicateSpec == AlwaysPredicateSpec.TRUE)) return AlwaysPredicateSpec.TRUE;
+		if(loweredSpecs.stream().anyMatch(pred -> pred == AlwaysPredicateSpec.TRUE)) return AlwaysPredicateSpec.TRUE;
 		
 		//Always-false specs can be ignored.
-		loweredSpecs.removeIf(predicateSpec -> predicateSpec == AlwaysPredicateSpec.FALSE);
+		loweredSpecs.removeIf(pred -> pred == AlwaysPredicateSpec.FALSE);
 		
 		//If there are no specs left, uhh
 		if(loweredSpecs.size() == 0) return AlwaysPredicateSpec.FALSE;

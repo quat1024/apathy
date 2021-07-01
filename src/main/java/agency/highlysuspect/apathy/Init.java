@@ -9,12 +9,11 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.list.PlayerSetManager;
 import agency.highlysuspect.apathy.mixin.MinecraftServerAccessor;
 import agency.highlysuspect.apathy.revenge.VengeanceHandler;
+import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.boss.dragon.EnderDragonFight;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
@@ -56,6 +55,7 @@ public class Init implements ModInitializer {
 		}
 		
 		//Various subsystems
+		Specs.onInitialize();
 		Commands.onInitialize();
 		VengeanceHandler.onInitialize();
 		PlayerSetManager.onInitialize();

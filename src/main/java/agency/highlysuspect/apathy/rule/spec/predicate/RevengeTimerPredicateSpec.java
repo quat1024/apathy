@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.revenge.VengeanceHandler;
+import agency.highlysuspect.apathy.MobEntityExt;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,7 +23,7 @@ public class RevengeTimerPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> VengeanceHandler.lastAttackedWithin(attacker, timer);
+		return (attacker, defender) -> MobEntityExt.cast(attacker).apathy$lastAttackedWithin(timer);
 	}
 	
 	@Override

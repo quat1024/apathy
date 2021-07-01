@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
-import agency.highlysuspect.apathy.revenge.MobEntityExt;
+import agency.highlysuspect.apathy.MobEntityExt;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;

@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.etc;
+package agency.highlysuspect.apathy.rule;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

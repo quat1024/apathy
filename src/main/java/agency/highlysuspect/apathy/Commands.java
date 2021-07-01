@@ -1,8 +1,8 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.list.PlayerSet;
-import agency.highlysuspect.apathy.list.PlayerSetArgumentType;
-import agency.highlysuspect.apathy.list.PlayerSetManager;
+import agency.highlysuspect.apathy.playerset.PlayerSet;
+import agency.highlysuspect.apathy.playerset.PlayerSetArgumentType;
+import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -20,8 +20,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
-import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.getPlayerSet;
-import static agency.highlysuspect.apathy.list.PlayerSetArgumentType.playerSet;
+import static agency.highlysuspect.apathy.playerset.PlayerSetArgumentType.getPlayerSet;
+import static agency.highlysuspect.apathy.playerset.PlayerSetArgumentType.playerSet;
 import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
 import static net.minecraft.command.argument.EntityArgumentType.players;
 import static net.minecraft.server.command.CommandManager.argument;

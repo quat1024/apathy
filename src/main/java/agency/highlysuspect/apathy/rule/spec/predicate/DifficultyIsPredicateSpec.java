@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.etc.CodecUtil;
+import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
-import agency.highlysuspect.apathy.rule.RuleUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.Difficulty;
@@ -28,7 +27,7 @@ public class DifficultyIsPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecializeNotEmpty(difficulties,
+		return PredicateSpec.sizeSpecializeNotEmpty(difficulties,
 			difficulty -> (attacker, defender) -> attacker.world.getDifficulty() == difficulty,
 			set -> (attacker, defender) -> set.contains(attacker.world.getDifficulty())
 		);

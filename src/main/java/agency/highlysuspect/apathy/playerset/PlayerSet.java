@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.list;
+package agency.highlysuspect.apathy.playerset;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

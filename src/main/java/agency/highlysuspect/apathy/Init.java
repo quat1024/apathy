@@ -4,17 +4,18 @@ import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
-import agency.highlysuspect.apathy.list.PlayerSetManager;
+import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import agency.highlysuspect.apathy.mixin.MinecraftServerAccessor;
-import agency.highlysuspect.apathy.revenge.VengeanceHandler;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,6 @@ public class Init implements ModInitializer {
 		Specs.onInitialize();
 		
 		Commands.onInitialize();
-		VengeanceHandler.onInitialize();
 		PlayerSetManager.onInitialize();
 		
 		//Config file stuff
@@ -81,6 +81,14 @@ public class Init implements ModInitializer {
 					LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
 				}
 			}
+		});
+		
+		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+			if(!world.isClient && entity instanceof MobEntityExt) {
+				((MobEntityExt) entity).apathy$provokeNow();
+			}
+			
+			return ActionResult.PASS;
 		});
 	}
 	

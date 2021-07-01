@@ -1,7 +1,6 @@
 # TODO:
 
 * Check that the default config behavior is the same as Apathetic Mobs's default config
-* impl Spirit's JSON concept!
 * Check rule optimizer behavior for things like "mobSet is empty, mobSetExcluded isn't pass"
 * Write tests for the rule optimizer
 

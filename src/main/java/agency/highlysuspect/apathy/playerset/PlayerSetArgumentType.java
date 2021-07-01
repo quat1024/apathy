@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.list;
+package agency.highlysuspect.apathy.playerset;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;

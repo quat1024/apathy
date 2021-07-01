@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.list;
+package agency.highlysuspect.apathy.playerset;
 
 import agency.highlysuspect.apathy.Init;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;

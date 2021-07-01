@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.etc.CodecUtil;
+import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
-import agency.highlysuspect.apathy.rule.RuleUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.EntityType;
@@ -32,7 +31,7 @@ public class AttackerTaggedWithPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecializeNotEmpty(tags,
+		return PredicateSpec.sizeSpecializeNotEmpty(tags,
 			tag -> (attacker, defender) -> tag.contains(attacker.getType()),
 			set -> (attacker, defender) -> {
 				for(Tag<EntityType<?>> tag : set) {

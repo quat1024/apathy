@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.etc.CodecUtil;
+import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import com.mojang.serialization.Codec;

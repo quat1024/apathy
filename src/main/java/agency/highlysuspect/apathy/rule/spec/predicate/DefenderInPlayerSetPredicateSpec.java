@@ -1,10 +1,9 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.etc.CodecUtil;
-import agency.highlysuspect.apathy.list.PlayerSet;
-import agency.highlysuspect.apathy.list.PlayerSetManager;
+import agency.highlysuspect.apathy.rule.CodecUtil;
+import agency.highlysuspect.apathy.playerset.PlayerSet;
+import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import agency.highlysuspect.apathy.rule.Partial;
-import agency.highlysuspect.apathy.rule.RuleUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.MinecraftServer;
@@ -30,7 +29,7 @@ public class DefenderInPlayerSetPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return RuleUtil.sizeSpecializeNotEmpty(playerSetNames,
+		return PredicateSpec.sizeSpecializeNotEmpty(playerSetNames,
 			playerSetName -> (attacker, defender) -> {
 				MinecraftServer server = defender.getServer();
 				assert server != null; //it's a ServerPlayerEntity

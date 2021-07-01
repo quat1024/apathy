@@ -7,5 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(MinecraftServer.class)
 public interface MinecraftServerAccessor {
+	//Fairly unimportant mixin, but needed for the /apathy reload command, pretty sure.
 	@Accessor("serverResourceManager") ServerResourceManager apathy$getServerResourceManager();
 }

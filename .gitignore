@@ -31,3 +31,7 @@ bin/
 # fabric
 
 run/
+
+# Oh my godddd kritaaaaaaa stopppppp
+*.kra-autosave
+*.kra~

@@ -8,12 +8,7 @@ import net.minecraft.world.Difficulty;
 
 import java.util.Set;
 
-public class DifficultyIsPredicateSpec implements PredicateSpec {
-	public DifficultyIsPredicateSpec(Set<Difficulty> difficulties) {
-		this.difficulties = difficulties;
-	}
-	
-	private final Set<Difficulty> difficulties;
+public record DifficultyIsPredicateSpec(Set<Difficulty> difficulties) implements PredicateSpec {
 	
 	public static final Codec<DifficultyIsPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(CodecUtil.DIFFICULTY).fieldOf("difficulties").forGetter(x -> x.difficulties)

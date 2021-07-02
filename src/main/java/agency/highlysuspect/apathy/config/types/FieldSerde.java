@@ -20,7 +20,7 @@ public interface FieldSerde<T> {
 	default <U> FieldSerde<U> dimap(Function<T, U> into, Function<U, T> from) {
 		FieldSerde<T> me = this;
 		
-		return new FieldSerde<U>() {
+		return new FieldSerde<>() {
 			@Override
 			public String write(Field targetField, U value) {
 				return me.write(targetField, from.apply(value));
@@ -36,7 +36,7 @@ public interface FieldSerde<T> {
 	default FieldSerde<Set<T>> commaSeparatedSet(Comparator<T> sorter) {
 		FieldSerde<T> me = this;
 		
-		return new FieldSerde<Set<T>>() {
+		return new FieldSerde<>() {
 			@Override
 			public String write(Field targetField, Set<T> value) {
 				if(value == null) value = Collections.emptySet();
@@ -66,7 +66,7 @@ public interface FieldSerde<T> {
 	default FieldSerde<List<T>> commaSeparatedList() {
 		FieldSerde<T> me = this;
 		
-		return new FieldSerde<List<T>>() {
+		return new FieldSerde<>() {
 			@Override
 			public String write(Field targetField, List<T> value) {
 				StringBuilder bob = new StringBuilder();
@@ -91,7 +91,7 @@ public interface FieldSerde<T> {
 	default FieldSerde<Optional<T>> optional() {
 		FieldSerde<T> me = this;
 		
-		return new FieldSerde<Optional<T>>() {
+		return new FieldSerde<>() {
 			@Override
 			public String write(Field targetField, Optional<T> value) {
 				if(value.isPresent()) return me.write(targetField, value.get());

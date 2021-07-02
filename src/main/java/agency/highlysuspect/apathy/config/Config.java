@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public abstract class Config implements Opcodes {
 	protected Config() {
 		path = null;

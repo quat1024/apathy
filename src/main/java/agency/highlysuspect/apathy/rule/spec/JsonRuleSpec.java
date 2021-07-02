@@ -5,7 +5,7 @@ import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.util.TriState;
 
-public class JsonRuleSpec implements RuleSpec {
+public record JsonRuleSpec() implements RuleSpec {
 	public static final JsonRuleSpec INSTANCE = new JsonRuleSpec();
 	public static final Codec<JsonRuleSpec> CODEC = Codec.unit(INSTANCE);
 	

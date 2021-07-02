@@ -23,9 +23,9 @@ public class Specs {
 	public static void onInitialize() {
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("always"), AlwaysRuleSpec.CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("chain"), ChainRuleSpec.CODEC);
-		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("predicated"), PredicatedRuleSpec.CODEC);
-		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("allow_if"), PredicatedRuleSpec.AllowIf.CODEC);
-		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("deny_if"), PredicatedRuleSpec.DenyIf.CODEC);
+		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("predicated"), PredicatedRuleSpec.PREDICATED_CODEC);
+		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("allow_if"), PredicatedRuleSpec.ALLOW_IF_CODEC);
+		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("deny_if"), PredicatedRuleSpec.DENY_IF_CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("debug"), DebugRuleSpec.CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("difficulty_case"), DifficultyCaseRuleSpec.CODEC);
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("evaluate_json_file"), JsonRuleSpec.CODEC);

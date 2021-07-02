@@ -9,13 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ChainRuleSpec implements RuleSpec {
-	public ChainRuleSpec(List<RuleSpec> rules) {
-		this.rules = rules;
-	}
-	
-	private final List<RuleSpec> rules;
-	
+public record ChainRuleSpec(List<RuleSpec> rules) implements RuleSpec {
 	public static final Codec<ChainRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.RULE_SPEC_CODEC.listOf().fieldOf("rules").forGetter(x -> x.rules)
 	).apply(i, ChainRuleSpec::new));

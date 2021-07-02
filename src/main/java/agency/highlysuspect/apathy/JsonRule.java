@@ -76,9 +76,8 @@ public class JsonRule {
 			
 			DataResult<JsonElement> jsonResult = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, spec);
 			JsonElement json = jsonResult.getOrThrow(false, Init.LOG::error);
-			byte[] yes = GSON.toJson(json).getBytes(StandardCharsets.UTF_8);
 			
-			Files.write(outPath, yes);
+			Files.writeString(outPath, GSON.toJson(json));
 		} catch (Exception e) {
 			Init.LOG.error("Problem dumping rule to " + filename, e);
 		}

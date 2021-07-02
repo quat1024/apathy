@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+@SuppressWarnings("SameParameterValue")
 @Mixin(EnderDragonFight.class)
 public abstract class EnderDragonFightMixin {
 	//@Shadow @Final private static Logger LOGGER;

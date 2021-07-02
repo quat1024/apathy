@@ -31,6 +31,7 @@ import static net.minecraft.command.argument.EntityArgumentType.players;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
+@SuppressWarnings("SameReturnValue")
 public class Commands {
 	public static void onInitialize() {
 		Commands.registerArgumentTypes();

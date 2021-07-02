@@ -21,12 +21,12 @@ public class TriStateField {
 		
 		@Override
 		public String write(Field targetField, TriState value) {
-			switch(value) {
-				case TRUE: return "allow";
-				case FALSE: return "deny";
-				case DEFAULT: return "pass";
-				default: throw new IllegalStateException("how'd you fit four states in a TriState?");
-			}
+			return switch(value) {
+				case TRUE -> "allow";
+				case FALSE -> "deny";
+				case DEFAULT -> "pass";
+				default -> throw new IllegalStateException("how'd you fit four states in a TriState?");
+			};
 		}
 	}
 }

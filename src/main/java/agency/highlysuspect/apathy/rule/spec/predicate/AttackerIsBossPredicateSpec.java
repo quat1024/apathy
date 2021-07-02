@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.Tag;
 
-public class AttackerIsBossPredicateSpec implements PredicateSpec {
+public record AttackerIsBossPredicateSpec() implements PredicateSpec {
 	public static final AttackerIsBossPredicateSpec INSTANCE = new AttackerIsBossPredicateSpec();
 	public static final Codec<AttackerIsBossPredicateSpec> CODEC = Codec.unit(INSTANCE);
 	

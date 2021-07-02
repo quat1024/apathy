@@ -4,8 +4,9 @@ import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Section;
 
+@SuppressWarnings("CanBeFinal")
 public class BossConfig extends Config {
-	protected static int CURRENT_CONFIG_VERSION = 0;
+	protected static final int CURRENT_CONFIG_VERSION = 0;
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////

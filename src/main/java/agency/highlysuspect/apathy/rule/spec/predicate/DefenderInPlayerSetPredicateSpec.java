@@ -10,13 +10,7 @@ import net.minecraft.server.MinecraftServer;
 
 import java.util.Set;
 
-public class DefenderInPlayerSetPredicateSpec implements PredicateSpec {
-	public DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) {
-		this.playerSetNames = playerSetNames;
-	}
-	
-	private final Set<String> playerSetNames;
-	
+public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) implements PredicateSpec {
 	public static final Codec<DefenderInPlayerSetPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(Codec.STRING).fieldOf("player_sets").forGetter(x -> x.playerSetNames)
 	).apply(i, DefenderInPlayerSetPredicateSpec::new));

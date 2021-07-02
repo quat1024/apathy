@@ -11,13 +11,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Set;
 
-public class AttackerTaggedWithPredicateSpec implements PredicateSpec {
-	public AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) {
-		this.tags = tags;
-	}
-	
-	private final Set<Tag<EntityType<?>>> tags;
-	
+public record AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) implements PredicateSpec {
 	public static final Codec<AttackerTaggedWithPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(
 			Tag.codec(() -> ServerTagManagerHolder.getTagManager().getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY))

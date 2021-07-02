@@ -6,15 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 
-public class DebugRuleSpec implements RuleSpec {
-	public DebugRuleSpec(RuleSpec rule, String message) {
-		this.rule = rule;
-		this.message = message;
-	}
-	
-	private final RuleSpec rule;
-	private final String message;
-	
+public record DebugRuleSpec(RuleSpec rule, String message) implements RuleSpec {
 	public static final Codec<DebugRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.RULE_SPEC_CODEC.fieldOf("rule").forGetter(x -> x.rule),
 		Codec.STRING.fieldOf("message").forGetter(x -> x.message)
@@ -38,12 +30,11 @@ public class DebugRuleSpec implements RuleSpec {
 	}
 	
 	private static String showTriState(TriState state) {
-		switch(state) {
-			case FALSE: return "deny";
-			case DEFAULT: return "pass";
-			case TRUE: return "allow";
-			default: throw new IllegalStateException(state.toString());
-		}
+		return switch(state) {
+			case FALSE -> "deny";
+			case DEFAULT -> "pass";
+			case TRUE -> "allow";
+		};
 	}
 	
 	@Override

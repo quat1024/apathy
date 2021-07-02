@@ -5,12 +5,7 @@ import agency.highlysuspect.apathy.rule.spec.Specs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public class NotPredicateSpec implements PredicateSpec {
-	public NotPredicateSpec(PredicateSpec other) {
-		this.other = other;
-	}
-	
-	private final PredicateSpec other;
+public record NotPredicateSpec(PredicateSpec other) implements PredicateSpec {
 	
 	public static final Codec<NotPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.other)

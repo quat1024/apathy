@@ -9,13 +9,7 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.Set;
 
-public class AttackerIsPredicateSpec implements PredicateSpec {
-	public AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) {
-		this.mobSet = mobSet;
-	}
-	
-	private final Set<EntityType<?>> mobSet;
-	
+public record AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) implements PredicateSpec {
 	public static final Codec<AttackerIsPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(Registry.ENTITY_TYPE).fieldOf("mobs").forGetter(x -> x.mobSet)
 	).apply(i, AttackerIsPredicateSpec::new));

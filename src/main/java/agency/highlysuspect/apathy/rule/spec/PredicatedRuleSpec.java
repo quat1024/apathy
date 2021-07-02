@@ -9,22 +9,32 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 
-public class PredicatedRuleSpec implements RuleSpec {
+public record PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpec predSpec, Codec<PredicatedRuleSpec> theCodec) implements RuleSpec {
 	public PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpec predSpec) {
-		this.ifTrue = ifTrue;
-		this.ifFalse = ifFalse;
-		this.predSpec = predSpec;
+		this(ifTrue, ifFalse, predSpec, PREDICATED_CODEC);
 	}
 	
-	private final TriState ifTrue;
-	private final TriState ifFalse;
-	protected final PredicateSpec predSpec;
+	public static PredicatedRuleSpec allowIf(PredicateSpec spec) {
+		return new PredicatedRuleSpec(TriState.TRUE, TriState.DEFAULT, spec, ALLOW_IF_CODEC);
+	}
 	
-	public static final Codec<PredicatedRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
+	public static PredicatedRuleSpec denyIf(PredicateSpec spec) {
+		return new PredicatedRuleSpec(TriState.FALSE, TriState.DEFAULT, spec, DENY_IF_CODEC);
+	}
+	
+	public static final Codec<PredicatedRuleSpec> PREDICATED_CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.TRISTATE_ALLOW_DENY_PASS.optionalFieldOf("if_true", TriState.DEFAULT).forGetter(x -> x.ifTrue),
 		CodecUtil.TRISTATE_ALLOW_DENY_PASS.optionalFieldOf("if_false", TriState.DEFAULT).forGetter(x -> x.ifFalse),
 		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
 	).apply(i, PredicatedRuleSpec::new));
+	
+	public static final Codec<PredicatedRuleSpec> ALLOW_IF_CODEC = RecordCodecBuilder.create(i -> i.group(
+		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
+	).apply(i, PredicatedRuleSpec::allowIf));
+	
+	public static final Codec<PredicatedRuleSpec> DENY_IF_CODEC = RecordCodecBuilder.create(i -> i.group(
+		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
+	).apply(i, PredicatedRuleSpec::denyIf));
 	
 	@Override
 	public RuleSpec optimize() {
@@ -35,7 +45,14 @@ public class PredicatedRuleSpec implements RuleSpec {
 		if(predSpec == AlwaysPredicateSpec.TRUE) return AlwaysRuleSpec.always(ifTrue);
 		if(predSpec == AlwaysPredicateSpec.FALSE) return AlwaysRuleSpec.always(ifFalse);
 		
-		return new PredicatedRuleSpec(ifTrue, ifFalse, predSpecOpt);
+		//Try to use an ifTrue/ifFalse codec if at all possible
+		Codec<PredicatedRuleSpec> newCodec = PREDICATED_CODEC;
+		if(ifFalse == TriState.DEFAULT) {
+			if(ifTrue == TriState.TRUE) newCodec = ALLOW_IF_CODEC;
+			if(ifTrue == TriState.FALSE) newCodec = DENY_IF_CODEC;
+		}
+		
+		return new PredicatedRuleSpec(ifTrue, ifFalse, predSpecOpt, newCodec);
 	}
 	
 	@Override
@@ -46,36 +63,6 @@ public class PredicatedRuleSpec implements RuleSpec {
 	
 	@Override
 	public Codec<? extends RuleSpec> codec() {
-		return CODEC;
-	}
-	
-	public static class AllowIf extends PredicatedRuleSpec {
-		public AllowIf(PredicateSpec predSpec) {
-			super(TriState.TRUE, TriState.DEFAULT, predSpec);
-		}
-		
-		public static final Codec<AllowIf> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
-		).apply(i, AllowIf::new));
-		
-		@Override
-		public Codec<? extends RuleSpec> codec() {
-			return CODEC;
-		}
-	}
-	
-	public static class DenyIf extends PredicatedRuleSpec {
-		public DenyIf(PredicateSpec predSpec) {
-			super(TriState.FALSE, TriState.DEFAULT, predSpec);
-		}
-		
-		public static final Codec<DenyIf> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
-		).apply(i, DenyIf::new));
-		
-		@Override
-		public Codec<? extends RuleSpec> codec() {
-			return CODEC;
-		}
+		return theCodec;
 	}
 }

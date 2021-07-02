@@ -9,13 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class AllPredicateSpec implements PredicateSpec {
-	public AllPredicateSpec(Set<PredicateSpec> others) {
-		this.others = others;
-	}
-	
-	private final Set<PredicateSpec> others;
-	
+public record AllPredicateSpec(Set<PredicateSpec> others) implements PredicateSpec {
 	public static final Codec<AllPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(Specs.PREDICATE_SPEC_CODEC).fieldOf("predicates").forGetter(x -> x.others)
 	).apply(i, AllPredicateSpec::new));

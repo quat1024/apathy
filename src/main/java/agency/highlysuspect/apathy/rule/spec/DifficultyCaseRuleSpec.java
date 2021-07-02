@@ -11,13 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class DifficultyCaseRuleSpec implements RuleSpec {
-	public DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec> ruleSpecs) {
-		this.ruleSpecs = ruleSpecs;
-	}
-	
-	private final Map<Difficulty, RuleSpec> ruleSpecs;
-	
+public record DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec> ruleSpecs) implements RuleSpec {
 	//Doesn't seem to work
 	//public static final Codec<DifficultyCaseRuleSpec> CODEC = Codec.unboundedMap(CodecUtil.DIFFICULTY, Specs.RULE_SPEC_CODEC).xmap(DifficultyCaseRuleSpec::new, x -> x.ruleSpecs);
 	
@@ -36,7 +30,7 @@ public class DifficultyCaseRuleSpec implements RuleSpec {
 		Map<Difficulty, Rule> built = new EnumMap<>(Difficulty.class);
 		ruleSpecs.forEach((difficulty, ruleSpec) -> built.put(difficulty, ruleSpec.build()));
 		
-		return (attacker, defender) -> built.getOrDefault(attacker.world.getDifficulty(), alwaysPasses).apply(attacker, defender); 
+		return (attacker, defender) -> built.getOrDefault(attacker.world.getDifficulty(), alwaysPasses).apply(attacker, defender);
 	}
 	
 	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;

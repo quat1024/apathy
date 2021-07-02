@@ -16,9 +16,9 @@ import net.minecraft.world.Difficulty;
 
 import java.util.*;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+@SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "CanBeFinal"})
 public class MobConfig extends Config {
-	protected static int CURRENT_CONFIG_VERSION = 0;
+	protected static final int CURRENT_CONFIG_VERSION = 0;
 	
 	protected transient RuleSpec ruleSpec;
 	protected transient Rule rule;

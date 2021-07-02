@@ -4,8 +4,9 @@ import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Section;
 
+@SuppressWarnings("CanBeFinal")
 public class BossConfig extends Config {
-	protected static int CURRENT_CONFIG_VERSION = 0;
+	protected static final int CURRENT_CONFIG_VERSION = 0;
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////
@@ -26,7 +27,7 @@ public class BossConfig extends Config {
 		"charge_player is the one where she tries to fly into you.",
 		"If 'false', she will perform the 'landing_approach' action instead, which will cause her to perch on the portal."
 	})
-	public boolean dragonFlies = true;
+	public final boolean dragonFlies = true;
 	
 	@Comment({
 		"Can the Dragon perform the 'sitting_flaming' or 'sitting_attacking' actions?",
@@ -34,13 +35,13 @@ public class BossConfig extends Config {
 		"sitting_attacking is when she roars at you.",
 		"If 'false', she will perform the 'sitting_scanning' action instead, which will soon lead to her leaving her perch."
 	})
-	public boolean dragonSits = true;
+	public final boolean dragonSits = true;
 	
 	@Comment("Does the Dragon deal contact damage?")
-	public boolean dragonDamage = true;
+	public final boolean dragonDamage = true;
 	
 	@Comment("Does the Dragon knock back nearby entities, and damage them while she's sitting?")
-	public boolean dragonKnockback = true;
+	public final boolean dragonKnockback = true;
 	
 	//////////////////
 	@Section("Wither")
@@ -53,17 +54,17 @@ public class BossConfig extends Config {
 	public boolean noWither;
 	
 	@Comment("Is the Wither allowed to intentionally target players?")
-	public boolean witherTargetsPlayers = true;
+	public final boolean witherTargetsPlayers = true;
 	
 	@Comment("Is the Wither allowed to intentionally target non-players?")
-	public boolean witherTargetsMobs = true;
+	public final boolean witherTargetsMobs = true;
 	
 	@Comment("Can the Wither fire black wither skulls?")
-	public boolean blackWitherSkulls = true;
+	public final boolean blackWitherSkulls = true;
 	
 	@Comment("Can the Wither fire blue ('charged') wither skulls on Normal and Hard difficulty?")
-	public boolean blueWitherSkulls = true;
+	public final boolean blueWitherSkulls = true;
 	
 	@Comment("Does the Wither break nearby blocks after it gets damaged?")
-	public boolean witherBreaksBlocks = true;
+	public final boolean witherBreaksBlocks = true;
 }

@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy.playerset;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -65,11 +65,11 @@ public class PlayerSet {
 		return new TranslatableText(selfSelect ? "apathy.set.show.selfSelect" : "apathy.set.show.notSelfSelect", name);
 	}
 	
-	public static PlayerSet fromTag(PlayerSetManager owner, String name, CompoundTag tag) {
+	public static PlayerSet fromTag(PlayerSetManager owner, String name, NbtCompound tag) {
 		HashSet<UUID> members = new HashSet<>();
 		
-		ListTag memberList = tag.getList("Members", 11);
-		for(Tag value : memberList) {
+		NbtList memberList = tag.getList("Members", 11);
+		for(NbtElement value : memberList) {
 			members.add(NbtHelper.toUuid(value));
 		}
 		
@@ -78,10 +78,10 @@ public class PlayerSet {
 		return new PlayerSet(owner, members, name, selfSelect);
 	}
 	
-	public CompoundTag toTag() {
-		CompoundTag tag = new CompoundTag();
+	public NbtCompound toTag() {
+		NbtCompound tag = new NbtCompound();
 		
-		ListTag memberList = new ListTag();
+		NbtList memberList = new NbtList();
 		for(UUID uuid : members) {
 			memberList.add(NbtHelper.fromUuid(uuid));
 		}

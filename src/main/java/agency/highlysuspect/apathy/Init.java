@@ -104,7 +104,7 @@ public class Init implements ModInitializer {
 			}
 			
 			@Override
-			public void apply(ResourceManager manager) {
+			public void reload(ResourceManager manager) {
 				funny.accept(manager);
 			}
 		});

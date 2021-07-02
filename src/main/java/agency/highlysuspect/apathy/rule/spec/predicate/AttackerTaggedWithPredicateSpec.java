@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.registry.Registry;
 
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class AttackerTaggedWithPredicateSpec implements PredicateSpec {
 	
 	public static final Codec<AttackerTaggedWithPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(
-			Tag.codec(() -> ServerTagManagerHolder.getTagManager().getEntityTypes())
+			Tag.codec(() -> ServerTagManagerHolder.getTagManager().getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY))
 		).fieldOf("tags").forGetter(x -> x.tags)
 	).apply(i, AttackerTaggedWithPredicateSpec::new));
 	

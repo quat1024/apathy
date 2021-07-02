@@ -2,7 +2,7 @@ package agency.highlysuspect.apathy.playerset;
 
 import agency.highlysuspect.apathy.Init;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
@@ -14,17 +14,32 @@ import java.util.stream.Collectors;
 
 public class PlayerSetManager extends PersistentState {
 	public PlayerSetManager() {
-		super(KEY);
+		this.playerSets = new ConcurrentHashMap<>();
 	}
 	
-	public static final String KEY = "apathy-player-sets";
+	public PlayerSetManager(Map<String, PlayerSet> playerSets) {
+		this();
+		this.playerSets.putAll(playerSets);
+	}
+	
+	public PlayerSetManager(NbtCompound tag) {
+		this();
+		NbtCompound allSets = tag.getCompound("PlayerSets");
+		for(String name : allSets.getKeys()) {
+			playerSets.put(name, PlayerSet.fromTag(this, name, allSets.getCompound(name)));
+		}
+	}
 	
 	public static PlayerSetManager getFor(MinecraftServer server) {
-		return server.getOverworld().getPersistentStateManager().getOrCreate(PlayerSetManager::new, KEY);
+		return server.getOverworld().getPersistentStateManager().getOrCreate(
+			PlayerSetManager::new, //Nbt constructor
+			PlayerSetManager::new, //Default constructor
+			"apathy-player-sets"
+		);
 	}
 	
 	//Idk if it needs to be a concurrent map really but.... okay
-	private final ConcurrentHashMap<String, PlayerSet> playerSets = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, PlayerSet> playerSets;
 	
 	public boolean hasSet(String name) {
 		return playerSets.containsKey(name);
@@ -68,24 +83,14 @@ public class PlayerSetManager extends PersistentState {
 	}
 	
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		CompoundTag allSets = new CompoundTag();
+	public NbtCompound writeNbt(NbtCompound tag) {
+		NbtCompound allSets = new NbtCompound();
 		for(Map.Entry<String, PlayerSet> entry : playerSets.entrySet()) {
 			allSets.put(entry.getKey(), entry.getValue().toTag());
 		}
 		tag.put("PlayerSets", allSets);
 		
 		return tag;
-	}
-	
-	@Override
-	public void fromTag(CompoundTag tag) {
-		playerSets.clear();
-		
-		CompoundTag allSets = tag.getCompound("PlayerSets");
-		for(String name : allSets.getKeys()) {
-			playerSets.put(name, PlayerSet.fromTag(this, name, allSets.getCompound(name)));
-		}
 	}
 	
 	public static void onInitialize() {

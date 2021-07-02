@@ -30,7 +30,7 @@ public class WitherEntityMixin {
 		}
 	}
 	
-	@Inject(method = "method_6877", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
 	private void noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
 		if((!charged && !Init.bossConfig.blackWitherSkulls) || (charged && !Init.bossConfig.blueWitherSkulls)) {
 			ci.cancel();

@@ -4,7 +4,7 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.MobEntityExt;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +34,7 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.world.getTime() + thi$.getEntityId()) % Init.generalConfig.recheckInterval == 0
+		if((thi$.world.getTime() + thi$.getId()) % Init.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayerEntity
 			&& !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
 			target = null;
@@ -64,15 +64,15 @@ public class MobEntityMixin implements MobEntityExt {
 		return provocationTime != NOT_PROVOKED;
 	}
 	
-	@Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
+	@Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
+	public void whenSaving(NbtCompound tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
 	}
 	
-	@Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-	public void whenLoading(CompoundTag tag, CallbackInfo ci) {
+	@Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+	public void whenLoading(NbtCompound tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);
 		} else {

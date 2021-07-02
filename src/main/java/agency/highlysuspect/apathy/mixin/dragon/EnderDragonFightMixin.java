@@ -11,7 +11,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonSpawnState;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
@@ -67,7 +67,7 @@ public abstract class EnderDragonFightMixin {
 	@Unique private static final String APATHY_GATEWAYTIMER = "apathy-gateway-timer";
 	
 	@Inject(method = "<init>", at = @At("TAIL"))
-	void onInit(ServerWorld world, long l, CompoundTag tag, CallbackInfo ci) {
+	void onInit(ServerWorld world, long l, NbtCompound tag, CallbackInfo ci) {
 		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
 		if(tag.contains(APATHY_GATEWAYTIMER)) {
 			gatewayTimer = tag.getInt(APATHY_GATEWAYTIMER);
@@ -83,9 +83,9 @@ public abstract class EnderDragonFightMixin {
 		}
 	}
 	
-	@Inject(method = "toTag", at = @At(value = "RETURN"))
-	void whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
-		CompoundTag tag = cir.getReturnValue();
+	@Inject(method = "toNbt", at = @At(value = "RETURN"))
+	void whenTagging(CallbackInfoReturnable<NbtCompound> cir) {
+		NbtCompound tag = cir.getReturnValue();
 		
 		tag.putBoolean(APATHY_CREATEDPORTAL, createdApathyPortal);
 		tag.putInt(APATHY_GATEWAYTIMER, gatewayTimer);
@@ -101,7 +101,7 @@ public abstract class EnderDragonFightMixin {
 			this.bossBar.setVisible(false);
 			
 			for(EnderDragonEntity dragon : world.getAliveEnderDragons()) {
-				dragon.remove();
+				dragon.discard();
 			}
 			
 			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
@@ -192,7 +192,7 @@ public abstract class EnderDragonFightMixin {
 			for(EndCrystalEntity crystal : this.world.getNonSpectatingEntities(EndCrystalEntity.class, new Box(oneAboveThat.offset(d, 2)))) {
 				crystal.setBeamTarget(null);
 				world.createExplosion(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.DestructionType.NONE);
-				crystal.remove();
+				crystal.discard();
 			}
 		}
 		

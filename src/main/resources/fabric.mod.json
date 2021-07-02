@@ -14,7 +14,7 @@
   },
 
   "license": "LGPL-3.0-or-later",
-  "icon": "assets/apathy/icon.png",
+  "icon": "assets/apathy/icon-128.png",
 
   "environment": "*",
   "entrypoints": {

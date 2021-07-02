@@ -1,6 +1,6 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.16.
+Overconfigurable port/rewrite of Apathetic Mobs for Fabric 1.17.
 
 # quat, this config file is too long. How do I ______?
 

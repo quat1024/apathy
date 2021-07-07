@@ -5,8 +5,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,8 +61,8 @@ public class PlayerSet {
 		return name;
 	}
 	
-	public Text toText() {
-		return new TranslatableText(selfSelect ? "apathy.set.show.selfSelect" : "apathy.set.show.notSelfSelect", name);
+	public Text toLiteralText() {
+		return new LiteralText(String.format(selfSelect ? "%s (self-select)" : "%s", name));
 	}
 	
 	public static PlayerSet fromTag(PlayerSetManager owner, String name, CompoundTag tag) {

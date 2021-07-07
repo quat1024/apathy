@@ -1,5 +1,5 @@
 {
-	"apathy.commands.arg.notSet": "No set named %s.",
+	"apathy.commands.error.noSet": "No set named %s.",
 	"apathy.commands.set.notSelfSelect": "Set %s is not a self-select set, use /apathy set-admin.",
 	"apathy.commands.set.joinSuccess": "%s joined set %s.",
 	"apathy.commands.set.alreadyInSet": "%s already joined set %s.",

@@ -1,14 +1,20 @@
 package agency.highlysuspect.apathy.playerset;
 
 import agency.highlysuspect.apathy.Init;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.PersistentState;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -21,6 +27,10 @@ public class PlayerSetManager extends PersistentState {
 	
 	public static PlayerSetManager getFor(MinecraftServer server) {
 		return server.getOverworld().getPersistentStateManager().getOrCreate(PlayerSetManager::new, KEY);
+	}
+	
+	public static PlayerSetManager getFor(CommandContext<ServerCommandSource> cmdCtx) {
+		return getFor(cmdCtx.getSource().getMinecraftServer());
 	}
 	
 	//Idk if it needs to be a concurrent map really but.... okay
@@ -96,5 +106,20 @@ public class PlayerSetManager extends PersistentState {
 				else mgr.createSet(s, Init.mobConfig.playerSetSelfSelect);
 			});
 		});
+	}
+	
+	public static CompletableFuture<Suggestions> suggestSelfSelectPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+		PlayerSetManager setManager = getFor(context);
+		return CommandSource.suggestMatching(setManager.allSets().stream()
+			.filter(PlayerSet::isSelfSelect)
+			.map(PlayerSet::getName)
+			.collect(Collectors.toList()), builder);
+	}
+	
+	public static CompletableFuture<Suggestions> suggestAllPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+		PlayerSetManager setManager = getFor(context);
+		return CommandSource.suggestMatching(setManager.allSets().stream()
+			.map(PlayerSet::getName)
+			.collect(Collectors.toList()), builder);
 	}
 }

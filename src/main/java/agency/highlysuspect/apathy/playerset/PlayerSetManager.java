@@ -45,7 +45,7 @@ public class PlayerSetManager extends PersistentState {
 	}
 	
 	public static PlayerSetManager getFor(CommandContext<ServerCommandSource> cmdCtx) {
-		return getFor(cmdCtx.getSource().getServer());
+		return getFor(cmdCtx.getSource().getMinecraftServer());
 	}
 	
 	//Idk if it needs to be a concurrent map really but.... okay

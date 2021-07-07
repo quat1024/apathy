@@ -26,7 +26,7 @@ public class PlayerSetArgumentType implements ArgumentType<String> {
 	
 	public static PlayerSet getPlayerSet(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		String setName = context.getArgument(name, String.class);
-		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getServer());
 		PlayerSet set = setManager.get(setName);
 		if(set == null) {
 			throw new SimpleCommandExceptionType(new TranslatableText("apathy.commands.arg.notSet", setName)).create();
@@ -34,7 +34,7 @@ public class PlayerSetArgumentType implements ArgumentType<String> {
 	}
 	
 	public static CompletableFuture<Suggestions> suggestSelfSelectPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getServer());
 		return CommandSource.suggestMatching(setManager.allSets().stream()
 			.filter(PlayerSet::isSelfSelect)
 			.map(PlayerSet::getName)
@@ -42,7 +42,7 @@ public class PlayerSetArgumentType implements ArgumentType<String> {
 	}
 	
 	public static CompletableFuture<Suggestions> suggestAllPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(context.getSource().getServer());
 		return CommandSource.suggestMatching(setManager.allSets().stream()
 			.map(PlayerSet::getName)
 			.collect(Collectors.toList()), builder);

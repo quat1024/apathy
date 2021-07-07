@@ -122,7 +122,7 @@ public class Commands {
 	}
 	
 	private static int showSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getServer());
 		
 		if(setManager.isEmpty()) {
 			cmd.getSource().sendError(new TranslatableText("apathy.commands.set.available.none"));
@@ -147,13 +147,13 @@ public class Commands {
 	}
 	
 	private static int showAll(CommandContext<ServerCommandSource> cmd) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getServer());
 		
 		if(setManager.isEmpty()) {
 			cmd.getSource().sendError(new TranslatableText("apathy.commands.show-all.none"));
 		} else {
 			cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.show-all.list", Texts.join(setManager.allSets(), PlayerSet::toText)), false);
-			PlayerManager mgr = cmd.getSource().getMinecraftServer().getPlayerManager();
+			PlayerManager mgr = cmd.getSource().getServer().getPlayerManager();
 			
 			for(PlayerSet set : setManager.allSets()) {
 				cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.show-all.set", set.getName(), set.members().size()), false);
@@ -170,7 +170,7 @@ public class Commands {
 	}
 	
 	private static int createSet(CommandContext<ServerCommandSource> cmd, String name, boolean selfSelect) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getServer());
 		if(setManager.hasSet(name)) {
 			cmd.getSource().sendError(new TranslatableText("apathy.commands.add.fail.already-exists", name));
 			return 0;
@@ -195,7 +195,7 @@ public class Commands {
 	}
 	
 	private static int deleteSet(CommandContext<ServerCommandSource> cmd, PlayerSet set) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getMinecraftServer());
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd.getSource().getServer());
 		
 		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
 		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
@@ -214,7 +214,7 @@ public class Commands {
 	}
 	
 	private static int reloadNow(CommandContext<ServerCommandSource> cmd) {
-		Init.reloadNow(cmd.getSource().getMinecraftServer());
+		Init.reloadNow(cmd.getSource().getServer());
 		cmd.getSource().sendFeedback(new TranslatableText("apathy.commands.reload"), true);
 		return 0;
 	}

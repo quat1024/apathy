@@ -10,5 +10,4 @@ public interface RuleSpec {
 	
 	Rule build();
 	Codec<? extends RuleSpec> codec();
-	
 }

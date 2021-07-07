@@ -17,11 +17,6 @@ public class PlayerSetManager extends PersistentState {
 		this.playerSets = new ConcurrentHashMap<>();
 	}
 	
-	public PlayerSetManager(Map<String, PlayerSet> playerSets) {
-		this();
-		this.playerSets.putAll(playerSets);
-	}
-	
 	public PlayerSetManager(NbtCompound tag) {
 		this();
 		NbtCompound allSets = tag.getCompound("PlayerSets");

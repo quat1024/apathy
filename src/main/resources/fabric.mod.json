@@ -30,8 +30,5 @@
     "fabricloader": "*",
     "fabric": "*",
     "minecraft": "1.17.x"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

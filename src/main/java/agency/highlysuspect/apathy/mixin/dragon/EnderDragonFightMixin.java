@@ -37,28 +37,23 @@ import java.util.function.Predicate;
 @SuppressWarnings("SameParameterValue")
 @Mixin(EnderDragonFight.class)
 public abstract class EnderDragonFightMixin {
-	//@Shadow @Final private static Logger LOGGER;
+	//a zillion shadows
 	@Shadow @Final private static Predicate<Entity> VALID_ENTITY;
 	@Shadow @Final private ServerBossBar bossBar;
 	@Shadow @Final private ServerWorld world;
 	@Shadow @Final private List<Integer> gateways;
-	//@Shadow @Final private BlockPattern endPortalPattern;
-	//@Shadow private int dragonSeenTimer;
-	//@Shadow private int endCrystalsAlive;
-	//@Shadow private int crystalCountTimer;
-	//@Shadow private int playerUpdateTimer;
 	@Shadow private boolean dragonKilled;
-	//@Shadow private boolean previouslyKilled;
 	@Shadow private UUID dragonUuid;
 	@Shadow private boolean doLegacyCheck;
 	@Shadow private BlockPos exitPortalLocation;
 	@Shadow private EnderDragonSpawnState dragonSpawnState;
-	//@Shadow private int spawnStateTimer;
 	@Shadow private List<EndCrystalEntity> crystals;
 	
 	@Shadow protected abstract void generateEndPortal(boolean previouslyKilled);
 	@Shadow protected abstract boolean loadChunks();
 	@Shadow protected abstract void generateNewEndGateway();
+	
+	//my additions
 	
 	@Unique private boolean createdApathyPortal;
 	@Unique private int gatewayTimer = NOT_RUNNING;

@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.config.annotation.Use;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -45,7 +46,7 @@ public class Types {
 		customParsers.put("stringList", new StringSerde().commaSeparatedList());
 		
 		//bulk of this stuff (going from string -> tag) is untested; it's only used to write the "default value:" comment anyways
-		customParsers.put("entityTypeTagSet", ident.dimap(TagRegistry::entityType, tag -> ((Tag.Identified<?>)tag).getId()).commaSeparatedSet(Comparator.comparing(tag -> ((Tag.Identified<?>)tag).getId())));
+		customParsers.put("entityTypeTagSet", ident.dimap(TagFactory.ENTITY_TYPE::create, Tag.Identified::getId).commaSeparatedSet(Comparator.comparing(Tag.Identified::getId)));
 	}
 	
 	@SuppressWarnings("unchecked")

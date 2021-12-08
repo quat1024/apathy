@@ -12,8 +12,8 @@ public interface FieldSerde<T> {
 	T parse(Field sourceField, String value);
 	
 	//Java generic hell don't mind me
+	@SuppressWarnings("unchecked")
 	default String writeErased(Field targetField, Object value) {
-		//noinspection unchecked
 		return write(targetField, (T) value);
 	}
 	

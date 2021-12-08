@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.MobEntityExt;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,7 +22,7 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) newTarget)) {
+		if(newTarget instanceof ServerPlayerEntity && !Apathy.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) newTarget)) {
 			//Keep whatever old target was around.
 			ci.cancel();
 		}
@@ -34,9 +34,9 @@ public class MobEntityMixin implements MobEntityExt {
 		if(thi$.world.isClient) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.world.getTime() + thi$.getId()) % Init.generalConfig.recheckInterval == 0
+		if((thi$.world.getTime() + thi$.getId()) % Apathy.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayerEntity
-			&& !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
+			&& !Apathy.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayerEntity) target)) {
 			target = null;
 		}
 	}

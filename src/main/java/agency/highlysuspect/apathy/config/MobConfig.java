@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.rule.Rule;
@@ -240,7 +240,7 @@ public class MobConfig extends Config {
 		
 		if(unknownKeys != null) {
 			//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
-			unknownKeys.forEach((key, value) -> Init.LOG.warn("Unknown config field: " + key));
+			unknownKeys.forEach((key, value) -> Apathy.LOG.warn("Unknown config field: " + key));
 			//We don't need to keep track of them anymore.
 			unknownKeys = null;
 		}
@@ -254,7 +254,7 @@ public class MobConfig extends Config {
 		super.finish();
 		
 		if(nuclearOption) {
-			Init.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			Apathy.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
 		} else {
 			ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
@@ -267,17 +267,17 @@ public class MobConfig extends Config {
 					case "tagset"     -> ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
 					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
 					case "revenge"    -> ruleSpecList.add(PredicatedRuleSpec.allowIf(new RevengeTimerPredicateSpec(revengeTimer)));
-					default -> Init.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+					default -> Apathy.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 				}
 			}
 			
 			ruleSpec = new ChainRuleSpec(ruleSpecList);
 		}
 		
-		if(Init.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule", ruleSpec);
-		if(Init.generalConfig.runRuleOptimizer) {
+		if(Apathy.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule", ruleSpec);
+		if(Apathy.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
-			if(Init.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule-opt", ruleSpec);
+			if(Apathy.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule-opt", ruleSpec);
 		}
 		
 		rule = ruleSpec.build();

@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Apathy",
-  "description": "Mobs don't attack players.",
+  "description": "Mobs don't attack players. Maybe. Customizable!",
   "authors": [
     "quaternary",
 		"whizzball1"
@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "agency.highlysuspect.apathy.Init"
+			"agency.highlysuspect.apathy.platform.FabricInit"
     ]
   },
   "mixins": [

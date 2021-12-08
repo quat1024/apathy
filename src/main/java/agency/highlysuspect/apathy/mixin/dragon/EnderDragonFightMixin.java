@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -76,7 +76,7 @@ public abstract class EnderDragonFightMixin {
 			gatewayTimer = NOT_RUNNING;
 		}
 		
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			dragonKilled = true; //sigh
 			dragonUuid = null;
 			doLegacyCheck = false;
@@ -94,7 +94,7 @@ public abstract class EnderDragonFightMixin {
 	
 	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
 	void dontTick(CallbackInfo ci) {
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			ci.cancel();
 			
 			//Just to be like triple sure there's no ender dragons around
@@ -132,7 +132,7 @@ public abstract class EnderDragonFightMixin {
 	@Inject(method = "setSpawnState", at = @At("HEAD"), cancellable = true)
 	void dontSetSpawnState(EnderDragonSpawnState enderDragonSpawnState, CallbackInfo ci) {
 		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			this.dragonSpawnState = null;
 			ci.cancel();
 		}
@@ -140,7 +140,7 @@ public abstract class EnderDragonFightMixin {
 	
 	@Inject(method = "createDragon", at = @At("HEAD"), cancellable = true)
 	void dontCreateDragon(CallbackInfoReturnable<EnderDragonEntity> cir) {
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			cir.setReturnValue(null);
 		}
 	}
@@ -149,7 +149,7 @@ public abstract class EnderDragonFightMixin {
 	void dontRespawnDragon(List<EndCrystalEntity> crystals, CallbackInfo ci) {
 		//respawnDragon-no-args handles detecting the 4 end crystals by the exit portal.
 		//respawnDragon-list-arg gets called with the list of end crystals, if there are four, and normally actually summons the boss.
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			ci.cancel();
 			
 			tryEnderCrystalGateway(crystals);

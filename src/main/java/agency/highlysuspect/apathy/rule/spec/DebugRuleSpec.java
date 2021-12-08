@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -22,9 +22,9 @@ public record DebugRuleSpec(RuleSpec rule, String message) implements RuleSpec {
 		Rule built = rule.build();
 		
 		return (attacker, defender) -> {
-			Init.LOG.info("rule: " + message);
+			Apathy.LOG.info("rule: " + message);
 			TriState result = built.apply(attacker, defender);
-			Init.LOG.info("returned: " + showTriState(result));
+			Apathy.LOG.info("returned: " + showTriState(result));
 			return result;
 		};
 	}

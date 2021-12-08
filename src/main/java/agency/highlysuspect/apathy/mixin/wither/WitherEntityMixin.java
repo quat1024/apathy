@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -17,22 +17,22 @@ public class WitherEntityMixin {
 	@Inject(method = "method_6873", at = @At("HEAD"), cancellable = true)
 	private static void peacefulWither(LivingEntity ent, CallbackInfoReturnable<Boolean> cir) {
 		if(ent instanceof PlayerEntity) {
-			if(!Init.bossConfig.witherTargetsPlayers) {
+			if(!Apathy.bossConfig.witherTargetsPlayers) {
 				cir.setReturnValue(false);
 			}
-		} else if(!Init.bossConfig.witherTargetsMobs) cir.setReturnValue(false);
+		} else if(!Apathy.bossConfig.witherTargetsMobs) cir.setReturnValue(false);
 	}
 	
 	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)
 	private static void cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
-		if(!Init.bossConfig.witherBreaksBlocks) {
+		if(!Apathy.bossConfig.witherBreaksBlocks) {
 			cir.setReturnValue(false);
 		}
 	}
 	
 	@Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
 	private void noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
-		if((!charged && !Init.bossConfig.blackWitherSkulls) || (charged && !Init.bossConfig.blueWitherSkulls)) {
+		if((!charged && !Apathy.bossConfig.blackWitherSkulls) || (charged && !Apathy.bossConfig.blueWitherSkulls)) {
 			ci.cancel();
 		}
 	}

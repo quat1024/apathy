@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,14 +14,14 @@ import java.util.List;
 public class EnderDragonEntityMixin {
 	@Inject(method = "launchLivingEntities", at = @At("HEAD"), cancellable = true)
 	private void dontLaunch(List<Entity> entities, CallbackInfo ci) {
-		if(!Init.bossConfig.dragonKnockback) {
+		if(!Apathy.bossConfig.dragonKnockback) {
 			ci.cancel();
 		}
 	}
 	
 	@Inject(method = "damageLivingEntities", at = @At("HEAD"), cancellable = true)
 	private void dontDamage(List<Entity> entities, CallbackInfo ci) {
-		if(!Init.bossConfig.dragonDamage) {
+		if(!Apathy.bossConfig.dragonDamage) {
 			ci.cancel();
 		}
 	}

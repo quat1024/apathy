@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 
 import java.lang.reflect.Field;
@@ -17,7 +17,7 @@ public class LongSerde implements FieldSerde.ToString<Long> {
 		
 		AtLeast atLeast = sourceField.getDeclaredAnnotation(AtLeast.class);
 		if(atLeast != null && x < atLeast.minLong()) {
-			Init.LOG.warn("Value " + sourceField.getName() + " not at least " + atLeast.minLong());
+			Apathy.LOG.warn("Value " + sourceField.getName() + " not at least " + atLeast.minLong());
 			x = atLeast.minLong();
 		}
 		

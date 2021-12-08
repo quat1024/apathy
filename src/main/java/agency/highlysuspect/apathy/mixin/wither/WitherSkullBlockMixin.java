@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.block.WitherSkullBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.WitherEntity;
@@ -20,7 +20,7 @@ public class WitherSkullBlockMixin {
 		)
 	)
 	private static boolean yeet(World world, Entity entity) {
-		if(!Init.bossConfig.noWither) return world.spawnEntity(entity);
+		if(!Apathy.bossConfig.noWither) return world.spawnEntity(entity);
 		
 		if(entity instanceof WitherEntity) ((LivingEntityInvoker) entity).apathy$dropEquipment(DamageSource.ANVIL, 1, true);
 		return false;

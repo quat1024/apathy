@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.playerset;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -101,9 +101,9 @@ public class PlayerSetManager extends PersistentState {
 	public static void onInitialize() {
 		ServerTickEvents.START_SERVER_TICK.register(server -> {
 			PlayerSetManager mgr = PlayerSetManager.getFor(server);
-			Init.mobConfig.playerSetName.ifPresent(s -> {
-				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Init.mobConfig.playerSetSelfSelect);
-				else mgr.createSet(s, Init.mobConfig.playerSetSelfSelect);
+			Apathy.mobConfig.playerSetName.ifPresent(s -> {
+				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Apathy.mobConfig.playerSetSelfSelect);
+				else mgr.createSet(s, Apathy.mobConfig.playerSetSelfSelect);
 			});
 		});
 	}

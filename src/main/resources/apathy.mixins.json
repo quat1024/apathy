@@ -6,8 +6,8 @@
   "mixins": [
 		"MobEntityMixin",
 		"MinecraftServerAccessor",
-		"dragon.EnderDragonFightMixin",
-		"dragon.PhaseManagerMixin",
+		"dragon.EndDragonFightMixin",
+		"dragon.EnderDragonPhaseManagerMixin",
 		"dragon.EnderDragonEntityMixin",
 		"wither.WitherSkullBlockMixin",
 		"wither.LivingEntityInvoker",

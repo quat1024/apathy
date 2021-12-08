@@ -12,14 +12,14 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
 @Mixin(EnderDragon.class)
 public class EnderDragonEntityMixin {
-	@Inject(method = "launchLivingEntities", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "knockBack", at = @At("HEAD"), cancellable = true)
 	private void dontLaunch(List<Entity> entities, CallbackInfo ci) {
 		if(!Init.bossConfig.dragonKnockback) {
 			ci.cancel();
 		}
 	}
 	
-	@Inject(method = "damageLivingEntities", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "hurt(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
 	private void dontDamage(List<Entity> entities, CallbackInfo ci) {
 		if(!Init.bossConfig.dragonDamage) {
 			ci.cancel();

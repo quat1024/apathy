@@ -18,12 +18,12 @@ import net.minecraft.world.level.block.state.BlockState;
 
 @Mixin(WitherBoss.class)
 public class WitherEntityMixin {
-	@Shadow @Final @Mutable private static Predicate<LivingEntity> CAN_ATTACK_PREDICATE;
+	@Shadow @Final @Mutable private static Predicate<LivingEntity> LIVING_ENTITY_SELECTOR;
 	
 	static {
 		//Targeting these with mixin is always a huge pain...
 		//Compose it with another predicate instead, how about that
-		CAN_ATTACK_PREDICATE = CAN_ATTACK_PREDICATE.and((ent) -> {
+		LIVING_ENTITY_SELECTOR = LIVING_ENTITY_SELECTOR.and((ent) -> {
 			if(ent instanceof Player) return Init.bossConfig.witherTargetsPlayers;
 			else return Init.bossConfig.witherTargetsMobs;
 		});
@@ -36,7 +36,7 @@ public class WitherEntityMixin {
 		}
 	}
 	
-	@Inject(method = "shootSkullAt(IDDDZ)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "performRangedAttack(IDDDZ)V", at = @At("HEAD"), cancellable = true)
 	private void noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
 		if((!charged && !Init.bossConfig.blackWitherSkulls) || (charged && !Init.bossConfig.blueWitherSkulls)) {
 			ci.cancel();

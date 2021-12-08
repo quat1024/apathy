@@ -64,14 +64,14 @@ public class MobEntityMixin implements MobEntityExt {
 		return provocationTime != NOT_PROVOKED;
 	}
 	
-	@Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
+	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
 	}
 	
-	@Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
 	public void whenLoading(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);

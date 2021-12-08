@@ -22,7 +22,7 @@ public class WitherSkullBlockMixin {
 	private static boolean yeet(Level world, Entity entity) {
 		if(!Init.bossConfig.noWither) return world.addFreshEntity(entity);
 		
-		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropEquipment(DamageSource.ANVIL, 1, true);
+		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(DamageSource.ANVIL);
 		return false;
 	}
 }

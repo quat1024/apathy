@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(EnderDragonPhaseManager.class)
-public class PhaseManagerMixin {
+public class EnderDragonPhaseManagerMixin {
 	@ModifyVariable(method = "setPhase", at = @At("HEAD"))
 	private EnderDragonPhase<?> whenSettingPhase(EnderDragonPhase<?> type) {
 		if(!Init.bossConfig.dragonFlies && (type == EnderDragonPhase.STRAFE_PLAYER || type == EnderDragonPhase.CHARGING_PLAYER)) return EnderDragonPhase.LANDING_APPROACH;

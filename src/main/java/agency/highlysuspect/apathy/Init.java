@@ -117,7 +117,7 @@ public class Init implements ModInitializer {
 	
 	//called from the `/apathy reload` command, just reruns my own loaders and not the whole game
 	public static void reloadNow(MinecraftServer server) {
-		ResourceManager rm = ((MinecraftServerAccessor) server).apathy$getServerResourceManager().getResourceManager();
+		ResourceManager rm = ((MinecraftServerAccessor) server).apathy$getServerResources().getResourceManager();
 		reloaders.forEach(reloader -> reloader.accept(rm));
 	}
 }

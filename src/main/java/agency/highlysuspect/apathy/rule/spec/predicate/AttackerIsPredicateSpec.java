@@ -11,7 +11,7 @@ import java.util.Set;
 
 public record AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) implements PredicateSpec {
 	public static final Codec<AttackerIsPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Registry.ENTITY_TYPE).fieldOf("mobs").forGetter(x -> x.mobSet)
+		CodecUtil.setOf(Registry.ENTITY_TYPE.getCodec()).fieldOf("mobs").forGetter(x -> x.mobSet)
 	).apply(i, AttackerIsPredicateSpec::new));
 	
 	@Override

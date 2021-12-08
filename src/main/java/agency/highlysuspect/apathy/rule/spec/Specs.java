@@ -17,8 +17,8 @@ public class Specs {
 	public static final RegistryKey<Registry<Codec<? extends PredicateSpec>>> PREDICATE_SPEC_REGISTRY_KEY = RegistryKey.ofRegistry(Init.id("rule_predicate_spec_codec"));
 	public static final Registry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new SimpleRegistry<>(PREDICATE_SPEC_REGISTRY_KEY, Lifecycle.stable());
 	
-	public static final Codec<RuleSpec> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.dispatch(RuleSpec::codec, Function.identity());
-	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.dispatch(PredicateSpec::codec, Function.identity());
+	public static final Codec<RuleSpec> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.getCodec().dispatch(RuleSpec::codec, Function.identity());
+	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.getCodec().dispatch(PredicateSpec::codec, Function.identity());
 	
 	public static void onInitialize() {
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("always"), AlwaysRuleSpec.CODEC);

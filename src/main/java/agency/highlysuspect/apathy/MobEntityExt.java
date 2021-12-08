@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy;
 
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.entity.Mob;
 
 public interface MobEntityExt {
 	void apathy$provokeNow();
@@ -11,7 +11,7 @@ public interface MobEntityExt {
 		return apathy$wasProvoked() && apathy$timeSinceProvocation() <= timeframe;
 	}
 	
-	static MobEntityExt cast(MobEntity entity) {
+	static MobEntityExt cast(Mob entity) {
 		return (MobEntityExt) entity;
 	}
 }

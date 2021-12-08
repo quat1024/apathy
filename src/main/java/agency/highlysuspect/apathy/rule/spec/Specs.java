@@ -4,21 +4,20 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
-
 import java.util.function.Function;
+import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 
 public class Specs {
-	public static final RegistryKey<Registry<Codec<? extends RuleSpec>>> RULE_SPEC_CODEC_KEY = RegistryKey.ofRegistry(Init.id("rule_spec_codec"));
-	public static final Registry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new SimpleRegistry<>(RULE_SPEC_CODEC_KEY, Lifecycle.stable());
+	public static final ResourceKey<Registry<Codec<? extends RuleSpec>>> RULE_SPEC_CODEC_KEY = ResourceKey.createRegistryKey(Init.id("rule_spec_codec"));
+	public static final Registry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(RULE_SPEC_CODEC_KEY, Lifecycle.stable());
 	
-	public static final RegistryKey<Registry<Codec<? extends PredicateSpec>>> PREDICATE_SPEC_REGISTRY_KEY = RegistryKey.ofRegistry(Init.id("rule_predicate_spec_codec"));
-	public static final Registry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new SimpleRegistry<>(PREDICATE_SPEC_REGISTRY_KEY, Lifecycle.stable());
+	public static final ResourceKey<Registry<Codec<? extends PredicateSpec>>> PREDICATE_SPEC_REGISTRY_KEY = ResourceKey.createRegistryKey(Init.id("rule_predicate_spec_codec"));
+	public static final Registry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(PREDICATE_SPEC_REGISTRY_KEY, Lifecycle.stable());
 	
-	public static final Codec<RuleSpec> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.getCodec().dispatch(RuleSpec::codec, Function.identity());
-	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.getCodec().dispatch(PredicateSpec::codec, Function.identity());
+	public static final Codec<RuleSpec> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(RuleSpec::codec, Function.identity());
+	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(PredicateSpec::codec, Function.identity());
 	
 	public static void onInitialize() {
 		Registry.register(RULE_SPEC_CODEC_REGISTRY, Init.id("always"), AlwaysRuleSpec.CODEC);

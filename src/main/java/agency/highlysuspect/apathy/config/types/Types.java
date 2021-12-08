@@ -3,9 +3,9 @@ package agency.highlysuspect.apathy.config.types;
 import agency.highlysuspect.apathy.config.annotation.Use;
 import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.Difficulty;
 
 import java.lang.reflect.Field;
@@ -18,10 +18,10 @@ public class Types {
 	static final Map<String, FieldSerde<?>> customParsers = new HashMap<>();
 	
 	static {
-		FieldSerde<Identifier> ident = new StringSerde().dimap(Identifier::new, Identifier::toString);
+		FieldSerde<ResourceLocation> ident = new StringSerde().dimap(ResourceLocation::new, ResourceLocation::toString);
 		
 		builtinParsers.put(String.class, new StringSerde());
-		builtinParsers.put(Identifier.class, ident);
+		builtinParsers.put(ResourceLocation.class, ident);
 		builtinParsers.put(Integer.TYPE, new IntSerde());
 		builtinParsers.put(Boolean.TYPE, new BooleanSerde());
 		builtinParsers.put(Long.TYPE, new LongSerde());
@@ -33,8 +33,8 @@ public class Types {
 			.commaSeparatedSet(Comparator.comparingInt(Difficulty::getId)));
 		
 		customParsers.put("entityTypeSet", ident
-			.dimap(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getId)
-			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getId))
+			.dimap(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getKey)
+			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getKey))
 		);
 		
 		customParsers.put("triStateAllowDenyPass", new TriStateField.AllowDenyPass());
@@ -46,7 +46,7 @@ public class Types {
 		customParsers.put("stringList", new StringSerde().commaSeparatedList());
 		
 		//bulk of this stuff (going from string -> tag) is untested; it's only used to write the "default value:" comment anyways
-		customParsers.put("entityTypeTagSet", ident.dimap(TagFactory.ENTITY_TYPE::create, Tag.Identified::getId).commaSeparatedSet(Comparator.comparing(Tag.Identified::getId)));
+		customParsers.put("entityTypeTagSet", ident.dimap(TagFactory.ENTITY_TYPE::create, Tag.Named::getName).commaSeparatedSet(Comparator.comparing(Tag.Named::getName)));
 	}
 	
 	@SuppressWarnings("unchecked")

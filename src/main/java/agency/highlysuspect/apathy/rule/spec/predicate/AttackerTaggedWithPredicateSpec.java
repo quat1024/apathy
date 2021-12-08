@@ -4,11 +4,6 @@ import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.registry.Registry;
-
 import java.util.Set;
 
 public record AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) implements PredicateSpec {

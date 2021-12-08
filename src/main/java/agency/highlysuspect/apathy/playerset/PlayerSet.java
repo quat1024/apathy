@@ -1,17 +1,16 @@
 package agency.highlysuspect.apathy.playerset;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerSet {
 	public PlayerSet(PlayerSetManager owner, Set<UUID> members, String name, boolean selfSelect) {
@@ -30,18 +29,18 @@ public class PlayerSet {
 	private final String name;
 	private boolean selfSelect;
 	
-	public boolean join(ServerPlayerEntity player) {
-		this.owner.markDirty();
-		return members.add(player.getUuid());
+	public boolean join(ServerPlayer player) {
+		this.owner.setDirty();
+		return members.add(player.getUUID());
 	}
 	
-	public boolean part(ServerPlayerEntity player) {
-		this.owner.markDirty();
-		return members.remove(player.getUuid());
+	public boolean part(ServerPlayer player) {
+		this.owner.setDirty();
+		return members.remove(player.getUUID());
 	}
 	
-	public boolean contains(ServerPlayerEntity player) {
-		return members.contains(player.getUuid());
+	public boolean contains(ServerPlayer player) {
+		return members.contains(player.getUUID());
 	}
 	
 	public Collection<UUID> members() {
@@ -53,7 +52,7 @@ public class PlayerSet {
 	}
 	
 	public void setSelfSelect(boolean selfSelect) {
-		if(this.selfSelect != selfSelect) this.owner.markDirty();
+		if(this.selfSelect != selfSelect) this.owner.setDirty();
 		this.selfSelect = selfSelect;
 	}
 	
@@ -61,16 +60,16 @@ public class PlayerSet {
 		return name;
 	}
 	
-	public Text toLiteralText() {
-		return new LiteralText(String.format(selfSelect ? "%s (self-select)" : "%s", name));
+	public Component toLiteralText() {
+		return new TextComponent(String.format(selfSelect ? "%s (self-select)" : "%s", name));
 	}
 	
-	public static PlayerSet fromTag(PlayerSetManager owner, String name, NbtCompound tag) {
+	public static PlayerSet fromTag(PlayerSetManager owner, String name, CompoundTag tag) {
 		HashSet<UUID> members = new HashSet<>();
 		
-		NbtList memberList = tag.getList("Members", 11);
-		for(NbtElement value : memberList) {
-			members.add(NbtHelper.toUuid(value));
+		ListTag memberList = tag.getList("Members", 11);
+		for(Tag value : memberList) {
+			members.add(NbtUtils.loadUUID(value));
 		}
 		
 		boolean selfSelect = tag.getBoolean("SelfSelect");
@@ -78,12 +77,12 @@ public class PlayerSet {
 		return new PlayerSet(owner, members, name, selfSelect);
 	}
 	
-	public NbtCompound toTag() {
-		NbtCompound tag = new NbtCompound();
+	public CompoundTag toTag() {
+		CompoundTag tag = new CompoundTag();
 		
-		NbtList memberList = new NbtList();
+		ListTag memberList = new ListTag();
 		for(UUID uuid : members) {
-			memberList.add(NbtHelper.fromUuid(uuid));
+			memberList.add(NbtUtils.createUUID(uuid));
 		}
 		tag.put("Members", memberList);
 		tag.putBoolean("SelfSelect", selfSelect);

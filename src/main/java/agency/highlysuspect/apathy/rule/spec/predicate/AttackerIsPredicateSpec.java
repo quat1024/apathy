@@ -4,9 +4,6 @@ import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.registry.Registry;
-
 import java.util.Set;
 
 public record AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) implements PredicateSpec {

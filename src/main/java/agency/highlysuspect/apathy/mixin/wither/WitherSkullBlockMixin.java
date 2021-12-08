@@ -1,11 +1,11 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Init;
-import net.minecraft.block.WitherSkullBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.world.World;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.WitherSkullBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -19,10 +19,10 @@ public class WitherSkullBlockMixin {
 			target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
 		)
 	)
-	private static boolean yeet(World world, Entity entity) {
-		if(!Init.bossConfig.noWither) return world.spawnEntity(entity);
+	private static boolean yeet(Level world, Entity entity) {
+		if(!Init.bossConfig.noWither) return world.addFreshEntity(entity);
 		
-		if(entity instanceof WitherEntity) ((LivingEntityInvoker) entity).apathy$dropEquipment(DamageSource.ANVIL, 1, true);
+		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropEquipment(DamageSource.ANVIL, 1, true);
 		return false;
 	}
 }

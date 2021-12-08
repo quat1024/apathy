@@ -5,41 +5,40 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.command.CommandSource;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.PersistentState;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.saveddata.SavedData;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class PlayerSetManager extends PersistentState {
+public class PlayerSetManager extends SavedData {
 	public PlayerSetManager() {
 		this.playerSets = new ConcurrentHashMap<>();
 	}
 	
-	public PlayerSetManager(NbtCompound tag) {
+	public PlayerSetManager(CompoundTag tag) {
 		this();
-		NbtCompound allSets = tag.getCompound("PlayerSets");
-		for(String name : allSets.getKeys()) {
+		CompoundTag allSets = tag.getCompound("PlayerSets");
+		for(String name : allSets.getAllKeys()) {
 			playerSets.put(name, PlayerSet.fromTag(this, name, allSets.getCompound(name)));
 		}
 	}
 	
 	public static PlayerSetManager getFor(MinecraftServer server) {
-		return server.getOverworld().getPersistentStateManager().getOrCreate(
+		return server.overworld().getDataStorage().computeIfAbsent(
 			PlayerSetManager::new, //Nbt constructor
 			PlayerSetManager::new, //Default constructor
 			"apathy-player-sets"
 		);
 	}
 	
-	public static PlayerSetManager getFor(CommandContext<ServerCommandSource> cmdCtx) {
+	public static PlayerSetManager getFor(CommandContext<CommandSourceStack> cmdCtx) {
 		return getFor(cmdCtx.getSource().getServer());
 	}
 	
@@ -64,14 +63,14 @@ public class PlayerSetManager extends PersistentState {
 		PlayerSet newOne = new PlayerSet(this, name, selfSelect);
 		playerSets.put(name, newOne);
 		
-		markDirty();
+		setDirty();
 		
 		return newOne;
 	}
 	
 	public void deleteSet(String name) {
 		playerSets.remove(name);
-		markDirty();
+		setDirty();
 	}
 	
 	public boolean isEmpty() {
@@ -82,14 +81,14 @@ public class PlayerSetManager extends PersistentState {
 		return playerSets.values();
 	}
 	
-	public Collection<PlayerSet> allSetsContaining_KindaSlow_DontUseThisOnTheHotPath(ServerPlayerEntity player) {
+	public Collection<PlayerSet> allSetsContaining_KindaSlow_DontUseThisOnTheHotPath(ServerPlayer player) {
 		//It's just used in commands, i can afford to be slow here.
 		return playerSets.values().stream().filter(set -> set.contains(player)).collect(Collectors.toList());
 	}
 	
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
-		NbtCompound allSets = new NbtCompound();
+	public CompoundTag save(CompoundTag tag) {
+		CompoundTag allSets = new CompoundTag();
 		for(Map.Entry<String, PlayerSet> entry : playerSets.entrySet()) {
 			allSets.put(entry.getKey(), entry.getValue().toTag());
 		}
@@ -108,17 +107,17 @@ public class PlayerSetManager extends PersistentState {
 		});
 	}
 	
-	public static CompletableFuture<Suggestions> suggestSelfSelectPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+	public static CompletableFuture<Suggestions> suggestSelfSelectPlayerSets(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
 		PlayerSetManager setManager = getFor(context);
-		return CommandSource.suggestMatching(setManager.allSets().stream()
+		return SharedSuggestionProvider.suggest(setManager.allSets().stream()
 			.filter(PlayerSet::isSelfSelect)
 			.map(PlayerSet::getName)
 			.collect(Collectors.toList()), builder);
 	}
 	
-	public static CompletableFuture<Suggestions> suggestAllPlayerSets(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) {
+	public static CompletableFuture<Suggestions> suggestAllPlayerSets(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
 		PlayerSetManager setManager = getFor(context);
-		return CommandSource.suggestMatching(setManager.allSets().stream()
+		return SharedSuggestionProvider.suggest(setManager.allSets().stream()
 			.map(PlayerSet::getName)
 			.collect(Collectors.toList()), builder);
 	}

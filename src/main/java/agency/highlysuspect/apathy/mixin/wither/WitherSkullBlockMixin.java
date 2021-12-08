@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(WitherSkullBlock.class)
 public class WitherSkullBlockMixin {
 	@Redirect(
-		method = "onPlaced(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/SkullBlockEntity;)V",
+		method = "checkSpawn",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
+			target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
 		)
 	)
 	private static boolean yeet(Level world, Entity entity) {

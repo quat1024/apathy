@@ -23,8 +23,8 @@ public record DifficultyIsPredicateSpec(Set<Difficulty> difficulties) implements
 	@Override
 	public Partial build() {
 		return PredicateSpec.sizeSpecializeNotEmpty(difficulties,
-			difficulty -> (attacker, defender) -> attacker.world.getDifficulty() == difficulty,
-			set -> (attacker, defender) -> set.contains(attacker.world.getDifficulty())
+			difficulty -> (attacker, defender) -> attacker.level.getDifficulty() == difficulty,
+			set -> (attacker, defender) -> set.contains(attacker.level.getDifficulty())
 		);
 	}
 	

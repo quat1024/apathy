@@ -10,7 +10,7 @@ public class BossConfig extends Config {
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////
-	@Section("Ender Dragon - all of these except noDragon are untested, sorry!")
+	@Section("Ender Dragon")
 	////////////////////////
 	
 	@Comment({

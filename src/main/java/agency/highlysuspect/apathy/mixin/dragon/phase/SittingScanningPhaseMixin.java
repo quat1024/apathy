@@ -16,7 +16,7 @@ public class SittingScanningPhaseMixin {
 		at = @At(
 			value = "INVOKE_ASSIGN",
 			target = "Lnet/minecraft/world/World;getClosestPlayer(Lnet/minecraft/entity/ai/TargetPredicate;Lnet/minecraft/entity/LivingEntity;DDD)Lnet/minecraft/entity/player/PlayerEntity;",
-			//first call is looking for the nearest player to turn and face them
+			//first call is looking for the nearest player, to turn and face them
 			//second call is the one that transitions to ChargingPlayer
 			ordinal = 1
 		)

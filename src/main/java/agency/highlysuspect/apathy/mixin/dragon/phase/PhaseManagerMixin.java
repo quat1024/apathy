@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.mixin.dragon;
+package agency.highlysuspect.apathy.mixin.dragon.phase;
 
 import agency.highlysuspect.apathy.Init;
 import net.minecraft.entity.boss.dragon.phase.PhaseManager;

@@ -1,19 +1,21 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "agency.highlysuspect.apathy.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "mixins": [
-		"MobEntityMixin",
+	"required": true,
+	"minVersion": "0.8",
+	"package": "agency.highlysuspect.apathy.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"EntityViewMixin",
+		"LivingEntityMixin",
 		"MinecraftServerAccessor",
+		"MobEntityMixin",
+		"dragon.EnderDragonEntityMixin",
 		"dragon.EnderDragonFightMixin",
 		"dragon.PhaseManagerMixin",
-		"dragon.EnderDragonEntityMixin",
-		"wither.WitherSkullBlockMixin",
 		"wither.LivingEntityInvoker",
-		"wither.WitherEntityMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+		"wither.WitherEntityMixin",
+		"wither.WitherSkullBlockMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
 }

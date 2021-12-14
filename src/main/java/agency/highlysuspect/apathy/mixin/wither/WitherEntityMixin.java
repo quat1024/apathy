@@ -16,6 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Predicate;
 
+/**
+ * @see agency.highlysuspect.apathy.mixin.EntityViewMixin for an additional mixin relevant to Wither targeting mechanics
+ */
 @Mixin(WitherEntity.class)
 public class WitherEntityMixin {
 	@Shadow @Final @Mutable private static Predicate<LivingEntity> CAN_ATTACK_PREDICATE;

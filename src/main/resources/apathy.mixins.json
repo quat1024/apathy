@@ -10,7 +10,11 @@
 		"MobEntityMixin",
 		"dragon.EnderDragonEntityMixin",
 		"dragon.EnderDragonFightMixin",
-		"dragon.PhaseManagerMixin",
+		"dragon.phase.AbstractPhaseAccessor",
+		"dragon.phase.PhaseManagerMixin",
+		"dragon.phase.HoldingPatternPhaseMixin",
+		"dragon.phase.StrafePlayerPhaseMixin",
+		"dragon.phase.SittingScanningPhaseMixin",
 		"wither.LivingEntityInvoker",
 		"wither.WitherEntityMixin",
 		"wither.WitherSkullBlockMixin"

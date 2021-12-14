@@ -24,7 +24,7 @@ public class SittingScanningPhaseMixin {
 	private LivingEntity filterEntity(LivingEntity in) {
 		EnderDragonEntity dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
 		
-		if(in instanceof ServerPlayerEntity serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(in instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(dergon, (ServerPlayerEntity) in)) {
 			return null;
 		} else return in;
 	}

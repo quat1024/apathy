@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LivingEntityMixin {
 	@Inject(method = "canTarget(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void patchCanTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
-		if((LivingEntity) (Object) this instanceof MobEntity mob && target instanceof ServerPlayerEntity player && !Init.mobConfig.allowedToTargetPlayer(mob, player)) {
+		LivingEntity THIS = (LivingEntity) (Object) this;
+		if(THIS instanceof MobEntity && target instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer((MobEntity) THIS, (ServerPlayerEntity) target)) {
 			cir.setReturnValue(false);
 		}
 	}

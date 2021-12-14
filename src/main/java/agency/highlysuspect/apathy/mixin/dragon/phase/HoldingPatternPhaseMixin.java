@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HoldingPatternPhase.class)
 public class HoldingPatternPhaseMixin {
-	@Inject(method = "strafePlayer", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "method_6843", at = @At("HEAD"), cancellable = true)
 	private void maybeDontStrafePlayer(PlayerEntity player, CallbackInfo ci) {
 		EnderDragonEntity dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
 		
-		if(player instanceof ServerPlayerEntity serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(player instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(dergon, (ServerPlayerEntity) player)) {
 			ci.cancel();
 		}
 	}

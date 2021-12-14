@@ -20,7 +20,7 @@ public class StrafePlayerPhaseMixin {
 	private void onServerTick(CallbackInfo ci) {
 		EnderDragonEntity dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
 		
-		if(target instanceof ServerPlayerEntity serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(target instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(dergon, (ServerPlayerEntity) target)) {
 			//Will cause her to transition away from this phase
 			target = null;
 		}

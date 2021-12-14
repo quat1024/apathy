@@ -23,29 +23,18 @@ public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) imple
 	
 	@Override
 	public Partial build() {
-		return PredicateSpec.sizeSpecializeNotEmpty(playerSetNames,
-			playerSetName -> (attacker, defender) -> {
-				MinecraftServer server = defender.getServer();
-				assert server != null; //it's a ServerPlayerEntity
-				
-				PlayerSetManager setManager = PlayerSetManager.getFor(server);
-				PlayerSet set = setManager.get(playerSetName);
-				if(set == null) return false;
-				else return set.contains(defender);
-			},
-			set -> (attacker, defender) -> {
-				MinecraftServer server = defender.getServer();
-				assert server != null;
-				
-				PlayerSetManager setManager = PlayerSetManager.getFor(server);
-				for(String playerSetName : set) {
-					PlayerSet playerSet = setManager.get(playerSetName);
-					if(playerSet == null) continue;
-					if(playerSet.contains(defender)) return true;
-				}
-				return false;
+		return (attacker, defender) -> {
+			MinecraftServer server = defender.getServer();
+			assert server != null;
+			
+			PlayerSetManager setManager = PlayerSetManager.getFor(server);
+			for(String playerSetName : playerSetNames) {
+				PlayerSet playerSet = setManager.get(playerSetName);
+				if(playerSet == null) continue;
+				if(playerSet.contains(defender)) return true;
 			}
-		);
+			return false;
+		};
 	}
 	
 	@Override

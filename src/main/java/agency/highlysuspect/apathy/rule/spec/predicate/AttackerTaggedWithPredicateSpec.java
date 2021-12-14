@@ -26,15 +26,12 @@ public record AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) impl
 	
 	@Override
 	public Partial build() {
-		return PredicateSpec.sizeSpecializeNotEmpty(tags,
-			tag -> (attacker, defender) -> tag.contains(attacker.getType()),
-			set -> (attacker, defender) -> {
-				for(Tag<EntityType<?>> tag : set) {
-					if(tag.contains(attacker.getType())) return true;
-				}
-				return false;
+		return (attacker, defender) -> {
+			for(Tag<EntityType<?>> tag : tags) {
+				if(tag.contains(attacker.getType())) return true;
 			}
-		);
+			return false;
+		};
 	}
 	
 	@Override

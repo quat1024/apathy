@@ -22,10 +22,7 @@ public record AttackerIsPredicateSpec(Set<EntityType<?>> mobSet) implements Pred
 	
 	@Override
 	public Partial build() {
-		return PredicateSpec.sizeSpecializeNotEmpty(mobSet,
-			type -> (attacker, defender) -> attacker.getType().equals(type),
-			set -> (attacker, defender) -> set.contains(attacker.getType())
-		);
+		return (attacker, defender) -> mobSet.contains(attacker.getType());
 	}
 	
 	@Override

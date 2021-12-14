@@ -5,22 +5,31 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.function.Predicate;
+
+/**
+ * @see agency.highlysuspect.apathy.mixin.EntityViewMixin for an additional mixin relevant to Wither targeting mechanics
+ */
 @Mixin(WitherEntity.class)
 public class WitherEntityMixin {
-	@SuppressWarnings("UnresolvedMixinReference") //WitherEntity.CAN_ATTACK_PREDICATE's method body
-	@Inject(method = "method_6873", at = @At("HEAD"), cancellable = true)
-	private static void peacefulWither(LivingEntity ent, CallbackInfoReturnable<Boolean> cir) {
-		if(ent instanceof PlayerEntity) {
-			if(!Init.bossConfig.witherTargetsPlayers) {
-				cir.setReturnValue(false);
-			}
-		} else if(!Init.bossConfig.witherTargetsMobs) cir.setReturnValue(false);
+	@Shadow @Final @Mutable private static Predicate<LivingEntity> CAN_ATTACK_PREDICATE;
+	
+	static {
+		//Targeting these with mixin is always a huge pain...
+		//Compose it with another predicate instead, how about that
+		CAN_ATTACK_PREDICATE = CAN_ATTACK_PREDICATE.and((ent) -> {
+			if(ent instanceof PlayerEntity) return Init.bossConfig.witherTargetsPlayers;
+			else return Init.bossConfig.witherTargetsMobs;
+		});
 	}
 	
 	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)

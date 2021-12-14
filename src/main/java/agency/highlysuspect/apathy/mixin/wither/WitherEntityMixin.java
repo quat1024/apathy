@@ -4,21 +4,23 @@ import agency.highlysuspect.apathy.Init;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
-/**
- * @see agency.highlysuspect.apathy.mixin.EntityViewMixin for an additional mixin relevant to Wither targeting mechanics
- */
 @Mixin(WitherEntity.class)
 public class WitherEntityMixin {
 	@Shadow @Final @Mutable private static Predicate<LivingEntity> CAN_ATTACK_PREDICATE;
@@ -44,5 +46,22 @@ public class WitherEntityMixin {
 		if((!charged && !Init.bossConfig.blackWitherSkulls) || (charged && !Init.bossConfig.blueWitherSkulls)) {
 			ci.cancel();
 		}
+	}
+	
+	@ModifyVariable(
+		method = "mobTick",
+		at = @At(
+			value = "INVOKE_ASSIGN",
+			target = "Lnet/minecraft/world/World;getTargets(Ljava/lang/Class;Lnet/minecraft/entity/ai/TargetPredicate;Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/util/math/Box;)Ljava/util/List;"
+		)
+	)
+	private List<LivingEntity> filterGetTargets_NoInterfaceMixin(List<LivingEntity> targets) {
+		WitherEntity wither = (WitherEntity) (Object) this;
+		
+		//In 1.18, Mixin allows targeting default interface methods, so I target getTargets() directly.
+		//In this version, it's not possible. So I modify the result of getTargets() instead.
+		List<LivingEntity> defensiveCopy = new ArrayList<>(targets);
+		defensiveCopy.removeIf(target -> target instanceof ServerPlayerEntity && !Init.mobConfig.allowedToTargetPlayer(wither, (ServerPlayerEntity) target));
+		return defensiveCopy;
 	}
 }

@@ -31,7 +31,7 @@ public class ForgePlatformSupport extends PlatformSupport {
 			event.addListener(new PreparableReloadListener() {
 				@Override
 				public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
-					return CompletableFuture.runAsync(Apathy::loadConfig, gameExecutor);
+					return CompletableFuture.runAsync(() -> {}, backgroundExecutor).thenCompose(stage::wait).thenRunAsync(Apathy::loadConfig, gameExecutor);
 				}
 			});
 		});

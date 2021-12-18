@@ -8,7 +8,7 @@ import java.util.Locale;
 public class DifficultySerde implements FieldSerde<Difficulty> {
 	@Override
 	public String write(Field targetField, Difficulty value) {
-		return value.getName();
+		return value.getKey();
 	}
 	
 	@Override

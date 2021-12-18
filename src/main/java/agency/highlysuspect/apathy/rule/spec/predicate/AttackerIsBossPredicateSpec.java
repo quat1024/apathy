@@ -4,8 +4,8 @@ import agency.highlysuspect.apathy.Init;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.tag.TagFactory;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tag.Tag;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.EntityType;
 
 public final class AttackerIsBossPredicateSpec implements PredicateSpec {
 	public static final AttackerIsBossPredicateSpec INSTANCE = new AttackerIsBossPredicateSpec();

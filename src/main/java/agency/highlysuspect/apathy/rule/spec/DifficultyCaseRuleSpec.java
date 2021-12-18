@@ -31,7 +31,7 @@ public final class DifficultyCaseRuleSpec implements RuleSpec {
 		Map<Difficulty, Rule> built = new EnumMap<>(Difficulty.class);
 		ruleSpecs.forEach((difficulty, ruleSpec) -> built.put(difficulty, ruleSpec.build()));
 		
-		return (attacker, defender) -> built.getOrDefault(attacker.world.getDifficulty(), alwaysPasses).apply(attacker, defender);
+		return (attacker, defender) -> built.getOrDefault(attacker.level.getDifficulty(), alwaysPasses).apply(attacker, defender);
 	}
 	
 	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;

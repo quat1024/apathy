@@ -1,25 +1,30 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Init;
-import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonFight;
-import net.minecraft.entity.boss.dragon.EnderDragonSpawnState;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.EndCrystalEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.util.Mth;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.*;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.feature.EndPortalFeature;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
+import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,19 +40,19 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @SuppressWarnings("SameParameterValue")
-@Mixin(EnderDragonFight.class)
+@Mixin(EndDragonFight.class)
 public abstract class EnderDragonFightMixin {
 	//a zillion shadows
 	@Shadow @Final private static Predicate<Entity> VALID_ENTITY;
-	@Shadow @Final private ServerBossBar bossBar;
-	@Shadow @Final private ServerWorld world;
+	@Shadow @Final private ServerBossEvent bossBar;
+	@Shadow @Final private ServerLevel world;
 	@Shadow @Final private List<Integer> gateways;
 	@Shadow private boolean dragonKilled;
 	@Shadow private UUID dragonUuid;
 	@Shadow private boolean doLegacyCheck;
 	@Shadow private BlockPos exitPortalLocation;
-	@Shadow private EnderDragonSpawnState dragonSpawnState;
-	@Shadow private List<EndCrystalEntity> crystals;
+	@Shadow private DragonRespawnAnimation dragonSpawnState;
+	@Shadow private List<EndCrystal> crystals;
 	
 	@Shadow protected abstract void generateEndPortal(boolean previouslyKilled);
 	@Shadow protected abstract boolean loadChunks();
@@ -63,7 +68,7 @@ public abstract class EnderDragonFightMixin {
 	@Unique private static final String APATHY_GATEWAYTIMER = "apathy-gateway-timer";
 	
 	@Inject(method = "<init>", at = @At("TAIL"))
-	void onInit(ServerWorld world, long l, NbtCompound tag, CallbackInfo ci) {
+	void onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
 		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
 		if(tag.contains(APATHY_GATEWAYTIMER)) {
 			gatewayTimer = tag.getInt(APATHY_GATEWAYTIMER);
@@ -80,8 +85,8 @@ public abstract class EnderDragonFightMixin {
 	}
 	
 	@Inject(method = "toNbt", at = @At(value = "RETURN"))
-	void whenTagging(CallbackInfoReturnable<NbtCompound> cir) {
-		NbtCompound tag = cir.getReturnValue();
+	void whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
+		CompoundTag tag = cir.getReturnValue();
 		
 		tag.putBoolean(APATHY_CREATEDPORTAL, createdApathyPortal);
 		tag.putInt(APATHY_GATEWAYTIMER, gatewayTimer);
@@ -93,26 +98,26 @@ public abstract class EnderDragonFightMixin {
 			ci.cancel();
 			
 			//Just to be like triple sure there's no ender dragons around
-			this.bossBar.clearPlayers();
+			this.bossBar.removeAllPlayers();
 			this.bossBar.setVisible(false);
 			
-			for(EnderDragonEntity dragon : world.getAliveEnderDragons()) {
+			for(EnderDragon dragon : world.getDragons()) {
 				dragon.discard();
 			}
 			
 			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
 			//Special mechanics like the apathy exit portal & the gateway mechanic require chunks to be loaded.
-			List<ServerPlayerEntity> players = world.getPlayers(VALID_ENTITY);
+			List<ServerPlayer> players = world.getPlayers(VALID_ENTITY);
 			if(players.isEmpty()) {
-				this.world.getChunkManager().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+				this.world.getChunkSource().removeRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
 			} else {
-				this.world.getChunkManager().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+				this.world.getChunkSource().addRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
 				
 				//Also automatically grant "Free the End" advancement
 				//(this also grants "monster hunter" if you don't have it already but w/e)
-				EnderDragonEntity dummy = EntityType.ENDER_DRAGON.create(world);
-				for(ServerPlayerEntity player : players) {
-					Criteria.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
+				EnderDragon dummy = EntityType.ENDER_DRAGON.create(world);
+				for(ServerPlayer player : players) {
+					CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
 				}
 			}
 			
@@ -125,7 +130,7 @@ public abstract class EnderDragonFightMixin {
 	}
 	
 	@Inject(method = "setSpawnState", at = @At("HEAD"), cancellable = true)
-	void dontSetSpawnState(EnderDragonSpawnState enderDragonSpawnState, CallbackInfo ci) {
+	void dontSetSpawnState(DragonRespawnAnimation enderDragonSpawnState, CallbackInfo ci) {
 		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
 		if(Init.bossConfig.noDragon) {
 			this.dragonSpawnState = null;
@@ -134,14 +139,14 @@ public abstract class EnderDragonFightMixin {
 	}
 	
 	@Inject(method = "createDragon", at = @At("HEAD"), cancellable = true)
-	void dontCreateDragon(CallbackInfoReturnable<EnderDragonEntity> cir) {
+	void dontCreateDragon(CallbackInfoReturnable<EnderDragon> cir) {
 		if(Init.bossConfig.noDragon) {
 			cir.setReturnValue(null);
 		}
 	}
 	
 	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
-	void dontRespawnDragon(List<EndCrystalEntity> crystals, CallbackInfo ci) {
+	void dontRespawnDragon(List<EndCrystal> crystals, CallbackInfo ci) {
 		//respawnDragon-no-args handles detecting the 4 end crystals by the exit portal.
 		//respawnDragon-list-arg gets called with the list of end crystals, if there are four, and normally actually summons the boss.
 		if(Init.bossConfig.noDragon) {
@@ -157,7 +162,7 @@ public abstract class EnderDragonFightMixin {
 		//Ensure chunks are loaded before calling this, or the portal will generate at y = -1 for some reason.
 		if(!createdApathyPortal) {
 			generateEndPortal(true);
-			this.world.setBlockState(this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN), Blocks.DRAGON_EGG.getDefaultState());
+			this.world.setBlockAndUpdate(this.world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
 			createdApathyPortal = true;
 		}
 	}
@@ -183,28 +188,28 @@ public abstract class EnderDragonFightMixin {
 		//Blow up the crystals located on the end portal.
 		//(Yes, this means you can smuggle them away with a piston, just like vanilla lol.)
 		BlockPos exitPos = exitPortalLocation;
-		BlockPos oneAboveThat = exitPos.up();
-		for(Direction d : Direction.Type.HORIZONTAL) {
-			for(EndCrystalEntity crystal : this.world.getNonSpectatingEntities(EndCrystalEntity.class, new Box(oneAboveThat.offset(d, 2)))) {
+		BlockPos oneAboveThat = exitPos.above();
+		for(Direction d : Direction.Plane.HORIZONTAL) {
+			for(EndCrystal crystal : this.world.getEntitiesOfClass(EndCrystal.class, new AABB(oneAboveThat.relative(d, 2)))) {
 				crystal.setBeamTarget(null);
-				world.createExplosion(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.DestructionType.NONE);
+				world.explode(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.BlockInteraction.NONE);
 				crystal.discard();
 			}
 		}
 		
 		//Grant the advancement for resummoning the Ender Dragon (close enough)
-		EnderDragonEntity dummy = EntityType.ENDER_DRAGON.create(world);
-		for(ServerPlayerEntity player : world.getPlayers(VALID_ENTITY)) {
-			Criteria.SUMMONED_ENTITY.trigger(player, dummy);
+		EnderDragon dummy = EntityType.ENDER_DRAGON.create(world);
+		for(ServerPlayer player : world.getPlayers(VALID_ENTITY)) {
+			CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);
 		}
 	}
 	
-	@Unique private void tryEnderCrystalGateway(List<EndCrystalEntity> crystalsAroundEndPortal) {
+	@Unique private void tryEnderCrystalGateway(List<EndCrystal> crystalsAroundEndPortal) {
 		if(gatewayTimer == NOT_RUNNING) {
 			BlockPos pos = gatewayDryRun();
 			if(pos != null) {
-				BlockPos downABit = pos.down(2); //where the actual gateway block will be
-				for(EndCrystalEntity crystal : crystalsAroundEndPortal) {
+				BlockPos downABit = pos.below(2); //where the actual gateway block will be
+				for(EndCrystal crystal : crystalsAroundEndPortal) {
 					crystal.setBeamTarget(downABit);
 				}
 				
@@ -220,8 +225,8 @@ public abstract class EnderDragonFightMixin {
 		if(this.gateways.isEmpty()) return null;
 		else {
 			int i = this.gateways.get(this.gateways.size() - 1);
-			int j = MathHelper.floor(96.0D * Math.cos(2.0D * (-3.141592653589793D + 0.15707963267948966D * (double)i)));
-			int k = MathHelper.floor(96.0D * Math.sin(2.0D * (-3.141592653589793D + 0.15707963267948966D * (double)i)));
+			int j = Mth.floor(96.0D * Math.cos(2.0D * (-3.141592653589793D + 0.15707963267948966D * (double)i)));
+			int k = Mth.floor(96.0D * Math.sin(2.0D * (-3.141592653589793D + 0.15707963267948966D * (double)i)));
 			return new BlockPos(j, 75, k);
 		}
 	}

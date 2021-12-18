@@ -5,12 +5,12 @@ import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.PlayerList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -20,10 +20,10 @@ import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.command.argument.EntityArgumentType.getPlayers;
-import static net.minecraft.command.argument.EntityArgumentType.players;
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.Commands.literal;
 
 @SuppressWarnings("SameReturnValue")
 public class Commands {
@@ -31,7 +31,7 @@ public class Commands {
 		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
 	}
 	
-	public static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful
@@ -39,14 +39,14 @@ public class Commands {
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
-						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getString(cmd, "set"), true))))
+						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), true))))
 				.then(literal("part")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
-						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayer()), getString(cmd, "set"), true))))
+						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), true))))
 				.then(literal("show")
-					.executes(cmd -> showSets(cmd, Collections.singletonList(cmd.getSource().getPlayer())))))
+					.executes(cmd -> showSets(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException())))))
 			.then(literal("set-admin")
-				.requires(src -> src.hasPermissionLevel(2))
+				.requires(src -> src.hasPermission(2))
 				.then(literal("join")
 					.then(argument("who", players())
 						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
@@ -69,30 +69,30 @@ public class Commands {
 						.then(argument("self-select", bool())
 							.executes(cmd -> editSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))))
 			.then(literal("reload")
-				.requires(src -> src.hasPermissionLevel(2))
+				.requires(src -> src.hasPermission(2))
 				.executes(Commands::reloadNow))
 		);
 	}
 	
 	//(scaffolding)
-	private static void err(CommandContext<ServerCommandSource> cmd, String msg, Object... args) {
-		cmd.getSource().sendError(lit(msg, args));
+	private static void err(CommandContext<CommandSourceStack> cmd, String msg, Object... args) {
+		cmd.getSource().sendFailure(lit(msg, args));
 	}
 	
-	private static void personalMsg(CommandContext<ServerCommandSource> cmd, String msg, Object... args) {
-		cmd.getSource().sendFeedback(lit(msg, args), false);
+	private static void personalMsg(CommandContext<CommandSourceStack> cmd, String msg, Object... args) {
+		cmd.getSource().sendSuccess(lit(msg, args), false);
 	}
 	
-	private static void msg(CommandContext<ServerCommandSource> cmd, String msg, Object... args) {
-		cmd.getSource().sendFeedback(lit(msg, args), true);
+	private static void msg(CommandContext<CommandSourceStack> cmd, String msg, Object... args) {
+		cmd.getSource().sendSuccess(lit(msg, args), true);
 	}
 	
-	private static Text lit(String msg, Object... args) {
-		for(int i = 0; i < args.length; i++) if(args[i] instanceof Text) args[i] = ((Text) args[i]).asString();
-		return new LiteralText(String.format(msg, args));
+	private static Component lit(String msg, Object... args) {
+		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getContents();
+		return new TextComponent(String.format(msg, args));
 	}
 	
-	private static @Nullable PlayerSet getSet(CommandContext<ServerCommandSource> cmd, String setName) {
+	private static @Nullable PlayerSet getSet(CommandContext<CommandSourceStack> cmd, String setName) {
 		PlayerSet set = PlayerSetManager.getFor(cmd).get(setName);
 		if(set == null) {
 			err(cmd, "No set named %s.", setName);
@@ -102,7 +102,7 @@ public class Commands {
 	}
 	
 	//Joining, parting
-	private static int joinSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, String setName, boolean requireSelfSelect) {
+	private static int joinSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String setName, boolean requireSelfSelect) {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
@@ -112,7 +112,7 @@ public class Commands {
 		}
 		
 		int success = 0;
-		for(ServerPlayerEntity player : players) {
+		for(ServerPlayer player : players) {
 			if(set.join(player)) {
 				msg(cmd, "%s joined set %s.", player.getName(), set.getName());
 				success++;
@@ -124,7 +124,7 @@ public class Commands {
 		return success;
 	}
 	
-	private static int partSet(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players, String setName, boolean requireSelfSelect) {
+	private static int partSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String setName, boolean requireSelfSelect) {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
@@ -134,7 +134,7 @@ public class Commands {
 		}
 		
 		int success = 0;
-		for(ServerPlayerEntity player : players) {
+		for(ServerPlayer player : players) {
 			if(set.part(player)) {
 				msg(cmd, "%s parted set %s.", player.getName(), set.getName());
 				success++;
@@ -147,24 +147,24 @@ public class Commands {
 	}
 	
 	//Showing
-	private static int showSets(CommandContext<ServerCommandSource> cmd, Collection<ServerPlayerEntity> players) {
+	private static int showSets(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
 			err(cmd, "No player sets are available.");
 		} else {
-			personalMsg(cmd, "The following sets are available: %s", Texts.join(setManager.allSets(), PlayerSet::toLiteralText));
+			personalMsg(cmd, "The following sets are available: %s", ComponentUtils.formatList(setManager.allSets(), PlayerSet::toLiteralText));
 		}
 		
 		int success = 0;
 		
-		for(ServerPlayerEntity player : players) {
+		for(ServerPlayer player : players) {
 			Collection<PlayerSet> yea = setManager.allSetsContaining_KindaSlow_DontUseThisOnTheHotPath(player);
 			
 			if(yea.isEmpty()) {
 				err(cmd, "%s is not in any sets.", player.getName());
 			} else {
-				personalMsg(cmd, "%s is in these sets: %s", player.getName(), Texts.join(yea, PlayerSet::toLiteralText));
+				personalMsg(cmd, "%s is in these sets: %s", player.getName(), ComponentUtils.formatList(yea, PlayerSet::toLiteralText));
 				success++;
 			}
 		}
@@ -172,22 +172,22 @@ public class Commands {
 		return success;
 	}
 	
-	private static int showAllSets(CommandContext<ServerCommandSource> cmd) {
+	private static int showAllSets(CommandContext<CommandSourceStack> cmd) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
 			err(cmd, "No player sets are available.");
 		} else {
-			personalMsg(cmd, "The following player sets exist: %s", Texts.join(setManager.allSets(), PlayerSet::toLiteralText));
-			PlayerManager mgr = cmd.getSource().getServer().getPlayerManager();
+			personalMsg(cmd, "The following player sets exist: %s", ComponentUtils.formatList(setManager.allSets(), PlayerSet::toLiteralText));
+			PlayerList mgr = cmd.getSource().getServer().getPlayerList();
 			
 			for(PlayerSet set : setManager.allSets()) {
 				personalMsg(cmd, "Set %s contains %s members.", set.getName(), set.members().size());
 				for(UUID uuid : set.members()) {
-					ServerPlayerEntity player = mgr.getPlayer(uuid);
+					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
 						String.format(" - a currently logged-out player (UUID %s)", uuid) :
-						String.format(" - %s (UUID %s)", player.getName().asString(), uuid));
+						String.format(" - %s (UUID %s)", player.getName().getContents(), uuid));
 				}
 			}
 		}
@@ -195,7 +195,7 @@ public class Commands {
 	}
 	
 	//create, edit, delete
-	private static int createSet(CommandContext<ServerCommandSource> cmd, String name, boolean selfSelect) {
+	private static int createSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
 		if(setManager.hasSet(name)) {
 			err(cmd, "Cannot add a new player set named %s, as one already exists with that name.", name);
@@ -207,7 +207,7 @@ public class Commands {
 		return 1;
 	}
 	
-	private static int editSet(CommandContext<ServerCommandSource> cmd, String setName, boolean selfSelect) {
+	private static int editSet(CommandContext<CommandSourceStack> cmd, String setName, boolean selfSelect) {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
@@ -223,7 +223,7 @@ public class Commands {
 		return 1;
 	}
 	
-	private static int deleteSet(CommandContext<ServerCommandSource> cmd, String setName) {
+	private static int deleteSet(CommandContext<CommandSourceStack> cmd, String setName) {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
@@ -238,7 +238,7 @@ public class Commands {
 		return 1;
 	}
 	
-	private static int reloadNow(CommandContext<ServerCommandSource> cmd) {
+	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
 		Init.reloadNow(cmd.getSource().getServer());
 		msg(cmd, "Reloaded Apathy config file (and any scripts). Check the server log for any errors.");
 		return 0;

@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.rule;
 
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import java.util.function.BiPredicate;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 
-public interface Partial extends BiPredicate<MobEntity, ServerPlayerEntity> {}
+public interface Partial extends BiPredicate<Mob, ServerPlayer> {}

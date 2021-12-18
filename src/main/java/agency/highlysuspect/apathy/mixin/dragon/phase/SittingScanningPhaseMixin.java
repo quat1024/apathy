@@ -1,15 +1,15 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
 import agency.highlysuspect.apathy.Init;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.SittingScanningPhase;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonSittingScanningPhase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-@Mixin(SittingScanningPhase.class)
+@Mixin(DragonSittingScanningPhase.class)
 public class SittingScanningPhaseMixin {
 	@ModifyVariable(
 		method = "serverTick",
@@ -22,9 +22,9 @@ public class SittingScanningPhaseMixin {
 		)
 	)
 	private LivingEntity filterEntity(LivingEntity in) {
-		EnderDragonEntity dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
+		EnderDragon dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
 		
-		if(in instanceof ServerPlayerEntity serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(in instanceof ServerPlayer serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
 			return null;
 		} else return in;
 	}

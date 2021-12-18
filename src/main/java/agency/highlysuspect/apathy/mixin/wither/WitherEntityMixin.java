@@ -1,10 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Init;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -15,11 +11,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Predicate;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * @see agency.highlysuspect.apathy.mixin.EntityViewMixin for an additional mixin relevant to Wither targeting mechanics
  */
-@Mixin(WitherEntity.class)
+@Mixin(WitherBoss.class)
 public class WitherEntityMixin {
 	@Shadow @Final @Mutable private static Predicate<LivingEntity> CAN_ATTACK_PREDICATE;
 	
@@ -27,7 +27,7 @@ public class WitherEntityMixin {
 		//Targeting these with mixin is always a huge pain...
 		//Compose it with another predicate instead, how about that
 		CAN_ATTACK_PREDICATE = CAN_ATTACK_PREDICATE.and((ent) -> {
-			if(ent instanceof PlayerEntity) return Init.bossConfig.witherTargetsPlayers;
+			if(ent instanceof Player) return Init.bossConfig.witherTargetsPlayers;
 			else return Init.bossConfig.witherTargetsMobs;
 		});
 	}

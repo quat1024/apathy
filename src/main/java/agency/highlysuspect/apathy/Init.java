@@ -12,11 +12,11 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.InteractionResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,8 +36,8 @@ public class Init implements ModInitializer {
 	public static GeneralConfig generalConfig;
 	public static BossConfig bossConfig;
 	
-	public static Identifier id(String path) {
-		return new Identifier(MODID, path);
+	public static ResourceLocation id(String path) {
+		return new ResourceLocation(MODID, path);
 	}
 	
 	@Override
@@ -82,11 +82,11 @@ public class Init implements ModInitializer {
 		});
 		
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			if(!world.isClient && entity instanceof MobEntityExt) {
+			if(!world.isClientSide && entity instanceof MobEntityExt) {
 				((MobEntityExt) entity).apathy$provokeNow();
 			}
 			
-			return ActionResult.PASS;
+			return InteractionResult.PASS;
 		});
 	}
 	
@@ -97,14 +97,14 @@ public class Init implements ModInitializer {
 	public static void installReload(String name, Consumer<ResourceManager> funny) {
 		reloaders.add(funny);
 		
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
-			public Identifier getFabricId() {
+			public ResourceLocation getFabricId() {
 				return id(name);
 			}
 			
 			@Override
-			public void reload(ResourceManager manager) {
+			public void onResourceManagerReload(ResourceManager manager) {
 				funny.accept(manager);
 			}
 		});

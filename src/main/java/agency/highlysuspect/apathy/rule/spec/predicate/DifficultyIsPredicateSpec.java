@@ -26,7 +26,7 @@ public final class DifficultyIsPredicateSpec implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> difficulties.contains(attacker.world.getDifficulty());
+		return (attacker, defender) -> difficulties.contains(attacker.level.getDifficulty());
 	}
 	
 	@Override

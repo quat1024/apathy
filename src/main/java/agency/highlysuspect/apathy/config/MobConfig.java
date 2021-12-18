@@ -8,12 +8,11 @@ import agency.highlysuspect.apathy.rule.spec.*;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.Tag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.Difficulty;
-
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import java.util.*;
 
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "CanBeFinal"})
@@ -24,8 +23,8 @@ public class MobConfig extends Config {
 	protected transient Rule rule;
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
-	public boolean allowedToTargetPlayer(MobEntity attacker, ServerPlayerEntity player) {
-		if(attacker.world.isClient) throw new IllegalStateException("Do not call on the client, please");
+	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
+		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
 		
 		TriState result = rule.apply(attacker, player);
 		if(result != TriState.DEFAULT) return result.get();

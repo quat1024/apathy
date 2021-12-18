@@ -4,15 +4,14 @@ import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.registry.Registry;
-
 import java.util.Objects;
 import java.util.Set;
+import net.minecraft.core.Registry;
+import net.minecraft.world.entity.EntityType;
 
 public final class AttackerIsPredicateSpec implements PredicateSpec {
 	public static final Codec<AttackerIsPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Registry.ENTITY_TYPE.getCodec()).fieldOf("mobs").forGetter(x -> x.mobSet)
+		CodecUtil.setOf(Registry.ENTITY_TYPE.byNameCodec()).fieldOf("mobs").forGetter(x -> x.mobSet)
 	).apply(i, AttackerIsPredicateSpec::new));
 	private final Set<EntityType<?>> mobSet;
 	

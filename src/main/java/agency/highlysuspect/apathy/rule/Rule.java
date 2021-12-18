@@ -1,9 +1,8 @@
 package agency.highlysuspect.apathy.rule;
 
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import java.util.function.BiFunction;
 
-public interface Rule extends BiFunction<MobEntity, ServerPlayerEntity, TriState> {}
+public interface Rule extends BiFunction<Mob, ServerPlayer, TriState> {}

@@ -1,11 +1,11 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AbstractPhase.class)
+@Mixin(AbstractDragonPhaseInstance.class)
 public interface AbstractPhaseAccessor {
-	@Accessor("dragon") EnderDragonEntity apathy$getDragon();
+	@Accessor("dragon") EnderDragon apathy$getDragon();
 }

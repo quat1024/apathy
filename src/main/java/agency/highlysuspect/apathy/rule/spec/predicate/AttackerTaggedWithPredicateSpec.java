@@ -4,18 +4,17 @@ import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.registry.Registry;
-
 import java.util.Objects;
 import java.util.Set;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.EntityType;
 
 public final class AttackerTaggedWithPredicateSpec implements PredicateSpec {
 	public static final Codec<AttackerTaggedWithPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(
-			Tag.codec(() -> ServerTagManagerHolder.getTagManager().getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY))
+			Tag.codec(() -> SerializationTags.getInstance().getOrEmpty(Registry.ENTITY_TYPE_REGISTRY))
 		).fieldOf("tags").forGetter(x -> x.tags)
 	).apply(i, AttackerTaggedWithPredicateSpec::new));
 	private final Set<Tag<EntityType<?>>> tags;

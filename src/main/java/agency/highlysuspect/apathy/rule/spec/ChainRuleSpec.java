@@ -1,22 +1,18 @@
 package agency.highlysuspect.apathy.rule.spec;
 
+import agency.highlysuspect.apathy.platform.TriState;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.fabric.api.util.TriState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class ChainRuleSpec implements RuleSpec {
+public record ChainRuleSpec(List<RuleSpec> rules) implements RuleSpec {
 	public static final Codec<ChainRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.RULE_SPEC_CODEC.listOf().fieldOf("rules").forGetter(x -> x.rules)
 	).apply(i, ChainRuleSpec::new));
-	private final List<RuleSpec> rules;
-	
-	public ChainRuleSpec(List<RuleSpec> rules) {this.rules = rules;}
 	
 	@Override
 	public RuleSpec optimize() {
@@ -59,26 +55,4 @@ public final class ChainRuleSpec implements RuleSpec {
 	public Codec<? extends RuleSpec> codec() {
 		return CODEC;
 	}
-	
-	public List<RuleSpec> rules() {return rules;}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if(obj == this) return true;
-		if(obj == null || obj.getClass() != this.getClass()) return false;
-		var that = (ChainRuleSpec) obj;
-		return Objects.equals(this.rules, that.rules);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(rules);
-	}
-	
-	@Override
-	public String toString() {
-		return "ChainRuleSpec[" +
-			"rules=" + rules + ']';
-	}
-	
 }

@@ -6,17 +6,13 @@ import agency.highlysuspect.apathy.rule.spec.Specs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class AllPredicateSpec implements PredicateSpec {
+public record AllPredicateSpec(Set<PredicateSpec> others) implements PredicateSpec {
 	public static final Codec<AllPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(Specs.PREDICATE_SPEC_CODEC).fieldOf("predicates").forGetter(x -> x.others)
 	).apply(i, AllPredicateSpec::new));
-	private final Set<PredicateSpec> others;
-	
-	public AllPredicateSpec(Set<PredicateSpec> others) {this.others = others;}
 	
 	@Override
 	public PredicateSpec optimize() {
@@ -52,26 +48,4 @@ public final class AllPredicateSpec implements PredicateSpec {
 	public Codec<? extends PredicateSpec> codec() {
 		return CODEC;
 	}
-	
-	public Set<PredicateSpec> others() {return others;}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if(obj == this) return true;
-		if(obj == null || obj.getClass() != this.getClass()) return false;
-		var that = (AllPredicateSpec) obj;
-		return Objects.equals(this.others, that.others);
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(others);
-	}
-	
-	@Override
-	public String toString() {
-		return "AllPredicateSpec[" +
-			"others=" + others + ']';
-	}
-	
 }

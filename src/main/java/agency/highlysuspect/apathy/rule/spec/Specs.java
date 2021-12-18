@@ -4,10 +4,11 @@ import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
-import java.util.function.Function;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
+
+import java.util.function.Function;
 
 public class Specs {
 	public static final ResourceKey<Registry<Codec<? extends RuleSpec>>> RULE_SPEC_CODEC_KEY = ResourceKey.createRegistryKey(Apathy.id("rule_spec_codec"));

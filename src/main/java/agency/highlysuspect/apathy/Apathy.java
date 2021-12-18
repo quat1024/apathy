@@ -5,10 +5,8 @@ import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
-import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,16 +36,14 @@ public class Apathy {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory", e);
 		}
 		
-		//Various subsystems
 		Specs.onInitialize();
 		
-		//Config file stuff
-		reloadConfigFile();
+		loadConfig();
 		
 		PlatformSupport.instance.initialize();
 	}
 	
-	public static void reloadConfigFile() {
+	public static void loadConfig() {
 		GeneralConfig oldGeneralConfig = generalConfig;
 		MobConfig oldMobConfig = mobConfig;
 		BossConfig oldBossConfig = bossConfig;
@@ -70,10 +66,5 @@ public class Apathy {
 				LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
 			}
 		}
-	}
-	
-	//called from the `/apathy reload` command, just reruns my own loaders and not the whole game
-	public static void reloadNow(MinecraftServer server) {
-		reloadConfigFile();
 	}
 }

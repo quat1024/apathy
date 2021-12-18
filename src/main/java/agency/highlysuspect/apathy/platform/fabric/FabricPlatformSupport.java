@@ -23,11 +23,6 @@ import java.nio.file.Path;
 
 public class FabricPlatformSupport extends PlatformSupport {
 	@Override
-	public Path getConfigPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
-	}
-	
-	@Override
 	public void initialize() {
 		installConfigFileReloader();
 		installAttackCallback();
@@ -44,7 +39,7 @@ public class FabricPlatformSupport extends PlatformSupport {
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				Apathy.reloadConfigFile();
+				Apathy.loadConfig();
 			}
 		});
 	}
@@ -74,6 +69,16 @@ public class FabricPlatformSupport extends PlatformSupport {
 				else mgr.createSet(s, Apathy.mobConfig.playerSetSelfSelect);
 			});
 		});
+	}
+	
+	@Override
+	public Path getConfigPath() {
+		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
+	}
+	
+	@Override
+	public boolean externalApathyReloadSupported() {
+		return true;
 	}
 	
 	@Override

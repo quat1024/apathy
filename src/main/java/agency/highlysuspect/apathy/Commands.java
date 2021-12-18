@@ -1,8 +1,10 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.platform.PlatformSupport;
 import agency.highlysuspect.apathy.playerset.PlayerSet;
 import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -30,7 +32,8 @@ public class Commands {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful
-		dispatcher.register(literal(Apathy.MODID)
+		
+		LiteralArgumentBuilder<CommandSourceStack> lit = literal(Apathy.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
@@ -62,11 +65,13 @@ public class Commands {
 				.then(literal("edit")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
 						.then(argument("self-select", bool())
-							.executes(cmd -> editSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))))
-			.then(literal("reload")
-				.requires(src -> src.hasPermission(2))
-				.executes(Commands::reloadNow))
-		);
+							.executes(cmd -> editSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))));
+		
+		if(PlatformSupport.instance.externalApathyReloadSupported()) {
+			lit = lit.then(literal("reload").requires(src -> src.hasPermission(2)).executes(Commands::reloadNow));
+		}
+		
+		dispatcher.register(lit);
 	}
 	
 	//(scaffolding)
@@ -234,7 +239,7 @@ public class Commands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		Apathy.reloadNow(cmd.getSource().getServer());
+		Apathy.loadConfig();
 		msg(cmd, "Reloaded Apathy config files. Check the server log for any errors.");
 		return 0;
 	}

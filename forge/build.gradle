@@ -1,0 +1,69 @@
+buildscript {
+	repositories {
+		maven { url = 'https://maven.minecraftforge.net' }
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+	}
+}
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+archivesBaseName = "${project.mod_name}-${project.minecraft_version}-forge"
+
+minecraft {
+	mappings channel: 'official', version: minecraft_version
+	
+//	if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
+//		// This location is hardcoded in Forge and can not be changed.
+//		// https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
+//		accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+//		project.logger.debug('Forge Access Transformers are enabled for this project.')
+//	}
+	
+	runs {
+		client {
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			taskName 'Client'
+			mods {
+				modClientRun {
+					source sourceSets.main
+					source project(":common").sourceSets.main
+				}
+			}
+		}
+		
+		server {
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			taskName 'Server'
+			mods {
+				modServerRun {
+					source sourceSets.main
+					source project(":common").sourceSets.main
+				}
+			}
+		}
+	}
+}
+
+sourceSets.main.resources.srcDir 'src/generated/resources'
+
+dependencies {
+	minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+	compileOnly project(":common")
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common").sourceSets.main.allSource)
+}
+
+processResources {
+	from project(":common").sourceSets.main.resources
+}
+
+jar.finalizedBy('reobfJar')

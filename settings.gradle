@@ -1,9 +1,16 @@
 pluginManagement {
-    repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        gradlePluginPortal()
-    }
+	repositories {
+		gradlePluginPortal()
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		maven {
+			name = 'Sponge Snapshots'
+			url = 'https://repo.spongepowered.org/repository/maven-public/'
+		}
+	}
 }
+
+rootProject.name = "apathy"
+include("common", "fabric", "forge")

@@ -9,7 +9,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 
-public record PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpec predSpec, Codec<PredicatedRuleSpec> theCodec) implements RuleSpec {
+import java.util.Objects;
+
+public final class PredicatedRuleSpec implements RuleSpec {
 	public PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpec predSpec) {
 		this(ifTrue, ifFalse, predSpec, PREDICATED_CODEC);
 	}
@@ -35,6 +37,17 @@ public record PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpe
 	public static final Codec<PredicatedRuleSpec> DENY_IF_CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.predSpec)
 	).apply(i, PredicatedRuleSpec::denyIf));
+	private final TriState ifTrue;
+	private final TriState ifFalse;
+	private final PredicateSpec predSpec;
+	private final Codec<PredicatedRuleSpec> theCodec;
+	
+	public PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpec predSpec, Codec<PredicatedRuleSpec> theCodec) {
+		this.ifTrue = ifTrue;
+		this.ifFalse = ifFalse;
+		this.predSpec = predSpec;
+		this.theCodec = theCodec;
+	}
 	
 	@Override
 	public RuleSpec optimize() {
@@ -65,4 +78,38 @@ public record PredicatedRuleSpec(TriState ifTrue, TriState ifFalse, PredicateSpe
 	public Codec<? extends RuleSpec> codec() {
 		return theCodec;
 	}
+	
+	public TriState ifTrue() {return ifTrue;}
+	
+	public TriState ifFalse() {return ifFalse;}
+	
+	public PredicateSpec predSpec() {return predSpec;}
+	
+	public Codec<PredicatedRuleSpec> theCodec() {return theCodec;}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) return true;
+		if(obj == null || obj.getClass() != this.getClass()) return false;
+		var that = (PredicatedRuleSpec) obj;
+		return Objects.equals(this.ifTrue, that.ifTrue) &&
+			Objects.equals(this.ifFalse, that.ifFalse) &&
+			Objects.equals(this.predSpec, that.predSpec) &&
+			Objects.equals(this.theCodec, that.theCodec);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(ifTrue, ifFalse, predSpec, theCodec);
+	}
+	
+	@Override
+	public String toString() {
+		return "PredicatedRuleSpec[" +
+			"ifTrue=" + ifTrue + ", " +
+			"ifFalse=" + ifFalse + ", " +
+			"predSpec=" + predSpec + ", " +
+			"theCodec=" + theCodec + ']';
+	}
+	
 }

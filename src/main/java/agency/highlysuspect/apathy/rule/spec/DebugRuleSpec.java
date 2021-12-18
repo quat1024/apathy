@@ -6,11 +6,20 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 
-public record DebugRuleSpec(RuleSpec rule, String message) implements RuleSpec {
+import java.util.Objects;
+
+public final class DebugRuleSpec implements RuleSpec {
 	public static final Codec<DebugRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.RULE_SPEC_CODEC.fieldOf("rule").forGetter(x -> x.rule),
 		Codec.STRING.fieldOf("message").forGetter(x -> x.message)
 	).apply(i, DebugRuleSpec::new));
+	private final RuleSpec rule;
+	private final String message;
+	
+	public DebugRuleSpec(RuleSpec rule, String message) {
+		this.rule = rule;
+		this.message = message;
+	}
 	
 	@Override
 	public RuleSpec optimize() {
@@ -41,4 +50,30 @@ public record DebugRuleSpec(RuleSpec rule, String message) implements RuleSpec {
 	public Codec<? extends RuleSpec> codec() {
 		return CODEC;
 	}
+	
+	public RuleSpec rule() {return rule;}
+	
+	public String message() {return message;}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) return true;
+		if(obj == null || obj.getClass() != this.getClass()) return false;
+		var that = (DebugRuleSpec) obj;
+		return Objects.equals(this.rule, that.rule) &&
+			Objects.equals(this.message, that.message);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(rule, message);
+	}
+	
+	@Override
+	public String toString() {
+		return "DebugRuleSpec[" +
+			"rule=" + rule + ", " +
+			"message=" + message + ']';
+	}
+	
 }

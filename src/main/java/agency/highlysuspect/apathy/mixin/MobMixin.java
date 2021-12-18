@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Init;
-import agency.highlysuspect.apathy.MobEntityExt;
+import agency.highlysuspect.apathy.MobExt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mob.class)
-public class MobEntityMixin implements MobEntityExt {
+public class MobMixin implements MobExt {
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
 	public void whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
@@ -64,14 +64,14 @@ public class MobEntityMixin implements MobEntityExt {
 		return provocationTime != NOT_PROVOKED;
 	}
 	
-	@Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
+	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
 	}
 	
-	@Inject(method = "readCustomDataFromNbt", at = @At("RETURN"))
+	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
 	public void whenLoading(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);

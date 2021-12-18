@@ -13,16 +13,16 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(WitherSkullBlock.class)
 public class WitherSkullBlockMixin {
 	@Redirect(
-		method = "onPlaced(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/SkullBlockEntity;)V",
+		method = "checkSpawn",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
+			target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
 		)
 	)
 	private static boolean yeet(Level world, Entity entity) {
 		if(!Init.bossConfig.noWither) return world.addFreshEntity(entity);
 		
-		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropEquipment(DamageSource.ANVIL, 1, true);
+		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(DamageSource.ANVIL);
 		return false;
 	}
 }

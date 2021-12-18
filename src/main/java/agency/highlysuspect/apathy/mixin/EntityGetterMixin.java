@@ -15,9 +15,9 @@ import net.minecraft.world.phys.AABB;
 
 //please tell me i can mixin to default interface methods, please please
 @Mixin(EntityGetter.class)
-public interface EntityViewMixin {
+public interface EntityGetterMixin {
 	@ModifyVariable(
-		method = "getTargets", ordinal = 1 /* idk why i need this, there's only one return point */, at = @At("RETURN")
+		method = "getNearbyEntities", ordinal = 1 /* idk why i need this, there's only one return point */, at = @At("RETURN")
 	)
 	default <T extends LivingEntity> List<T> filterTargets(List<T> targets, Class<T> entityClass, TargetingConditions targetPredicate, LivingEntity targetingEntity, AABB box) {
 		//Miscellaneous method used for some "find nearby things to target" tasks in the game.

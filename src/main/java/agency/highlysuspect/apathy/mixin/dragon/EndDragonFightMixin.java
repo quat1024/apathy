@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Unit;
-import net.minecraft.util.math.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -41,22 +40,22 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("SameParameterValue")
 @Mixin(EndDragonFight.class)
-public abstract class EnderDragonFightMixin {
+public abstract class EndDragonFightMixin {
 	//a zillion shadows
-	@Shadow @Final private static Predicate<Entity> VALID_ENTITY;
-	@Shadow @Final private ServerBossEvent bossBar;
-	@Shadow @Final private ServerLevel world;
+	@Shadow @Final private static Predicate<Entity> VALID_PLAYER;
+	@Shadow @Final private ServerBossEvent dragonEvent;
+	@Shadow @Final private ServerLevel level;
 	@Shadow @Final private List<Integer> gateways;
 	@Shadow private boolean dragonKilled;
-	@Shadow private UUID dragonUuid;
-	@Shadow private boolean doLegacyCheck;
-	@Shadow private BlockPos exitPortalLocation;
-	@Shadow private DragonRespawnAnimation dragonSpawnState;
-	@Shadow private List<EndCrystal> crystals;
+	@Shadow private UUID dragonUUID;
+	@Shadow private boolean needsStateScanning;
+	@Shadow private BlockPos portalLocation;
+	@Shadow private DragonRespawnAnimation respawnStage;
+	@Shadow private List<EndCrystal> respawnCrystals;
 	
-	@Shadow protected abstract void generateEndPortal(boolean previouslyKilled);
-	@Shadow protected abstract boolean loadChunks();
-	@Shadow protected abstract void generateNewEndGateway();
+	@Shadow protected abstract boolean isArenaLoaded();
+	@Shadow protected abstract void spawnNewGateway();
+	@Shadow protected abstract void spawnExitPortal(boolean previouslyKilled);
 	
 	//my additions
 	
@@ -78,13 +77,13 @@ public abstract class EnderDragonFightMixin {
 		
 		if(Init.bossConfig.noDragon) {
 			dragonKilled = true; //sigh
-			dragonUuid = null;
-			doLegacyCheck = false;
-			dragonSpawnState = null;
+			dragonUUID = null;
+			needsStateScanning = false;
+			respawnStage = null;
 		}
 	}
 	
-	@Inject(method = "toNbt", at = @At(value = "RETURN"))
+	@Inject(method = "saveData", at = @At(value = "RETURN"))
 	void whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
 		CompoundTag tag = cir.getReturnValue();
 		
@@ -98,30 +97,30 @@ public abstract class EnderDragonFightMixin {
 			ci.cancel();
 			
 			//Just to be like triple sure there's no ender dragons around
-			this.bossBar.removeAllPlayers();
-			this.bossBar.setVisible(false);
+			this.dragonEvent.removeAllPlayers();
+			this.dragonEvent.setVisible(false);
 			
-			for(EnderDragon dragon : world.getDragons()) {
+			for(EnderDragon dragon : level.getDragons()) {
 				dragon.discard();
 			}
 			
 			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
 			//Special mechanics like the apathy exit portal & the gateway mechanic require chunks to be loaded.
-			List<ServerPlayer> players = world.getPlayers(VALID_ENTITY);
+			List<ServerPlayer> players = level.getPlayers(VALID_PLAYER);
 			if(players.isEmpty()) {
-				this.world.getChunkSource().removeRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+				this.level.getChunkSource().removeRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
 			} else {
-				this.world.getChunkSource().addRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+				this.level.getChunkSource().addRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
 				
 				//Also automatically grant "Free the End" advancement
 				//(this also grants "monster hunter" if you don't have it already but w/e)
-				EnderDragon dummy = EntityType.ENDER_DRAGON.create(world);
+				EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
 				for(ServerPlayer player : players) {
 					CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
 				}
 			}
 			
-			boolean chunksReady = loadChunks();
+			boolean chunksReady = isArenaLoaded();
 			if(chunksReady) {
 				createApathyPortal();
 				gatewayTimerTick();
@@ -129,16 +128,16 @@ public abstract class EnderDragonFightMixin {
 		}
 	}
 	
-	@Inject(method = "setSpawnState", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "setRespawnStage", at = @At("HEAD"), cancellable = true)
 	void dontSetSpawnState(DragonRespawnAnimation enderDragonSpawnState, CallbackInfo ci) {
 		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
 		if(Init.bossConfig.noDragon) {
-			this.dragonSpawnState = null;
+			this.respawnStage = null;
 			ci.cancel();
 		}
 	}
 	
-	@Inject(method = "createDragon", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "createNewDragon", at = @At("HEAD"), cancellable = true)
 	void dontCreateDragon(CallbackInfoReturnable<EnderDragon> cir) {
 		if(Init.bossConfig.noDragon) {
 			cir.setReturnValue(null);
@@ -161,8 +160,8 @@ public abstract class EnderDragonFightMixin {
 		//("generateEndPortal" updates the "exit portal location" blockpos variable btw.)
 		//Ensure chunks are loaded before calling this, or the portal will generate at y = -1 for some reason.
 		if(!createdApathyPortal) {
-			generateEndPortal(true);
-			this.world.setBlockAndUpdate(this.world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
+			spawnExitPortal(true);
+			this.level.setBlockAndUpdate(this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
 			createdApathyPortal = true;
 		}
 	}
@@ -183,23 +182,23 @@ public abstract class EnderDragonFightMixin {
 	
 	//The end of the "spawn gateway" cutscene
 	@Unique private void doGatewaySpawn() {
-		generateNewEndGateway(); //Actually generate it now
+		spawnNewGateway(); //Actually generate it now
 		
 		//Blow up the crystals located on the end portal.
 		//(Yes, this means you can smuggle them away with a piston, just like vanilla lol.)
-		BlockPos exitPos = exitPortalLocation;
+		BlockPos exitPos = portalLocation;
 		BlockPos oneAboveThat = exitPos.above();
 		for(Direction d : Direction.Plane.HORIZONTAL) {
-			for(EndCrystal crystal : this.world.getEntitiesOfClass(EndCrystal.class, new AABB(oneAboveThat.relative(d, 2)))) {
+			for(EndCrystal crystal : this.level.getEntitiesOfClass(EndCrystal.class, new AABB(oneAboveThat.relative(d, 2)))) {
 				crystal.setBeamTarget(null);
-				world.explode(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.BlockInteraction.NONE);
+				level.explode(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Explosion.BlockInteraction.NONE);
 				crystal.discard();
 			}
 		}
 		
 		//Grant the advancement for resummoning the Ender Dragon (close enough)
-		EnderDragon dummy = EntityType.ENDER_DRAGON.create(world);
-		for(ServerPlayer player : world.getPlayers(VALID_ENTITY)) {
+		EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
+		for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
 			CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);
 		}
 	}
@@ -213,7 +212,7 @@ public abstract class EnderDragonFightMixin {
 					crystal.setBeamTarget(downABit);
 				}
 				
-				this.crystals = crystalsAroundEndPortal;
+				this.respawnCrystals = crystalsAroundEndPortal;
 				gatewayTimer = 100; //5 seconds
 			}
 		}

@@ -13,16 +13,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DragonStrafePlayerPhase.class)
-public class StrafePlayerPhaseMixin {
-	@Shadow private @Nullable LivingEntity target;
+public class DragonStrafePlayerPhaseMixin {
+	@Shadow private @Nullable LivingEntity attackTarget;
 	
-	@Inject(method = "serverTick", at = @At("HEAD"))
+	@Inject(method = "doServerTick", at = @At("HEAD"))
 	private void onServerTick(CallbackInfo ci) {
-		EnderDragon dergon = ((AbstractPhaseAccessor) this).apathy$getDragon();
+		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		
-		if(target instanceof ServerPlayer serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(attackTarget instanceof ServerPlayer serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
 			//Will cause her to transition away from this phase
-			target = null;
+			attackTarget = null;
 		}
 	}
 }

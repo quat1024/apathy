@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Apathy",
-  "description": "Mobs don't attack players.",
+  "description": "Mobs don't attack players. Or maybe they do! Configurable! Yay",
   "authors": [
     "quaternary",
 		"whizzball1"
@@ -14,7 +14,7 @@
   },
 
   "license": "LGPL-3.0-or-later",
-  "icon": "assets/apathy/icon-128.png",
+  "icon": "apathy-icon-128.png",
 
   "environment": "*",
   "entrypoints": {

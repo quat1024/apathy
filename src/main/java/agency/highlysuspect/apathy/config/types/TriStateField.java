@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.fabricmc.fabric.api.util.TriState;
 
 import java.lang.reflect.Field;
@@ -14,7 +14,7 @@ public class TriStateField {
 				case "deny": return TriState.FALSE;
 				case "pass": return TriState.DEFAULT;
 				default:
-					Init.LOG.warn("Value " + value + " on field " + sourceField.getName() + " is not one of allow/deny/pass. Defaulting to 'pass'.");
+					Apathy.LOG.warn("Value " + value + " on field " + sourceField.getName() + " is not one of allow/deny/pass. Defaulting to 'pass'.");
 					return TriState.DEFAULT;
 			}
 		}

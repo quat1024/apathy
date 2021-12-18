@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "agency.highlysuspect.apathy.Init"
+			"agency.highlysuspect.apathy.platform.fabric.FabricInit"
     ]
   },
   "mixins": [

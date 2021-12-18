@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
+import agency.highlysuspect.apathy.platform.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Rule;
@@ -7,7 +8,6 @@ import agency.highlysuspect.apathy.rule.spec.predicate.AlwaysPredicateSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.PredicateSpec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.fabric.api.util.TriState;
 
 import java.util.Objects;
 

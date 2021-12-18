@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -20,7 +20,7 @@ public class DragonStrafePlayerPhaseMixin {
 	private void onServerTick(CallbackInfo ci) {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		
-		if(attackTarget instanceof ServerPlayer serverPlayer && !Init.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(attackTarget instanceof ServerPlayer serverPlayer && !Apathy.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
 			//Will cause her to transition away from this phase
 			attackTarget = null;
 		}

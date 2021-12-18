@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.MobExt;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,7 +22,7 @@ public class MobMixin implements MobExt {
 		if(thi$.level.isClientSide) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayer && !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
+		if(newTarget instanceof ServerPlayer && !Apathy.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
 			ci.cancel();
 		}
@@ -34,9 +34,9 @@ public class MobMixin implements MobExt {
 		if(thi$.level.isClientSide) return;
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Init.generalConfig.recheckInterval == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayer
-			&& !Init.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+			&& !Apathy.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}

@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.mixin.EntityGetterMixin;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,21 +28,21 @@ public class WitherBossMixin {
 		//Targeting these with mixin is always a huge pain...
 		//Compose it with another predicate instead, how about that
 		LIVING_ENTITY_SELECTOR = LIVING_ENTITY_SELECTOR.and((ent) -> {
-			if(ent instanceof Player) return Init.bossConfig.witherTargetsPlayers;
-			else return Init.bossConfig.witherTargetsMobs;
+			if(ent instanceof Player) return Apathy.bossConfig.witherTargetsPlayers;
+			else return Apathy.bossConfig.witherTargetsMobs;
 		});
 	}
 	
 	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)
 	private static void cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
-		if(!Init.bossConfig.witherBreaksBlocks) {
+		if(!Apathy.bossConfig.witherBreaksBlocks) {
 			cir.setReturnValue(false);
 		}
 	}
 	
 	@Inject(method = "performRangedAttack(IDDDZ)V", at = @At("HEAD"), cancellable = true)
 	private void noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
-		if((!charged && !Init.bossConfig.blackWitherSkulls) || (charged && !Init.bossConfig.blueWitherSkulls)) {
+		if((!charged && !Apathy.bossConfig.blackWitherSkulls) || (charged && !Apathy.bossConfig.blueWitherSkulls)) {
 			ci.cancel();
 		}
 	}

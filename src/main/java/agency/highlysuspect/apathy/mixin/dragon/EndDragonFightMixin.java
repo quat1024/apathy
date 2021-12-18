@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,7 +75,7 @@ public abstract class EndDragonFightMixin {
 			gatewayTimer = NOT_RUNNING;
 		}
 		
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			dragonKilled = true; //sigh
 			dragonUUID = null;
 			needsStateScanning = false;
@@ -93,7 +93,7 @@ public abstract class EndDragonFightMixin {
 	
 	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
 	void dontTick(CallbackInfo ci) {
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			ci.cancel();
 			
 			//Just to be like triple sure there's no ender dragons around
@@ -131,7 +131,7 @@ public abstract class EndDragonFightMixin {
 	@Inject(method = "setRespawnStage", at = @At("HEAD"), cancellable = true)
 	void dontSetSpawnState(DragonRespawnAnimation enderDragonSpawnState, CallbackInfo ci) {
 		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			this.respawnStage = null;
 			ci.cancel();
 		}
@@ -139,7 +139,7 @@ public abstract class EndDragonFightMixin {
 	
 	@Inject(method = "createNewDragon", at = @At("HEAD"), cancellable = true)
 	void dontCreateDragon(CallbackInfoReturnable<EnderDragon> cir) {
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			cir.setReturnValue(null);
 		}
 	}
@@ -148,7 +148,7 @@ public abstract class EndDragonFightMixin {
 	void dontRespawnDragon(List<EndCrystal> crystals, CallbackInfo ci) {
 		//respawnDragon-no-args handles detecting the 4 end crystals by the exit portal.
 		//respawnDragon-list-arg gets called with the list of end crystals, if there are four, and normally actually summons the boss.
-		if(Init.bossConfig.noDragon) {
+		if(Apathy.bossConfig.noDragon) {
 			ci.cancel();
 			
 			tryEnderCrystalGateway(crystals);

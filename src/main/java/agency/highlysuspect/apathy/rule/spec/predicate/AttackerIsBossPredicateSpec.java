@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.tag.TagFactory;
@@ -11,7 +11,7 @@ public final class AttackerIsBossPredicateSpec implements PredicateSpec {
 	public static final AttackerIsBossPredicateSpec INSTANCE = new AttackerIsBossPredicateSpec();
 	public static final Codec<AttackerIsBossPredicateSpec> CODEC = Codec.unit(INSTANCE);
 	
-	public static final Tag<EntityType<?>> BOSS_TAG = TagFactory.ENTITY_TYPE.create(Init.id("bosses"));
+	public static final Tag<EntityType<?>> BOSS_TAG = TagFactory.ENTITY_TYPE.create(Apathy.id("bosses"));
 	
 	public AttackerIsBossPredicateSpec() {}
 	

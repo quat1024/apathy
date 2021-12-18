@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -20,7 +20,7 @@ public class WitherSkullBlockMixin {
 		)
 	)
 	private static boolean yeet(Level world, Entity entity) {
-		if(!Init.bossConfig.noWither) return world.addFreshEntity(entity);
+		if(!Apathy.bossConfig.noWither) return world.addFreshEntity(entity);
 		
 		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(DamageSource.ANVIL);
 		return false;

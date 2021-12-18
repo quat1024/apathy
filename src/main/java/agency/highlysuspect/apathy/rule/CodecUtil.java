@@ -1,8 +1,8 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.platform.TriState;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.world.Difficulty;
 
 import java.util.*;

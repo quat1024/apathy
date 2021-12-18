@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Init;
+import agency.highlysuspect.apathy.Apathy;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -25,7 +25,7 @@ public interface EntityGetterMixin {
 		//This mixin catches some cases where an entity is attacked without formally being targeted, like the Wither firing black skulls.
 		if(targetingEntity instanceof Mob) {
 			Mob mob = (Mob) targetingEntity; 
-			targets.removeIf(target -> target instanceof ServerPlayer && !Init.mobConfig.allowedToTargetPlayer(mob, (ServerPlayer) target));
+			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy.mobConfig.allowedToTargetPlayer(mob, (ServerPlayer) target));
 		}
 		
 		return targets;

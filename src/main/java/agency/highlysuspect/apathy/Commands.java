@@ -35,7 +35,7 @@ public class Commands {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful
-		dispatcher.register(literal(Init.MODID)
+		dispatcher.register(literal(Apathy.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
@@ -211,7 +211,7 @@ public class Commands {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
-		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
+		Optional<String> yeayehhehh = Apathy.mobConfig.playerSetName;
 		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
 			err(cmd, "Cannot edit set %s, as its settings would just be reset by the config file.", set.getName());
 			return 0;
@@ -227,7 +227,7 @@ public class Commands {
 		PlayerSet set = getSet(cmd, setName);
 		if(set == null) return 0;
 		
-		Optional<String> yeayehhehh = Init.mobConfig.playerSetName;
+		Optional<String> yeayehhehh = Apathy.mobConfig.playerSetName;
 		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
 			err(cmd, "Player set %s cannot be deleted because it'd just get recreated by the config file.", set.getName());
 			return 0;
@@ -239,7 +239,7 @@ public class Commands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		Init.reloadNow(cmd.getSource().getServer());
+		Apathy.reloadNow(cmd.getSource().getServer());
 		msg(cmd, "Reloaded Apathy config file (and any scripts). Check the server log for any errors.");
 		return 0;
 	}

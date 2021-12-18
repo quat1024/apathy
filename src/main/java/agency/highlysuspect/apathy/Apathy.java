@@ -40,13 +40,11 @@ public class Apathy {
 		
 		//Various subsystems
 		Specs.onInitialize();
-		Commands.onInitialize();
-		PlayerSetManager.onInitialize();
 		
 		//Config file stuff
 		reloadConfigFile();
-		PlatformSupport.instance.reloadConfigFileOnResourceReload();
-		PlatformSupport.instance.installAttackCallback();
+		
+		PlatformSupport.instance.initialize();
 	}
 	
 	public static void reloadConfigFile() {

@@ -4,7 +4,6 @@ import agency.highlysuspect.apathy.playerset.PlayerSet;
 import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -27,10 +26,6 @@ import static net.minecraft.commands.Commands.literal;
 
 @SuppressWarnings("SameReturnValue")
 public class Commands {
-	public static void onInitialize() {
-		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
-	}
-	
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
 		//Do not trust the indentation lmao
 		//I've been burned before

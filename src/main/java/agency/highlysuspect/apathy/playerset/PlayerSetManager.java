@@ -1,10 +1,9 @@
 package agency.highlysuspect.apathy.playerset;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.platform.PlatformSupport;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.nbt.CompoundTag;
@@ -95,16 +94,6 @@ public class PlayerSetManager extends SavedData {
 		tag.put("PlayerSets", allSets);
 		
 		return tag;
-	}
-	
-	public static void onInitialize() {
-		ServerTickEvents.START_SERVER_TICK.register(server -> {
-			PlayerSetManager mgr = PlayerSetManager.getFor(server);
-			Apathy.mobConfig.playerSetName.ifPresent(s -> {
-				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Apathy.mobConfig.playerSetSelfSelect);
-				else mgr.createSet(s, Apathy.mobConfig.playerSetSelfSelect);
-			});
-		});
 	}
 	
 	public static CompletableFuture<Suggestions> suggestSelfSelectPlayerSets(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {

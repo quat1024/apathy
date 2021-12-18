@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.platform.TriState;
+import agency.highlysuspect.apathy.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Rule;

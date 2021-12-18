@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.rule.spec;
 
 import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.platform.TriState;
+import agency.highlysuspect.apathy.TriState;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

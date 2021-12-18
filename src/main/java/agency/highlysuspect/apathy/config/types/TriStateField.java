@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.Apathy;
-import net.fabricmc.fabric.api.util.TriState;
+import agency.highlysuspect.apathy.TriState;
 
 import java.lang.reflect.Field;
 
@@ -25,7 +25,6 @@ public class TriStateField {
 				case TRUE -> "allow";
 				case FALSE -> "deny";
 				case DEFAULT -> "pass";
-				default -> throw new IllegalStateException("how'd you fit four states in a TriState?");
 			};
 		}
 	}

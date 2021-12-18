@@ -235,7 +235,7 @@ public class Commands {
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
 		Apathy.reloadNow(cmd.getSource().getServer());
-		msg(cmd, "Reloaded Apathy config file (and any scripts). Check the server log for any errors.");
+		msg(cmd, "Reloaded Apathy config files. Check the server log for any errors.");
 		return 0;
 	}
 }

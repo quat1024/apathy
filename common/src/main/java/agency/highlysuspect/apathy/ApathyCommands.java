@@ -27,7 +27,7 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 @SuppressWarnings("SameReturnValue")
-public class Commands {
+public class ApathyCommands {
 	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
 		//Do not trust the indentation lmao
 		//I've been burned before
@@ -54,7 +54,7 @@ public class Commands {
 						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
 							.executes(cmd -> partSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), false)))))
 				.then(literal("show-all")
-					.executes(Commands::showAllSets))
+					.executes(ApathyCommands::showAllSets))
 				.then(literal("delete")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
 						.executes(cmd -> deleteSet(cmd, getString(cmd, "set")))))
@@ -68,7 +68,7 @@ public class Commands {
 							.executes(cmd -> editSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))));
 		
 		if(PlatformSupport.instance.externalApathyReloadSupported()) {
-			lit = lit.then(literal("reload").requires(src -> src.hasPermission(2)).executes(Commands::reloadNow));
+			lit = lit.then(literal("reload").requires(src -> src.hasPermission(2)).executes(ApathyCommands::reloadNow));
 		}
 		
 		dispatcher.register(lit);

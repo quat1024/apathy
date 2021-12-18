@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
 import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.Commands;
+import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import agency.highlysuspect.apathy.playerset.PlayerSetManager;
@@ -23,14 +23,7 @@ import java.nio.file.Path;
 
 public class FabricPlatformSupport extends PlatformSupport {
 	@Override
-	public void initialize() {
-		installConfigFileReloader();
-		installAttackCallback();
-		installCommandRegistrationCallback();
-		installPlayerSetManagerUpkeepTicker();
-	}
-	
-	private void installConfigFileReloader() {
+	public void installConfigFileReloader() {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
@@ -44,7 +37,8 @@ public class FabricPlatformSupport extends PlatformSupport {
 		});
 	}
 	
-	private void installAttackCallback() {
+	@Override
+	public void installAttackCallback() {
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
 			if(!world.isClientSide && entity instanceof MobExt ext) {
 				ext.apathy$provokeNow();
@@ -54,12 +48,14 @@ public class FabricPlatformSupport extends PlatformSupport {
 		});
 	}
 	
-	private void installCommandRegistrationCallback() {
+	@Override
+	public void installCommandRegistrationCallback() {
 		//TODO: Will need verifying that it's the same shape on Forge
-		CommandRegistrationCallback.EVENT.register(Commands::registerCommands);
+		CommandRegistrationCallback.EVENT.register(ApathyCommands::registerCommands);
 	}
 	
-	private void installPlayerSetManagerUpkeepTicker() {
+	@Override
+	public void installPlayerSetManagerUpkeepTicker() {
 		//TODO: This kind of sucks, and could do with some cleaning up
 		
 		ServerTickEvents.START_SERVER_TICK.register(server -> {

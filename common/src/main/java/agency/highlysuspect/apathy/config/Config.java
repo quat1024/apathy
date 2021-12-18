@@ -5,10 +5,10 @@ import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,7 +103,7 @@ public abstract class Config {
 		try {
 			Field field = this.getClass().getDeclaredField(name);
 			//Skip static, final, and transient fields
-			if((field.getModifiers() & (Opcodes.ACC_STATIC | Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT)) != 0) return null;
+			if((field.getModifiers() & (Modifier.STATIC | Modifier.FINAL | Modifier.TRANSIENT)) != 0) return null;
 			
 			field.setAccessible(true);
 			return field;
@@ -125,7 +125,7 @@ public abstract class Config {
 		
 		for(Field field : this.getClass().getDeclaredFields()) {
 			//Skip static, final, and transient fields.
-			if((field.getModifiers() & (Opcodes.ACC_STATIC | Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT)) != 0) continue;
+			if((field.getModifiers() & (Modifier.STATIC | Modifier.FINAL | Modifier.TRANSIENT)) != 0) continue;
 			
 			//If the field requests a blank line, go print that.
 			if(field.getDeclaredAnnotation(Blankline.class) != null) lines.add("");

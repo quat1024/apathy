@@ -9,7 +9,17 @@ import java.nio.file.Path;
 public abstract class PlatformSupport {
 	public static PlatformSupport instance;
 	
-	public abstract void initialize();
+	public void initialize() {
+		installConfigFileReloader();
+		installAttackCallback();
+		installCommandRegistrationCallback();
+		installPlayerSetManagerUpkeepTicker();
+	}
+	
+	public abstract void installConfigFileReloader();
+	public abstract void installAttackCallback();
+	public abstract void installCommandRegistrationCallback();
+	public abstract void installPlayerSetManagerUpkeepTicker();
 	
 	public abstract Path getConfigPath();
 	public abstract boolean externalApathyReloadSupported();

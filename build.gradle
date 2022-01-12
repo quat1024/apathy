@@ -12,3 +12,12 @@ subprojects {
 		it.options.release = 17
 	}
 }
+
+//dont ask me how this works its from stackoverflow
+allprojects {
+	plugins.withType(JavaPlugin) {
+		dependencies {
+			implementation "org.jetbrains:annotations:16.0.2"
+		}
+	}
+}

@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-archivesBaseName = "${project.mod_name}-${project.minecraft_version}-forge"
+archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.mod_version}-forge"
 
 minecraft {
 	mappings channel: 'official', version: minecraft_version

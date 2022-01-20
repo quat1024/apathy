@@ -83,7 +83,7 @@ processResources {
 	from project(":common").sourceSets.main.resources
 	inputs.property "version", project.version
 	
-	filesMatching("mods.toml") {
+	filesMatching(["mods.toml", ".*mods.toml", "**/mods.toml"]) {//Fucing work please!!!!!!!!!!
 		expand "version": project.version
 	}
 	
@@ -93,4 +93,16 @@ processResources {
 	}
 }
 
-jar.finalizedBy('reobfJar')
+jar {
+	manifest {
+		attributes([
+			"Specification-Title": "Apathy",
+			"Specification-Vendor": "quaternary",
+			"Specification-Version": "1",
+			"Implementation-Title": "Apathy",
+			"Implementation-Version": "${archiveVersion.get()}",
+			"Implementation-Vendor": "quaternary"
+		])
+	}
+	finalizedBy 'reobfJar'
+}

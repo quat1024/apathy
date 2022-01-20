@@ -4,7 +4,6 @@
 	"package": "agency.highlysuspect.apathy.mixin",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
-		"EntityGetterMixin",
 		"LivingEntityMixin",
 		"MobMixin",
 		"dragon.EnderDragonMixin",

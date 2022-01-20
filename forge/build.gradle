@@ -70,6 +70,9 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 dependencies {
 	minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
 	compileOnly project(":common")
+	
+	//Oops all refmaps
+	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 tasks.withType(JavaCompile) {
@@ -81,7 +84,7 @@ processResources {
 	
 	//Crusty refmap things
 	filesMatching(["apathy.mixins-common.json", "apathy.mixins-forge.json"]) {
-		expand "refmap_target": archivesBaseName + "-"
+		expand "refmap_target": "apathy.refmap.json" //set in the annotation processor above
 	}
 }
 

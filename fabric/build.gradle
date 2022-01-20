@@ -43,7 +43,13 @@ processResources {
 	
 	//Crusty refmap things
 	filesMatching(["apathy.mixins-common.json", "apathy.mixins-fabric.json"]) {
-		expand "refmap_target": "apathy."
+		//running with --info gives "Could not find refmap definition, will be using default name: apathy-1.18.1-2.0-fabric-refmap.json"
+		//and loom/mixin annotation processor/something writes the refmap to that exact file location
+		//idk where exactly this comes from, and i don't know how to change it, so lemme just... try to recreate that filename lol
+		//see https://github.com/FabricMC/fabric-loom/blob/dev/0.10/src/main/java/net/fabricmc/loom/extension/MixinExtensionImpl.java
+		expand "refmap_target": archivesBaseName + "-refmap.json"
+		//btw, my mixin jsons look like this: `"refmap": "${refmap_target}"`
+		//multiloader-template puts the variable substitution in a different place. just something to keep in mind
 	}
 }
 

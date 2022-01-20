@@ -6,7 +6,6 @@
 	"mixins": [
 		"EntityGetterMixin",
 		"LivingEntityMixin",
-		"MinecraftServerAccessor",
 		"MobMixin",
 		"dragon.EnderDragonMixin",
 		"dragon.EndDragonFightMixin",

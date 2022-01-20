@@ -3,9 +3,11 @@ package agency.highlysuspect.apathy.platform.forge;
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.minecraft.commands.Commands;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.EntityTypeTags;
@@ -16,8 +18,10 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +35,9 @@ public class ForgePlatformSupport extends PlatformSupport {
 			event.addListener(new PreparableReloadListener() {
 				@Override
 				public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
-					return CompletableFuture.runAsync(() -> {}, backgroundExecutor).thenCompose(stage::wait).thenRunAsync(Apathy::loadConfig, gameExecutor);
+					return CompletableFuture.runAsync(() -> {}, backgroundExecutor)
+						.thenCompose(stage::wait)
+						.thenRunAsync(Apathy::loadConfig, gameExecutor);
 				}
 			});
 		});
@@ -55,20 +61,20 @@ public class ForgePlatformSupport extends PlatformSupport {
 	}
 	
 	@Override
-	public void installPlayerSetManagerUpkeepTicker() {
-		//TODO
+	public void installPlayerSetManagerTicker() {
+		MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent e) -> {
+			if(e.phase == TickEvent.Phase.START) {
+				//Imagine having access to the server, that is ticking, in something called "Server Tick Event".
+				//What a FUCKIng concept!
+				PlayerSetManager.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
+			}
+		});
 	}
 	
 	@Override
 	public Path getConfigPath() {
 		//TODO should really use an actual forge config
 		return FMLPaths.CONFIGDIR.get().resolve(Apathy.MODID);
-	}
-	
-	@Override
-	public boolean externalApathyReloadSupported() {
-		//TODO: True for now until this project uses the real Forge config system
-		return true;
 	}
 	
 	@Override

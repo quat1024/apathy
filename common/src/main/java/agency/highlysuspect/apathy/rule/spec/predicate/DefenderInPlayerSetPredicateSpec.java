@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
-import agency.highlysuspect.apathy.playerset.PlayerSet;
-import agency.highlysuspect.apathy.playerset.PlayerSetManager;
+import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
@@ -29,9 +28,7 @@ public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) imple
 			
 			PlayerSetManager setManager = PlayerSetManager.getFor(server);
 			for(String playerSetName : playerSetNames) {
-				PlayerSet playerSet = setManager.get(playerSetName);
-				if(playerSet == null) continue;
-				if(playerSet.contains(defender)) return true;
+				if(setManager.playerInSet(defender, playerSetName)) return true;
 			}
 			return false;
 		};

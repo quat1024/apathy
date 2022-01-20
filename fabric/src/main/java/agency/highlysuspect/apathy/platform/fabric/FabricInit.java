@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
 import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.fabricmc.api.ModInitializer;
 
 public class FabricInit implements ModInitializer {

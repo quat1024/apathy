@@ -29,16 +29,15 @@ public abstract class PlatformSupport {
 		installConfigFileReloader();
 		installAttackCallback();
 		installCommandRegistrationCallback();
-		installPlayerSetManagerUpkeepTicker();
+		installPlayerSetManagerTicker();
 	}
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installAttackCallback();
 	public abstract void installCommandRegistrationCallback();
-	public abstract void installPlayerSetManagerUpkeepTicker();
+	public abstract void installPlayerSetManagerTicker();
 	
 	public abstract Path getConfigPath();
-	public abstract boolean externalApathyReloadSupported();
 	
 	public abstract Tag.Named<EntityType<?>> entityTypeTag(ResourceLocation id);
 }

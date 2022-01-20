@@ -3,8 +3,8 @@ package agency.highlysuspect.apathy.platform.fabric;
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
-import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -50,31 +50,17 @@ public class FabricPlatformSupport extends PlatformSupport {
 	
 	@Override
 	public void installCommandRegistrationCallback() {
-		//TODO: Will need verifying that it's the same shape on Forge
 		CommandRegistrationCallback.EVENT.register(ApathyCommands::registerCommands);
 	}
 	
 	@Override
-	public void installPlayerSetManagerUpkeepTicker() {
-		//TODO: This kind of sucks, and could do with some cleaning up
-		
-		ServerTickEvents.START_SERVER_TICK.register(server -> {
-			PlayerSetManager mgr = PlayerSetManager.getFor(server);
-			Apathy.mobConfig.playerSetName.ifPresent(s -> {
-				if(mgr.hasSet(s)) mgr.get(s).setSelfSelect(Apathy.mobConfig.playerSetSelfSelect);
-				else mgr.createSet(s, Apathy.mobConfig.playerSetSelfSelect);
-			});
-		});
+	public void installPlayerSetManagerTicker() {
+		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
 	}
 	
 	@Override
 	public Path getConfigPath() {
 		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
-	}
-	
-	@Override
-	public boolean externalApathyReloadSupported() {
-		return true;
 	}
 	
 	@Override

@@ -1,18 +1,14 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.platform.PlatformSupport;
-import agency.highlysuspect.apathy.playerset.PlayerSet;
-import agency.highlysuspect.apathy.playerset.PlayerSetManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -33,45 +29,42 @@ public class ApathyCommands {
 		//I've been burned before
 		//Be careful
 		
-		LiteralArgumentBuilder<CommandSourceStack> lit = literal(Apathy.MODID)
+		dispatcher.register(literal(Apathy.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
-						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), true))))
+						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), false))))
 				.then(literal("part")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
-						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), true))))
+						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), false))))
 				.then(literal("show")
-					.executes(cmd -> showSets(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException())))))
+					.executes(cmd -> personalShow(cmd, cmd.getSource().getPlayerOrException()))))
 			.then(literal("set-admin")
 				.requires(src -> src.hasPermission(2))
 				.then(literal("join")
 					.then(argument("who", players())
 						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
-							.executes(cmd -> joinSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), false)))))
+							.executes(cmd -> joinSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), true)))))
 				.then(literal("part")
 					.then(argument("who", players())
 						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
-							.executes(cmd -> partSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), false)))))
-				.then(literal("show-all")
-					.executes(ApathyCommands::showAllSets))
+							.executes(cmd -> partSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), true)))))
+				.then(literal("show")
+					.executes(ApathyCommands::adminShowSets))
 				.then(literal("delete")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
-						.executes(cmd -> deleteSet(cmd, getString(cmd, "set")))))
+						.executes(cmd -> adminDeleteSet(cmd, getString(cmd, "set")))))
 				.then(literal("create")
 					.then(argument("name", word())
 						.then(argument("self-select", bool())
-							.executes(cmd -> createSet(cmd, getString(cmd, "name"), getBool(cmd, "self-select"))))))
+							.executes(cmd -> adminCreateSet(cmd, getString(cmd, "name"), getBool(cmd, "self-select"))))))
 				.then(literal("edit")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
 						.then(argument("self-select", bool())
-							.executes(cmd -> editSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))));
-		
-		if(PlatformSupport.instance.externalApathyReloadSupported()) {
-			lit = lit.then(literal("reload").requires(src -> src.hasPermission(2)).executes(ApathyCommands::reloadNow));
-		}
-		
-		dispatcher.register(lit);
+							.executes(cmd -> adminEditSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))))
+			.then(literal("reload")
+				.requires(src -> src.hasPermission(2))
+				.executes(ApathyCommands::reloadNow)));
 	}
 	
 	//(scaffolding)
@@ -92,150 +85,128 @@ public class ApathyCommands {
 		return new TextComponent(String.format(msg, args));
 	}
 	
-	private static @Nullable PlayerSet getSet(CommandContext<CommandSourceStack> cmd, String setName) {
-		PlayerSet set = PlayerSetManager.getFor(cmd).get(setName);
-		if(set == null) {
-			err(cmd, "No set named %s.", setName);
-			return null;
-		}
-		return set;
-	}
-	
 	//Joining, parting
-	private static int joinSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String setName, boolean requireSelfSelect) {
-		PlayerSet set = getSet(cmd, setName);
-		if(set == null) return 0;
+	private static int joinSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String name, boolean op) {
+		int successCount = 0;
 		
-		if(requireSelfSelect && !set.isSelfSelect()) {
-			err(cmd, "Set %s is not a self-select set, use /apathy set-admin.", set.getName());
-			return 0;
-		}
-		
-		int success = 0;
 		for(ServerPlayer player : players) {
-			if(set.join(player)) {
-				msg(cmd, "%s joined set %s.", player.getName(), set.getName());
-				success++;
-			} else {
-				err(cmd, "%s already joined set %s.", player.getName(), set.getName());
+			PlayerSetManager.JoinResult result = PlayerSetManager.getFor(cmd).join(player, name, op);
+			switch(result) {
+				case SUCCESS -> {
+					successCount++;
+					msg(cmd, "%s joined set %s.", player.getName(), name);
+				}
+				case NO_SUCH_SET -> err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name);
+				case ALREADY_IN_SET -> err(cmd, "Player %s is already in set %s. Try /apathy set part.", player.getName(), name);
+				case NOT_SELF_SELECT -> err(cmd, "Set %s is not a self-select set. Try /apathy set-admin join.", name);
 			}
 		}
 		
-		return success;
+		return successCount;
 	}
 	
-	private static int partSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String setName, boolean requireSelfSelect) {
-		PlayerSet set = getSet(cmd, setName);
-		if(set == null) return 0;
+	private static int partSet(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players, String name, boolean op) {
+		int successCount = 0;
 		
-		if(requireSelfSelect && !set.isSelfSelect()) {
-			err(cmd, "Set %s is not a self-select set, use /apathy set-admin.", set.getName());
-			return 0;
-		}
-		
-		int success = 0;
 		for(ServerPlayer player : players) {
-			if(set.part(player)) {
-				msg(cmd, "%s parted set %s.", player.getName(), set.getName());
-				success++;
-			} else {
-				err(cmd, "%s is already not in set %s.", player.getName(), set.getName());
+			PlayerSetManager.PartResult result = PlayerSetManager.getFor(cmd).part(player, name, op);
+			switch(result) {
+				case SUCCESS -> {
+					successCount++;
+					msg(cmd, "%s parted set %s.", player.getName(), name);
+				}
+				case NO_SUCH_SET -> err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name);
+				case ALREADY_NOT_IN_SET -> err(cmd, "Player %s is already not in set %s. Try /apathy set join.", player.getName(), name);
+				case NOT_SELF_SELECT -> err(cmd, "Set %s is not a self-select set. Try /apathy set-admin part.", name);
 			}
 		}
 		
-		return success;
+		return successCount;
 	}
 	
 	//Showing
-	private static int showSets(CommandContext<CommandSourceStack> cmd, Collection<ServerPlayer> players) {
+	private static int personalShow(CommandContext<CommandSourceStack> cmd, ServerPlayer player) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
-			err(cmd, "No player sets are available.");
+			err(cmd, "There aren't any player sets.");
 		} else {
-			personalMsg(cmd, "The following sets are available: %s", ComponentUtils.formatList(setManager.allSets(), PlayerSet::toLiteralText));
+			personalMsg(cmd, "The following sets exist: %s", setManager.printAllPlayerSets());
 		}
 		
-		int success = 0;
-		
-		for(ServerPlayer player : players) {
-			Collection<PlayerSet> yea = setManager.allSetsContaining_KindaSlow_DontUseThisOnTheHotPath(player);
-			
-			if(yea.isEmpty()) {
-				err(cmd, "%s is not in any sets.", player.getName());
+		for(var entry : setManager.entrySet()) {
+			if(setManager.playerInSet(player, entry.getKey())) {
+				personalMsg(cmd, "You are in set %s.", entry.getKey());
 			} else {
-				personalMsg(cmd, "%s is in these sets: %s", player.getName(), ComponentUtils.formatList(yea, PlayerSet::toLiteralText));
-				success++;
+				err(cmd, "You are not in set %s.", entry.getKey());
 			}
 		}
 		
-		return success;
+		return 0;
 	}
 	
-	private static int showAllSets(CommandContext<CommandSourceStack> cmd) {
+	private static int adminShowSets(CommandContext<CommandSourceStack> cmd) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
-			err(cmd, "No player sets are available.");
+			err(cmd, "There aren't any player sets.");
 		} else {
-			personalMsg(cmd, "The following player sets exist: %s", ComponentUtils.formatList(setManager.allSets(), PlayerSet::toLiteralText));
+			personalMsg(cmd, "The following player sets exist: %s", setManager.printAllPlayerSets());
 			PlayerList mgr = cmd.getSource().getServer().getPlayerList();
 			
-			for(PlayerSet set : setManager.allSets()) {
-				personalMsg(cmd, "Set %s contains %s members.", set.getName(), set.members().size());
+			for(var entry : setManager.entrySet()) {
+				String name = entry.getKey();
+				PlayerSetManager.Entry set = entry.getValue();
+				
+				personalMsg(cmd, "Set %s contains %s members.", name, set.members().size());
 				for(UUID uuid : set.members()) {
 					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
-						String.format(" - a currently logged-out player (UUID %s)", uuid) :
+						String.format(" - someone with UUID %s", uuid) :
 						String.format(" - %s (UUID %s)", player.getName().getContents(), uuid));
 				}
 			}
 		}
+		
 		return 0;
 	}
 	
-	//create, edit, delete
-	private static int createSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
+	private static int adminEditSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
 		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
-		if(setManager.hasSet(name)) {
-			err(cmd, "Cannot add a new player set named %s, as one already exists with that name.", name);
-			return 0;
+		PlayerSetManager.EditResult result = setManager.edit(name, selfSelect);
+		
+		switch(result) {
+			case SUCCESS -> msg(cmd, selfSelect ? "Made set %s a self-select set." : "Made set %s a non-self-select set.", name);
+			case NO_SUCH_SET -> err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name);
+			case ALREADY_SELF_SELECT -> err(cmd, "Set %s is already self-select.", name);
+			case ALREADY_NOT_SELF_SELECT -> err(cmd, "Set %s is already not self-select.", name);
 		}
 		
-		setManager.createSet(name, selfSelect);
-		msg(cmd, selfSelect ? "Added new self-select player set named %s." : "Added new player set named %s.", name);
-		return 1;
+		return result == PlayerSetManager.EditResult.SUCCESS ? 1 : 0;
 	}
 	
-	private static int editSet(CommandContext<CommandSourceStack> cmd, String setName, boolean selfSelect) {
-		PlayerSet set = getSet(cmd, setName);
-		if(set == null) return 0;
+	private static int adminCreateSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
+		PlayerSetManager.CreateResult result = setManager.create(name, selfSelect);
 		
-		Optional<String> yeayehhehh = Apathy.mobConfig.playerSetName;
-		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
-			err(cmd, "Cannot edit set %s, as its settings would just be reset by the config file.", set.getName());
-			return 0;
+		switch(result) {
+			case SUCCESS -> msg(cmd, selfSelect ? "Created self-select set %s." : "Created non-self-select set %s.", name);
+			case ALREADY_EXISTS -> err(cmd, "There's already a set named %s. Try /apathy set-admin edit.", name);
 		}
 		
-		set.setSelfSelect(selfSelect);
-		
-		msg(cmd, selfSelect ? "Made set %s a self-select set." : "Made set %s a non-self-select set.", setName);
-		return 1;
+		return result == PlayerSetManager.CreateResult.SUCCESS ? 1 : 0;
 	}
 	
-	private static int deleteSet(CommandContext<CommandSourceStack> cmd, String setName) {
-		PlayerSet set = getSet(cmd, setName);
-		if(set == null) return 0;
+	private static int adminDeleteSet(CommandContext<CommandSourceStack> cmd, String name) {
+		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
+		PlayerSetManager.DeleteResult result = setManager.delete(name);
 		
-		Optional<String> yeayehhehh = Apathy.mobConfig.playerSetName;
-		if(yeayehhehh.isPresent() && yeayehhehh.get().equals(set.getName())) {
-			err(cmd, "Player set %s cannot be deleted because it'd just get recreated by the config file.", set.getName());
-			return 0;
+		switch(result) {
+			case SUCCESS -> msg(cmd, "Player set %s deleted.", name);
+			case NO_SUCH_SET -> err(cmd, "There isn't a set named %s.", name);
 		}
 		
-		PlayerSetManager.getFor(cmd).deleteSet(set.getName());
-		msg(cmd, "Player set %s deleted.", set.getName());
-		return 1;
+		return result == PlayerSetManager.DeleteResult.SUCCESS ? 1 : 0;
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {

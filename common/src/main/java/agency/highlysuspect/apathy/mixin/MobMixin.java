@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mob.class)
 public class MobMixin implements MobExt {
+	@Shadow private LivingEntity target;
+	
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
 	public void whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
@@ -24,6 +26,12 @@ public class MobMixin implements MobExt {
 		//Check whether it's okay to target this player.
 		if(newTarget instanceof ServerPlayer && !Apathy.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
+			
+			//Btw this is the reason i don't use the forge attack target event and use this mixin even on Forge too.
+			//It's fired after the attack target was already overwritten, so the best I can do is set the target to `null`.
+			//Apathetic Mobs did this - but I'd rather leave the target unchanged, rather than clear it unconditionally.
+			//Consider something like, two skeletons fighting each other. I don't want them to stop fighting
+			//just because one of them *thought* about setting their target to a player.
 			ci.cancel();
 		}
 	}
@@ -40,8 +48,6 @@ public class MobMixin implements MobExt {
 			target = null;
 		}
 	}
-	
-	@Shadow private LivingEntity target;
 	
 	///////////////
 	

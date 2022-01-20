@@ -40,6 +40,11 @@ processResources {
 	filesMatching("fabric.mod.json") {
 		expand "version": project.version
 	}
+	
+	//Crusty refmap things
+	filesMatching(["apathy.mixins-common.json", "apathy.mixins-fabric.json"]) {
+		expand "refmap_target": "apathy."
+	}
 }
 
 tasks.withType(JavaCompile) {

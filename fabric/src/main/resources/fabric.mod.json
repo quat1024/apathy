@@ -23,7 +23,8 @@
     ]
   },
   "mixins": [
-    "apathy.mixins.json"
+    "apathy.mixins-common.json",
+		"apathy.mixins-fabric.json"
   ],
 
   "depends": {

@@ -1,18 +1,30 @@
 buildscript {
 	repositories {
 		maven { url = 'https://maven.minecraftforge.net' }
+		maven {
+			url = 'https://repo.spongepowered.org/repository/maven-public/'
+			content { includeGroup "org.spongepowered" }
+		}
 		mavenCentral()
 	}
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
 	}
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.mod_version}-forge"
+
+mixin {
+	add sourceSets.main, "apathy.refmap.json"
+	
+	config "apathy.mixins-common.json"
+	config "apathy.mixins-forge.json"
+}
 
 minecraft {
 	mappings channel: 'official', version: minecraft_version
@@ -29,7 +41,7 @@ minecraft {
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			taskName 'Client'
-			args "-mixin.config=apathy.mixins.json"
+			args "-mixin.config=apathy.mixins-common.json", "-mixin.config=apathy.mixins-forge.json"
 			mods {
 				modClientRun {
 					source sourceSets.main
@@ -42,7 +54,7 @@ minecraft {
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			taskName 'Server'
-			args "-mixin.config=apathy.mixins.json"
+			args "-mixin.config=apathy.mixins-common.json", "-mixin.config=apathy.mixins-forge.json"
 			mods {
 				modServerRun {
 					source sourceSets.main
@@ -66,6 +78,11 @@ tasks.withType(JavaCompile) {
 
 processResources {
 	from project(":common").sourceSets.main.resources
+	
+	//Crusty refmap things
+	filesMatching(["apathy.mixins-common.json", "apathy.mixins-forge.json"]) {
+		expand "refmap_target": archivesBaseName + "-"
+	}
 }
 
 jar.finalizedBy('reobfJar')

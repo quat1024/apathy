@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.mixin.EntityGetterMixin;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -17,9 +16,6 @@ import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 
-/**
- * @see EntityGetterMixin for an additional mixin relevant to Wither targeting mechanics
- */
 @Mixin(WitherBoss.class)
 public class WitherBossMixin {
 	@Shadow @Final @Mutable private static Predicate<LivingEntity> LIVING_ENTITY_SELECTOR;

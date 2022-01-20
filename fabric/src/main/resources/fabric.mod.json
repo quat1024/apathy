@@ -4,11 +4,15 @@
   "version": "${version}",
 
   "name": "Apathy",
-  "description": "Mobs don't attack players. Or maybe they do! Configurable! Yay",
+  "description": "Mobs don't attack players, or maybe they do! Configurable.",
   "authors": [
     "quaternary",
 		"whizzball1"
   ],
+	"contributors": [
+		"jaredlll08",
+		"Darkhax"
+	],
   "contact": {
     "homepage": "https://highlysuspect.agency/"
   },

@@ -17,7 +17,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 
-archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.mod_version}-forge"
+archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.version}-forge"
 
 mixin {
 	add sourceSets.main, "apathy.refmap.json"
@@ -81,6 +81,11 @@ tasks.withType(JavaCompile) {
 
 processResources {
 	from project(":common").sourceSets.main.resources
+	inputs.property "version", project.version
+	
+	filesMatching("mods.toml") {
+		expand "version": project.version
+	}
 	
 	//Crusty refmap things
 	filesMatching(["apathy.mixins-common.json", "apathy.mixins-forge.json"]) {

@@ -4,7 +4,7 @@ plugins {
 	id "idea"
 }
 
-archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.mod_version}-fabric"
+archivesBaseName = "${project.mod_name}-${project.minecraft_version}-${project.version}-fabric"
 group = project.maven_group
 
 dependencies {

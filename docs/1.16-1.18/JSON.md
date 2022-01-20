@@ -132,19 +132,42 @@ The predicate returns `true` if the attacker is one of these mobs.
 ## `apathy:in_player_set`
 Arguments: `player_sets`, an array of strings such as `["my-cool-set"]`.
 
-The predicate returns `true` if the attacked player is part of one of these player sets.
+The predicate returns `true` if the defending player is part of one of these player sets.
 
 ## `apathy:revenge_timer`
 Arguments: `timeout`, a number like `60`.
 
 The predicate returns `true` while the mob was last attacked within this many ticks (1/20ths of a second).
 
-For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires the predicate will start returning `false`.
+For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires, the predicate will start returning `false`.
 
 ## `apathy:difficulty_is`
 Arguments: `difficulties`, an array of difficulty strings like `["easy", "normal"]`.
 
 The predicate returns `true` if the current world difficulty appears in the array.
+
+## `apathy:score` (✨ NEW in 1.18 ✨)
+Arguments:
+* `objective`, any string
+* `who`, either `"attacker"` or `"defender"`
+* `thresholdMode`, either `"at_least"`, `"at_most""`, or `"equal""`
+* `threshold`, any integer
+
+The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not.
+
+For example, this predicate:
+
+```json
+{
+	"type": "apathy:score",
+	"objective": "fruit",
+	"who": "defender",
+	"thresholdMode": "at_least",
+	"threshold": 10
+}
+```
+
+will return `true` when the defending player has >=10 points on the scoreboard objective named "fruit". If the scoreboard objective does not exist, this predicate will always return `false`.
 
 ## `apathy:all` and `apathy:any`
 Arguments: `predicates`, an array of more predicates.

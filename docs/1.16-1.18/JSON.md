@@ -149,7 +149,7 @@ The predicate returns `true` if the current world difficulty appears in the arra
 ## `apathy:score` (✨ NEW in 1.18 ✨)
 Arguments:
 * `objective`, any string
-* `who`, either `"attacker"` or `"defender"`
+* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
 * `thresholdMode`, either `"at_least"`, `"at_most""`, or `"equal""`
 * `threshold`, any integer
 

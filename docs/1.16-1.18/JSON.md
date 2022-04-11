@@ -178,11 +178,17 @@ The predicate returns `true` if the defending player has at least one of the men
 ## `apathy:location` (✨ NEW in 1.18.2 ✨)
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
-* `who`, either `"attacker"` or `"defender"` (defaults to `"attacker"`)
+* `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
 
-The predicate returns `true` when the entity specified in `who` is within the location that passes the Location Predicate.
+This predicate does the following:
 
-This can test x/y/z ranges, biomes, dimensions, features and light levels.
+* picks a *location* dependent on the value of `who`:
+  * `attacker`: the attacking mob's location
+  * `defender`: the defending player's location
+  * `attacker_spawn_location`: the first location where the attacking mob was noticed
+* returns `true` if the location is loaded and passes the `LocationPredicate`.
+
+LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
 
 For example, this predicate:
 ```json
@@ -196,8 +202,6 @@ For example, this predicate:
 ```
 
 returns `true` if the defending player is standing in a Stronghold structure, and `false` otherwise.
-
-For more information on LocationPredicates, please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
 
 ## `apathy:all` and `apathy:any`
 Arguments: `predicates`, an array of more predicates.

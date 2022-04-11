@@ -2,10 +2,12 @@ package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.rule.CodecUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,6 +43,9 @@ public class MobMixin implements MobExt {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
+		//Record the first known position of this entity
+		if(spawnPosition == null) spawnPosition = thi$.position();
+		
 		//If currently targeting a player, check to make sure it's still okay to do so.
 		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayer
@@ -53,7 +58,9 @@ public class MobMixin implements MobExt {
 	
 	@Unique private static final long NOT_PROVOKED = Long.MIN_VALUE;
 	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
+	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
 	@Unique long provocationTime = NOT_PROVOKED;
+	@Unique @Nullable Vec3 spawnPosition;
 	
 	@Override
 	public void apathy$provokeNow() {
@@ -70,10 +77,19 @@ public class MobMixin implements MobExt {
 		return provocationTime != NOT_PROVOKED;
 	}
 	
+	@Override
+	public @Nullable Vec3 apathy$getSpawnPosition() {
+		return spawnPosition;
+	}
+	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
+		}
+		
+		if(spawnPosition != null) {
+			tag.put(SPAWN_POSITION_KEY, CodecUtil.writeVec3(spawnPosition));
 		}
 	}
 	
@@ -83,6 +99,12 @@ public class MobMixin implements MobExt {
 			provocationTime = tag.getLong(PROVOCATION_KEY);
 		} else {
 			provocationTime = NOT_PROVOKED;
+		}
+		
+		if(tag.contains(SPAWN_POSITION_KEY)) {
+			spawnPosition = CodecUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CodecUtil.VEC3_LIST_ID));
+		} else {
+			spawnPosition = null;
 		}
 	}
 }

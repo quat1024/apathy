@@ -146,7 +146,7 @@ Arguments: `difficulties`, an array of difficulty strings like `["easy", "normal
 
 The predicate returns `true` if the current world difficulty appears in the array.
 
-## `apathy:score` (✨ NEW in 1.18 ✨)
+## `apathy:score` (✨ NEW in 1.18.1 ✨)
 Arguments:
 * `objective`, any string
 * `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
@@ -168,6 +168,12 @@ For example, this predicate:
 ```
 
 will return `true` when the defending player has >=10 points on the scoreboard objective named "fruit". If the scoreboard objective does not exist, this predicate will always return `false`.
+
+## `apathy:advancements` (✨ NEW in 1.18.2 ✨)
+Arguments:
+* `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`
+
+The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
 
 ## `apathy:all` and `apathy:any`
 Arguments: `predicates`, an array of more predicates.

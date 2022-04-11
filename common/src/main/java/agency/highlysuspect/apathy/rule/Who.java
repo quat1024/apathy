@@ -19,9 +19,9 @@ public enum Who {
 		};
 	}
 	
-	public static final Codec<Who> CODEC = Codec.STRING.comapFlatMap((s -> switch(s) {
+	public static final Codec<Who> CODEC = Codec.STRING.comapFlatMap(s -> switch(s) {
 		case "attacker" -> DataResult.success(ATTACKER);
 		case "defender" -> DataResult.success(DEFENDER);
 		default -> DataResult.error("unknown who " + s);
-	}), w -> w.name().toLowerCase(Locale.ROOT));
+	}, w -> w.name().toLowerCase(Locale.ROOT));
 }

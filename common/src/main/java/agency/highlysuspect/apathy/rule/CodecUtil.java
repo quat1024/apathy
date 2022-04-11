@@ -98,7 +98,7 @@ public class CodecUtil {
 	public static JsonElement filterNulls(JsonElement element) {
 		if(element.isJsonObject()) return filterNullsObject(element.getAsJsonObject());
 		if(element.isJsonArray()) return filterNullsArray(element.getAsJsonArray());
-		if(element.isJsonNull()) return new JsonObject(); //i guess
+		if(element.isJsonNull()) return new JsonObject(); //i guess!
 		return element;
 	}
 	
@@ -107,16 +107,7 @@ public class CodecUtil {
 		for(String key : object.keySet()) {
 			JsonElement value = object.get(key);
 			if(value.isJsonNull()) continue;
-			if(value.isJsonObject()) {
-				result.add(key, filterNullsObject(value.getAsJsonObject()));
-				continue;
-			}
-			if(value.isJsonArray()) {
-				result.add(key, filterNullsArray(value.getAsJsonArray()));
-				continue;
-			}
-			
-			result.add(key, value);
+			result.add(key, filterNulls(value));
 		}
 		return result;
 	}
@@ -125,15 +116,7 @@ public class CodecUtil {
 		JsonArray result = new JsonArray();
 		for(JsonElement value : array) {
 			if(value.isJsonNull()) continue;
-			if(value.isJsonObject()) {
-				result.add(filterNullsObject(value.getAsJsonObject()));
-				continue;
-			}
-			if(value.isJsonArray()) {
-				result.add(filterNullsArray(value.getAsJsonArray()));
-				continue;
-			}
-			result.add(value);
+			result.add(filterNulls(value));
 		}
 		return result;
 	}

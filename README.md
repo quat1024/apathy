@@ -9,7 +9,7 @@ This cursed abomination of a Gradle setup is courtesy of jaredlll08 and Darkhax'
 ### before compiling
 
 * Run `clean` before `build` when releasing, mixin annotation processor seems to be a bit picky
-* forge build prints some super worrying "invalid stream header" error from deep in the mxin AP, about refmaps, but i think it's okay..??
+* forge build prints some super worrying "invalid stream header" error from deep in the mixin AP, about refmaps, but i think it's okay..??
 
 ### license yadda yadda
 

@@ -17,58 +17,12 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 
-archivesBaseName = "${project.mod_name}-${project.minecraft_version}-forge"
+archivesBaseName = "${project.modId}-${project.minecraftVersion}-forge"
 
-mixin {
-	add sourceSets.main, "apathy.refmap.json"
-	
-	config "apathy.mixins-common.json"
-	config "apathy.mixins-forge.json"
-}
-
-minecraft {
-	mappings channel: 'official', version: minecraft_version
-	
-//	if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-//		// This location is hardcoded in Forge and can not be changed.
-//		// https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
-//		accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-//		project.logger.debug('Forge Access Transformers are enabled for this project.')
-//	}
-	
-	runs {
-		client {
-			workingDirectory project.file('run')
-			ideaModule "${rootProject.name}.${project.name}.main"
-			taskName 'Client'
-			args "-mixin.config=apathy.mixins-common.json", "-mixin.config=apathy.mixins-forge.json"
-			mods {
-				modClientRun {
-					source sourceSets.main
-					source project(":common").sourceSets.main
-				}
-			}
-		}
-		
-		server {
-			workingDirectory project.file('run')
-			ideaModule "${rootProject.name}.${project.name}.main"
-			taskName 'Server'
-			args "-mixin.config=apathy.mixins-common.json", "-mixin.config=apathy.mixins-forge.json"
-			mods {
-				modServerRun {
-					source sourceSets.main
-					source project(":common").sourceSets.main
-				}
-			}
-		}
-	}
-}
-
-sourceSets.main.resources.srcDir 'src/generated/resources'
+/// deps ///
 
 dependencies {
-	minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+	minecraft "net.minecraftforge:forge:${project.forgeVersion}"
 	compileOnly project(":common")
 	
 	//Oops all refmaps
@@ -79,19 +33,67 @@ tasks.withType(JavaCompile) {
 	source(project(":common").sourceSets.main.allSource)
 }
 
+/// resources ///
+
+//sourceSets.main.resources.srcDir 'src/generated/resources' //Idk why this was here!
+
 processResources {
+	//include common resources
 	from project(":common").sourceSets.main.resources
-	inputs.property "version", project.version
 	
+	//substitute in version
+	inputs.property "version", project.version
 	filesMatching(["mods.toml", ".*mods.toml", "**/mods.toml"]) {//Fucing work please!!!!!!!!!!
 		expand "version": project.version
 	}
+}
+
+/// mixin ///
+
+mixin {
+	//Tell mixingradle what filename the refmap should use
+	add sourceSets.main, "${project.modId}.refmap.json"
 	
-	//Crusty refmap things
-	filesMatching(["apathy.mixins-common.json", "apathy.mixins-forge.json"]) {
-		expand "refmap_target": "apathy.refmap.json" //set in the annotation processor above
+	//Tell mixingradle which mixin configs exist
+	config "${project.modId}.mixins-common.json"
+	config "${project.modId}.mixins-forge.json"
+}
+
+/// runs ///
+
+minecraft {
+	//Dep on official mappings
+	mappings channel: 'official', version: project.minecraftVersion
+	
+	runs {
+		client {
+			taskName 'Client'
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			mods {
+				"${project.modId}" {
+					source sourceSets.main
+					source project(":common").sourceSets.main
+				}
+			}
+		}
+		
+		server {
+			taskName 'Server'
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			mods {
+				"${project.modId}" {
+					source sourceSets.main
+					source project(":common").sourceSets.main
+				}
+			}
+		}
 	}
 }
+
+/// Idk what this is or if it has a purpose, but it's conventional to include it in forge mods ///
+/// it adds MANIFEST.MF properties ///
 
 jar {
 	manifest {

@@ -4,19 +4,44 @@ plugins {
 	id "idea"
 }
 
-archivesBaseName = "${project.mod_name}-${project.minecraft_version}-fabric"
-group = project.maven_group
+archivesBaseName = "${project.modId}-${project.minecraftVersion}-fabric"
+
+/// deps ///
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
 	
 	implementation project(":common")
 }
 
+tasks.withType(JavaCompile) {
+	source(project(":common").sourceSets.main.allSource)
+}
+
+/// resources ///
+
+processResources {
+	//include common resources
+	from project(":common").sourceSets.main.resources
+	
+	//substutute in version
+	inputs.property "version", project.version
+	filesMatching("fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
 loom {
+	/// mixin ///
+	
+	mixin {
+		defaultRefmapName = "${project.modId}.refmap.json"
+	}
+	
+	/// runs ///
 	runs {
 		client {
 			client()
@@ -31,28 +56,4 @@ loom {
 			runDir("run")
 		}
 	}
-}
-
-processResources {
-	from project(":common").sourceSets.main.resources
-	inputs.property "version", project.version
-	
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-	
-	//Crusty refmap things
-	filesMatching(["apathy.mixins-common.json", "apathy.mixins-fabric.json"]) {
-		//running with --info gives "Could not find refmap definition, will be using default name: apathy-1.18.1-2.0-fabric-refmap.json"
-		//and loom/mixin annotation processor/something writes the refmap to that exact file location
-		//idk where exactly this comes from, and i don't know how to change it, so lemme just... try to recreate that filename lol
-		//see https://github.com/FabricMC/fabric-loom/blob/dev/0.10/src/main/java/net/fabricmc/loom/extension/MixinExtensionImpl.java
-		expand "refmap_target": archivesBaseName + "-refmap.json"
-		//btw, my mixin jsons look like this: `"refmap": "${refmap_target}"`
-		//multiloader-template puts the variable substitution in a different place. just something to keep in mind
-	}
-}
-
-tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
 }

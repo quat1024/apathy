@@ -1,9 +1,6 @@
 package agency.highlysuspect.apathy.platform;
 
 import agency.highlysuspect.apathy.Apathy;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
-import net.minecraft.world.entity.EntityType;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -38,6 +35,4 @@ public abstract class PlatformSupport {
 	public abstract void installPlayerSetManagerTicker();
 	
 	public abstract Path getConfigPath();
-	
-	public abstract Tag.Named<EntityType<?>> entityTypeTag(ResourceLocation id);
 }

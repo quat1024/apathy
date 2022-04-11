@@ -9,7 +9,7 @@ import agency.highlysuspect.apathy.rule.spec.*;
 import agency.highlysuspect.apathy.rule.spec.predicate.*;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -142,7 +142,7 @@ public class MobConfig extends Config {
 	@Comment("A comma-separated set of entity type tags.")
 	@Example("minecraft:raiders, some_datapack:some_tag")
 	@Use("entityTypeTagSet")
-	public Set<Tag<EntityType<?>>> tagSet = Collections.emptySet();
+	public Set<TagKey<EntityType<?>>> tagSet = Collections.emptySet();
 	
 	@Comment({
 		"What happens when the attacker is tagged with one of the tags in mobTagSet?",

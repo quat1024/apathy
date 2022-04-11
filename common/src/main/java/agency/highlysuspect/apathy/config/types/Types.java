@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 
 import java.lang.reflect.Field;
@@ -17,10 +18,10 @@ public class Types {
 	static final Map<String, FieldSerde<?>> customParsers = new HashMap<>();
 	
 	static {
-		FieldSerde<ResourceLocation> ident = new StringSerde().dimap(ResourceLocation::new, ResourceLocation::toString);
+		FieldSerde<ResourceLocation> rl = new StringSerde().dimap(ResourceLocation::new, ResourceLocation::toString);
 		
 		builtinParsers.put(String.class, new StringSerde());
-		builtinParsers.put(ResourceLocation.class, ident);
+		builtinParsers.put(ResourceLocation.class, rl);
 		builtinParsers.put(Integer.TYPE, new IntSerde());
 		builtinParsers.put(Boolean.TYPE, new BooleanSerde());
 		builtinParsers.put(Long.TYPE, new LongSerde());
@@ -31,7 +32,7 @@ public class Types {
 		customParsers.put("difficultySet", new DifficultySerde()
 			.commaSeparatedSet(Comparator.comparingInt(Difficulty::getId)));
 		
-		customParsers.put("entityTypeSet", ident
+		customParsers.put("entityTypeSet", rl
 			.dimap(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getKey)
 			.commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getKey))
 		);
@@ -45,14 +46,17 @@ public class Types {
 		customParsers.put("stringList", new StringSerde().commaSeparatedList());
 		
 		//bulk of this stuff (going from string -> tag) is untested; it's only used to write the "default value:" comment anyways
-		customParsers.put("entityTypeTagSet", ident.dimap(PlatformSupport.instance::entityTypeTag, Tag.Named::getName).commaSeparatedSet(Comparator.comparing(Tag.Named::getName)));
+		customParsers.put("entityTypeTagSet", rl.dimap(
+			x -> TagKey.create(Registry.ENTITY_TYPE_REGISTRY, x),
+			TagKey::location
+		).commaSeparatedSet(Comparator.comparing(TagKey::location)));
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T> FieldSerde<T> find(Field field) {
-		Use pw = field.getAnnotation(Use.class);
-		if(pw != null) {
-			return (FieldSerde<T>) customParsers.get(pw.value());
+		Use use = field.getAnnotation(Use.class);
+		if(use != null) {
+			return (FieldSerde<T>) customParsers.get(use.value());
 		} else if(builtinParsers.containsKey(field.getType())) {
 			return (FieldSerde<T>) builtinParsers.get(field.getType());
 		}

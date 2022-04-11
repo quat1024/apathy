@@ -10,14 +10,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntityType;
 
 import java.nio.file.Path;
 
@@ -61,11 +58,5 @@ public class FabricPlatformSupport extends PlatformSupport {
 	@Override
 	public Path getConfigPath() {
 		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
-	}
-	
-	@Override
-	public Tag.Named<EntityType<?>> entityTypeTag(ResourceLocation id) {
-		//TODO: Not really sure what this is about
-		return TagFactory.ENTITY_TYPE.create(id);
 	}
 }

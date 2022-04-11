@@ -5,17 +5,14 @@ import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Registry;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Set;
 
-public record AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) implements PredicateSpec {
+public record AttackerTaggedWithPredicateSpec(Set<TagKey<EntityType<?>>> tags) implements PredicateSpec {
 	public static final Codec<AttackerTaggedWithPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(
-			Tag.codec(() -> SerializationTags.getInstance().getOrEmpty(Registry.ENTITY_TYPE_REGISTRY))
-		).fieldOf("tags").forGetter(x -> x.tags)
+		CodecUtil.setOf(TagKey.codec(Registry.ENTITY_TYPE_REGISTRY)).fieldOf("tags").forGetter(x -> x.tags)
 	).apply(i, AttackerTaggedWithPredicateSpec::new));
 	
 	@Override
@@ -27,8 +24,8 @@ public record AttackerTaggedWithPredicateSpec(Set<Tag<EntityType<?>>> tags) impl
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			for(Tag<EntityType<?>> tag : tags) {
-				if(tag.contains(attacker.getType())) return true;
+			for(TagKey<EntityType<?>> tag : tags) {
+				if(attacker.getType().is(tag)) return true;
 			}
 			return false;
 		};

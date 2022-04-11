@@ -6,14 +6,9 @@ import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.minecraft.commands.Commands;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -75,11 +70,5 @@ public class ForgePlatformSupport extends PlatformSupport {
 	public Path getConfigPath() {
 		//TODO should really use an actual forge config
 		return FMLPaths.CONFIGDIR.get().resolve(Apathy.MODID);
-	}
-	
-	@Override
-	public Tag.Named<EntityType<?>> entityTypeTag(ResourceLocation id) {
-		//Forge extension, I think
-		return EntityTypeTags.createOptional(id);
 	}
 }

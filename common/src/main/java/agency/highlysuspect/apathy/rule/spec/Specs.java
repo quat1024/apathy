@@ -10,12 +10,15 @@ import net.minecraft.resources.ResourceKey;
 
 import java.util.function.Function;
 
+/**
+ * IS USING VANILLA REGISTRY TECH IN 2022 A GOOD IDEA?????? no
+ */
 public class Specs {
 	public static final ResourceKey<Registry<Codec<? extends RuleSpec>>> RULE_SPEC_CODEC_KEY = ResourceKey.createRegistryKey(Apathy.id("rule_spec_codec"));
-	public static final Registry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(RULE_SPEC_CODEC_KEY, Lifecycle.stable());
+	public static final Registry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(RULE_SPEC_CODEC_KEY, Lifecycle.stable(), null);
 	
 	public static final ResourceKey<Registry<Codec<? extends PredicateSpec>>> PREDICATE_SPEC_REGISTRY_KEY = ResourceKey.createRegistryKey(Apathy.id("rule_predicate_spec_codec"));
-	public static final Registry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(PREDICATE_SPEC_REGISTRY_KEY, Lifecycle.stable());
+	public static final Registry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(PREDICATE_SPEC_REGISTRY_KEY, Lifecycle.stable(), null);
 	
 	public static final Codec<RuleSpec> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(RuleSpec::codec, Function.identity());
 	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(PredicateSpec::codec, Function.identity());

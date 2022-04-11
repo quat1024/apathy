@@ -1,6 +1,6 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ 1.18. For documentation, view the `docs/` folder.
+Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ 1.18.2. For documentation, view the `docs/` folder.
 
 ## Thanks
 

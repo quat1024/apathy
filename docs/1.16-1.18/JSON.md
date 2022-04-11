@@ -149,7 +149,7 @@ The predicate returns `true` if the current world difficulty appears in the arra
 ## `apathy:score` (✨ NEW in 1.18.1 ✨)
 Arguments:
 * `objective`, any string
-* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
+* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player) (if not specified, defaults to `"defender"` in 1.18.2)
 * `thresholdMode`, either `"at_least"`, `"at_most"`, or `"equal"`
 * `threshold`, any integer
 
@@ -174,6 +174,30 @@ Arguments:
 * `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`
 
 The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
+
+## `apathy:location` (✨ NEW in 1.18.2 ✨)
+Arguments:
+* `predicate`, a vanilla `LocationPredicate`.
+* `who`, either `"attacker"` or `"defender"` (defaults to `"defender"`)
+
+The predicate returns `true` when the entity specified in `who` is within the location that passes the Location Predicate.
+
+This can test x/y/z ranges, biomes, dimensions, features and light levels.
+
+For example, this predicate:
+```json
+{
+	"type": "apathy:location",
+	"who": "defender",
+	"predicate": {
+		"feature": "stronghold"
+	}
+}
+```
+
+returns `true` if the defending player is standing in a Stronghold structure, and `false` otherwise.
+
+For more information on LocationPredicates, please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
 
 ## `apathy:all` and `apathy:any`
 Arguments: `predicates`, an array of more predicates.

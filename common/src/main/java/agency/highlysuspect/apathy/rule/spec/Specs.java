@@ -42,6 +42,7 @@ public class Specs {
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("difficulty_is"), DifficultyIsPredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("score"), ScorePredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("advancements"), DefenderHasAdvancementPredicateSpec.CODEC);
+		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("location"), LocationPredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("all"), AllPredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("any"), AnyPredicateSpec.CODEC);
 		Registry.register(PREDICATE_SPEC_CODEC_REGISTRY, Apathy.id("not"), NotPredicateSpec.CODEC);

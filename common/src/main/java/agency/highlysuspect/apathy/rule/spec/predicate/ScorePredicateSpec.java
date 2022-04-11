@@ -11,7 +11,7 @@ import net.minecraft.world.scores.Scoreboard;
 public record ScorePredicateSpec(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements PredicateSpec {
 	public static final Codec<ScorePredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Codec.STRING.fieldOf("objective").forGetter(ScorePredicateSpec::scoreboardObjective),
-		Who.CODEC.fieldOf("who").forGetter(ScorePredicateSpec::who),
+		Who.CODEC.optionalFieldOf("who", Who.DEFENDER).forGetter(ScorePredicateSpec::who),
 		ThresholdMode.CODEC.fieldOf("thresholdMode").forGetter(ScorePredicateSpec::thresholdMode),
 		Codec.INT.fieldOf("threshold").forGetter(ScorePredicateSpec::threshold)
 	).apply(i, ScorePredicateSpec::new));

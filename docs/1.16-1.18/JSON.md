@@ -178,7 +178,7 @@ The predicate returns `true` if the defending player has at least one of the men
 ## `apathy:location` (✨ NEW in 1.18.2 ✨)
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
-* `who`, either `"attacker"` or `"defender"` (defaults to `"defender"`)
+* `who`, either `"attacker"` or `"defender"` (defaults to `"attacker"`)
 
 The predicate returns `true` when the entity specified in `who` is within the location that passes the Location Predicate.
 

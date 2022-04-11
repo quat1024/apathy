@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 public record LocationPredicateSpec(LocationPredicate pred, Who who, int offsetX, int offsetY, int offsetZ) implements PredicateSpec {
 	public static final Codec<LocationPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.LOCATION_PREDICATE_CODEC.fieldOf("predicate").forGetter(LocationPredicateSpec::pred),
-		Who.CODEC.optionalFieldOf("who", Who.DEFENDER).forGetter(LocationPredicateSpec::who),
+		Who.CODEC.optionalFieldOf("who", Who.ATTACKER).forGetter(LocationPredicateSpec::who),
 		Codec.INT.optionalFieldOf("offsetX", 0).forGetter(LocationPredicateSpec::offsetX),
 		Codec.INT.optionalFieldOf("offsetY", 0).forGetter(LocationPredicateSpec::offsetY),
 		Codec.INT.optionalFieldOf("offsetZ", 0).forGetter(LocationPredicateSpec::offsetZ)

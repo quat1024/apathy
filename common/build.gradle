@@ -10,7 +10,7 @@ minecraft {
 }
 
 dependencies {
-	compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.4'
+	compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
 }
 
 //Lmao idk why this is here but I think it's in multiloader template

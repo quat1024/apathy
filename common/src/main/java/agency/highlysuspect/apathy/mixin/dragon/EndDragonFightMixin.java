@@ -184,14 +184,6 @@ public abstract class EndDragonFightMixin {
 		}
 	}
 	
-	@Inject(method = "findExitPortal", at = @At("HEAD"), cancellable = true)
-	void bopExitPortal(CallbackInfoReturnable<BlockPattern.BlockPatternMatch> cir) {
-		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) {
-			System.out.println("BOPPING exit portal part 2");
-			cir.setReturnValue(null);
-		}
-	}
-	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))
 	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
 		System.out.println("createNewDragon!!!!!!!!!!!!");

@@ -23,7 +23,7 @@ public class BossConfig extends Config {
 	@Comment({
 		"What is the initial state of the Ender Dragon in the End?",
 		"If 'default', she will be present and attack players, just like the vanilla game.",
-		"If 'passive_dragon', she will be present, but fly in a circle until a player provokes her first.",
+		"If 'passive_dragon', she will be present, but idly noodle about until a player provokes her first.",
 		"If 'calm', the End will not contain an Ender Dragon by default."
 	})
 	@Note({

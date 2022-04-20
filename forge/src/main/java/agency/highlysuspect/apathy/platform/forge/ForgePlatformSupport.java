@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.platform.forge;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.ApathyCommands;
+import agency.highlysuspect.apathy.DragonDuck;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
@@ -42,8 +43,9 @@ public class ForgePlatformSupport extends PlatformSupport {
 	public void installAttackCallback() {
 		MinecraftForge.EVENT_BUS.addListener((AttackEntityEvent e) -> {
 			Level level = e.getTarget().level;
-			if(!level.isClientSide() && e.getTarget() instanceof MobExt ext) {
-				ext.apathy$provokeNow();
+			if(!level.isClientSide()) {
+				if(e.getTarget() instanceof MobExt ext) ext.apathy$provokeNow();
+				if(e.getTarget() instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
 			}
 		});
 	}

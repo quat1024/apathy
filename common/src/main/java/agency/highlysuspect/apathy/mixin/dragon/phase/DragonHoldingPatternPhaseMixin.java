@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
 import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.DragonDuck;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonHoldingPatternPhase;
@@ -15,8 +16,9 @@ public class DragonHoldingPatternPhaseMixin {
 	@Inject(method = "strafePlayer", at = @At("HEAD"), cancellable = true)
 	private void maybeDontStrafePlayer(Player player, CallbackInfo ci) {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
+		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(player instanceof ServerPlayer serverPlayer && !Apathy.mobConfig.allowedToTargetPlayer(dergon, serverPlayer)) {
+		if(player instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
 			ci.cancel();
 		}
 	}

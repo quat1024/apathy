@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.platform.fabric;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.ApathyCommands;
+import agency.highlysuspect.apathy.DragonDuck;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
@@ -37,8 +38,9 @@ public class FabricPlatformSupport extends PlatformSupport {
 	@Override
 	public void installAttackCallback() {
 		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			if(!world.isClientSide && entity instanceof MobExt ext) {
-				ext.apathy$provokeNow();
+			if(!world.isClientSide) {
+				if(entity instanceof MobExt ext) ext.apathy$provokeNow();
+				if(entity instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
 			}
 			
 			return InteractionResult.PASS;

@@ -1,25 +1,25 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.DragonDuck;
 import agency.highlysuspect.apathy.config.BossConfig;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.TicketType;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Unit;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -35,7 +35,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -62,12 +61,14 @@ public abstract class EndDragonFightMixin {
 	
 	//my additions
 	
-	@Unique private boolean createdApathyPortal;
+	@Unique private boolean createdApathyPortal = false;
 	@Unique private int gatewayTimer = NOT_RUNNING;
 	@Unique private static final int NOT_RUNNING = -100;
 	
 	@Unique private static final String APATHY_CREATEDPORTAL = "apathy-created-exit-portal";
 	@Unique private static final String APATHY_GATEWAYTIMER = "apathy-gateway-timer";
+	
+	@Unique private boolean apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 	
 	@Inject(method = "<init>", at = @At("TAIL"))
 	void onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
@@ -79,13 +80,15 @@ public abstract class EndDragonFightMixin {
 			gatewayTimer = NOT_RUNNING;
 		}
 		
-//		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
-//			//If "dragonKilled" is "true", vanilla tick() will not try to automatically create ender dragons.
-//			dragonKilled = true;
-//			dragonUUID = null;
-//			needsStateScanning = false;
-//			respawnStage = null;
-//		}
+		//COPY PASTE from vanilla.
+		//In vanilla, this code only runs if dragonKilled is true.
+		//In Apathy, it's possible for the location of the exit portal to be decided before killing the first dragon.
+		//In this situation we should still honor the ExitPortalLocation from disk. (Vanilla unconditionally saves it, no edits are needed there.)
+		if(tag.contains("ExitPortalLocation", 10)) {
+			this.portalLocation = NbtUtils.readBlockPos(tag.getCompound("ExitPortalLocation"));
+		}
+		
+		System.out.println("CONSTRUCTING - dragonKilled " + dragonKilled + " previouslyKilled " + previouslyKilled);
 	}
 	
 	@Inject(method = "saveData", at = @At(value = "RETURN"))
@@ -144,23 +147,56 @@ public abstract class EndDragonFightMixin {
 		}
 	}
 	
+	//wait wait gimme a sec, i can explain
 	@Inject(method = "scanState", at = @At("RETURN"))
-	void whenScanningState(CallbackInfo ci) {
+	void startScanningState(CallbackInfo ci) {
+		apathyIsManagingTheInitialPortalVanillaDontLookPlease = Apathy.bossConfig.portalInitialState != BossConfig.PortalInitialState.CLOSED;
+	}
+	
+	@Inject(method = "scanState", at = @At("RETURN"))
+	void finishScanningState(CallbackInfo ci) {
+		apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
+		System.out.println("scanState called");
+		System.out.println("dragonKilled " + dragonKilled + " previouslyKilled " + previouslyKilled);
+		System.out.println(Apathy.bossConfig.dragonInitialState);
+		
 		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
 		//It is also called before vanilla code spawns the initial Ender Dragon.
 		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
 		//player has requested for the initial dragon to be removed.
 		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+			System.out.println("taking the branch!!!!!!!!!!!!!");
 			dragonKilled = true; //This is the magic variable.
 			previouslyKilled = true;
 		}
 	}
 	
+	//the SUPER AWESOME ULTRA TURBO MEGA HACK:
+	//so if Apathy creates an already-opened End portal, it tends to confuse the shit out of the vanilla scanState logic
+	//it takes the existence of any End Portal block entities at all to mean "the dragon was already killed" and it does not
+	//spawn a dragon on first login. Because "already opened end portal" + "dragon" is a valid setup in apathy, i need to bop
+	//this shit on the head, the solution is to prevent endportals from being discovered in scanState.
+	@Inject(method = "hasActiveExitPortal", at = @At("HEAD"), cancellable = true)
+	void bopActiveExitPortal(CallbackInfoReturnable<Boolean> cir) {
+		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) {
+			System.out.println("BOPPING exit portal part 1");
+			cir.setReturnValue(false);
+		}
+	}
+	
+	@Inject(method = "findExitPortal", at = @At("HEAD"), cancellable = true)
+	void bopExitPortal(CallbackInfoReturnable<BlockPattern.BlockPatternMatch> cir) {
+		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) {
+			System.out.println("BOPPING exit portal part 2");
+			cir.setReturnValue(null);
+		}
+	}
+	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))
 	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
-		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
-			EnderDragon dragn = cir.getReturnValue();
-			//TODO: Implement DragonInitialState.PASSIVE_DRAGON
+		System.out.println("createNewDragon!!!!!!!!!!!!");
+		if(!previouslyKilled && Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
+			((DragonDuck) cir.getReturnValue()).apathy$disallowAttackingPlayers();
 		}
 	}
 	

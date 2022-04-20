@@ -148,7 +148,7 @@ public abstract class EndDragonFightMixin {
 	}
 	
 	//wait wait gimme a sec, i can explain
-	@Inject(method = "scanState", at = @At("RETURN"))
+	@Inject(method = "scanState", at = @At("HEAD"))
 	void startScanningState(CallbackInfo ci) {
 		apathyIsManagingTheInitialPortalVanillaDontLookPlease = Apathy.bossConfig.portalInitialState != BossConfig.PortalInitialState.CLOSED;
 	}

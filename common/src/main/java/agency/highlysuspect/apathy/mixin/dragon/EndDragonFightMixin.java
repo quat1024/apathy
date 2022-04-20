@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.config.BossConfig;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -47,6 +49,7 @@ public abstract class EndDragonFightMixin {
 	@Shadow @Final private ServerLevel level;
 	@Shadow @Final private List<Integer> gateways;
 	@Shadow private boolean dragonKilled;
+	@Shadow private boolean previouslyKilled;
 	@Shadow private UUID dragonUUID;
 	@Shadow private boolean needsStateScanning;
 	@Shadow private BlockPos portalLocation;
@@ -69,18 +72,20 @@ public abstract class EndDragonFightMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	void onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
 		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
+		
 		if(tag.contains(APATHY_GATEWAYTIMER)) {
 			gatewayTimer = tag.getInt(APATHY_GATEWAYTIMER);
 		} else {
 			gatewayTimer = NOT_RUNNING;
 		}
 		
-		if(Apathy.bossConfig.noDragon) {
-			dragonKilled = true; //sigh
-			dragonUUID = null;
-			needsStateScanning = false;
-			respawnStage = null;
-		}
+//		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+//			//If "dragonKilled" is "true", vanilla tick() will not try to automatically create ender dragons.
+//			dragonKilled = true;
+//			dragonUUID = null;
+//			needsStateScanning = false;
+//			respawnStage = null;
+//		}
 	}
 	
 	@Inject(method = "saveData", at = @At(value = "RETURN"))
@@ -91,91 +96,99 @@ public abstract class EndDragonFightMixin {
 		tag.putInt(APATHY_GATEWAYTIMER, gatewayTimer);
 	}
 	
-	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+	//runs BEFORE vanilla tick().
+	@Inject(method = "tick", at = @At("HEAD"))
 	void dontTick(CallbackInfo ci) {
-		if(Apathy.bossConfig.noDragon) {
-			ci.cancel();
-			
-			//Just to be like triple sure there's no ender dragons around
-			this.dragonEvent.removeAllPlayers();
-			this.dragonEvent.setVisible(false);
-			
-			for(EnderDragon dragon : level.getDragons()) {
-				dragon.discard();
-			}
-			
-			//Issue a chunk ticket if there's anyone nearby. Same as how chunks are normally loaded during the boss.
-			//Special mechanics like the apathy exit portal & the gateway mechanic require chunks to be loaded.
-			List<ServerPlayer> players = level.getPlayers(VALID_PLAYER);
-			if(players.isEmpty()) {
-				this.level.getChunkSource().removeRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
-			} else {
-				this.level.getChunkSource().addRegionTicket(TicketType.DRAGON, new ChunkPos(0, 0), 9, Unit.INSTANCE);
+		//Vanilla tick() adds a chunk ticket that loads a region around the main End Island if there's anyone standing nearby.
+		if(!isArenaLoaded()) return;
+		
+		//First-run tasks.
+		if(!createdApathyPortal) {
+			//1. If the End Portal was requested to be open by default, honor that.
+			if(Apathy.bossConfig.portalInitialState.isOpenByDefault()) {
+				//boolean prop is "whether it's open or not".
+				//this has computeIfAbsent semantics regarding the position of the portal - if the portal position is not already known,
+				//it is computed from the heightmap (which is totally busted if !isArenaLoaded(), btw)
+				spawnExitPortal(true);
 				
-				//Also automatically grant "Free the End" advancement
-				//(this also grants "monster hunter" if you don't have it already but w/e)
-				EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
-				for(ServerPlayer player : players) {
-					CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
+				if(Apathy.bossConfig.portalInitialState.hasEgg()) {
+					this.level.setBlockAndUpdate(this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
 				}
 			}
 			
-			boolean chunksReady = isArenaLoaded();
-			if(chunksReady) {
-				createApathyPortal();
-				gatewayTimerTick();
+			//2. If any End Gateways were requested to be open by default, generate those too. 
+			for(int i = 0; i < Apathy.bossConfig.initialEndGatewayCount; i++) {
+				spawnNewGateway();
 			}
-		}
-	}
-	
-	@Inject(method = "setRespawnStage", at = @At("HEAD"), cancellable = true)
-	void dontSetSpawnState(DragonRespawnAnimation enderDragonSpawnState, CallbackInfo ci) {
-		//This mixin is required if createDragon is overridden to return 'null'; it calls createDragon and would NPE
-		if(Apathy.bossConfig.noDragon) {
-			this.respawnStage = null;
-			ci.cancel();
-		}
-	}
-	
-	@Inject(method = "createNewDragon", at = @At("HEAD"), cancellable = true)
-	void dontCreateDragon(CallbackInfoReturnable<EnderDragon> cir) {
-		if(Apathy.bossConfig.noDragon) {
-			cir.setReturnValue(null);
-		}
-	}
-	
-	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
-	void dontRespawnDragon(List<EndCrystal> crystals, CallbackInfo ci) {
-		//respawnDragon-no-args handles detecting the 4 end crystals by the exit portal.
-		//respawnDragon-list-arg gets called with the list of end crystals, if there are four, and normally actually summons the boss.
-		if(Apathy.bossConfig.noDragon) {
-			ci.cancel();
 			
-			tryEnderCrystalGateway(crystals);
-		}
-	}
-	
-	@Unique private void createApathyPortal() {
-		//Generate a readymade exit End portal, just like after the boss fight.
-		//("generateEndPortal" updates the "exit portal location" blockpos variable btw.)
-		//Ensure chunks are loaded before calling this, or the portal will generate at y = -1 for some reason.
-		if(!createdApathyPortal) {
-			spawnExitPortal(true);
-			this.level.setBlockAndUpdate(this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
 			createdApathyPortal = true;
 		}
-	}
-	
-	@Unique private void gatewayTimerTick() {
-		//Tick down the timer for the "special gateway creation" timer.
-		//Spawns the gateway when it reaches 0.
-		//Ensure chunks are loaded before calling this.
+		
+		//3. Handle the ticker for the ResummonSequence.SPAWN_GATEWAY mechanic.
 		if(gatewayTimer != NOT_RUNNING) {
 			if(gatewayTimer > 0) {
 				gatewayTimer--;
 			} else {
 				doGatewaySpawn();
 				gatewayTimer = NOT_RUNNING;
+			}
+		}
+		
+		//4. Handle simulacra advancements.
+		if(Apathy.bossConfig.simulacraDragonAdvancements && Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+			//this grants the "Free the End" advancement, in a kind of clunky way
+			EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
+			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
+				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
+			}
+		}
+	}
+	
+	@Inject(method = "scanState", at = @At("RETURN"))
+	void whenScanningState(CallbackInfo ci) {
+		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
+		//It is also called before vanilla code spawns the initial Ender Dragon.
+		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
+		//player has requested for the initial dragon to be removed.
+		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+			dragonKilled = true; //This is the magic variable.
+			previouslyKilled = true;
+		}
+	}
+	
+	@Inject(method = "createNewDragon", at = @At("RETURN"))
+	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
+		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
+			EnderDragon dragn = cir.getReturnValue();
+			//TODO: Implement DragonInitialState.PASSIVE_DRAGON
+		}
+	}
+	
+	//tryRespawn handles detecting the 4 end crystals by the exit portal.
+	//respawnDragon gets called with the list of end crystals if there are four, and actually summons the boss.
+	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
+	void whenBeginningRespawnSequence(List<EndCrystal> crystals, CallbackInfo ci) {
+		switch(Apathy.bossConfig.resummonSequence) {
+			case DEFAULT -> {} //Nothing to do.
+			case DISABLED -> ci.cancel();
+			case SPAWN_GATEWAY -> {
+				ci.cancel();
+				tryEnderCrystalGateway(crystals);
+			}
+		}
+	}
+	
+	@Unique private void tryEnderCrystalGateway(List<EndCrystal> crystalsAroundEndPortal) {
+		if(gatewayTimer == NOT_RUNNING) {
+			BlockPos pos = gatewayDryRun();
+			if(pos != null) {
+				BlockPos downABit = pos.below(2); //where the actual gateway block will be
+				for(EndCrystal crystal : crystalsAroundEndPortal) {
+					crystal.setBeamTarget(downABit);
+				}
+				
+				this.respawnCrystals = crystalsAroundEndPortal;
+				gatewayTimer = 100; //5 seconds
 			}
 		}
 	}
@@ -197,23 +210,10 @@ public abstract class EndDragonFightMixin {
 		}
 		
 		//Grant the advancement for resummoning the Ender Dragon (close enough)
-		EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
-		for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
-			CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);
-		}
-	}
-	
-	@Unique private void tryEnderCrystalGateway(List<EndCrystal> crystalsAroundEndPortal) {
-		if(gatewayTimer == NOT_RUNNING) {
-			BlockPos pos = gatewayDryRun();
-			if(pos != null) {
-				BlockPos downABit = pos.below(2); //where the actual gateway block will be
-				for(EndCrystal crystal : crystalsAroundEndPortal) {
-					crystal.setBeamTarget(downABit);
-				}
-				
-				this.respawnCrystals = crystalsAroundEndPortal;
-				gatewayTimer = 100; //5 seconds
+		if(Apathy.bossConfig.simulacraDragonAdvancements) {
+			EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
+			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
+				CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);
 			}
 		}
 	}

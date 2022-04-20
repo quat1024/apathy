@@ -160,6 +160,15 @@ public abstract class Config {
 				}
 			}
 			
+			AtMost atMost = field.getDeclaredAnnotation(AtMost.class);
+			if(atMost != null) {
+				if(atMost.maxInt() != Integer.MAX_VALUE) {
+					lines.add("# Must be at most " + atMost.maxInt() + ".");
+				} else if(atMost.maxLong() != Long.MAX_VALUE) {
+					lines.add("# Must be at most " + atMost.maxLong() + ".");
+				}
+			}
+			
 			//If the field has an example, include that too.
 			Example example = field.getDeclaredAnnotation(Example.class);
 			if(example != null) {

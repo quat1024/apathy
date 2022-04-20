@@ -19,7 +19,6 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -87,8 +86,6 @@ public abstract class EndDragonFightMixin {
 		if(tag.contains("ExitPortalLocation", 10)) {
 			this.portalLocation = NbtUtils.readBlockPos(tag.getCompound("ExitPortalLocation"));
 		}
-		
-		System.out.println("CONSTRUCTING - dragonKilled " + dragonKilled + " previouslyKilled " + previouslyKilled);
 	}
 	
 	@Inject(method = "saveData", at = @At(value = "RETURN"))
@@ -156,16 +153,12 @@ public abstract class EndDragonFightMixin {
 	@Inject(method = "scanState", at = @At("RETURN"))
 	void finishScanningState(CallbackInfo ci) {
 		apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
-		System.out.println("scanState called");
-		System.out.println("dragonKilled " + dragonKilled + " previouslyKilled " + previouslyKilled);
-		System.out.println(Apathy.bossConfig.dragonInitialState);
 		
 		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
 		//It is also called before vanilla code spawns the initial Ender Dragon.
 		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
 		//player has requested for the initial dragon to be removed.
 		if(Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
-			System.out.println("taking the branch!!!!!!!!!!!!!");
 			dragonKilled = true; //This is the magic variable.
 			previouslyKilled = true;
 		}
@@ -178,15 +171,11 @@ public abstract class EndDragonFightMixin {
 	//this shit on the head, the solution is to prevent endportals from being discovered in scanState.
 	@Inject(method = "hasActiveExitPortal", at = @At("HEAD"), cancellable = true)
 	void bopActiveExitPortal(CallbackInfoReturnable<Boolean> cir) {
-		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) {
-			System.out.println("BOPPING exit portal part 1");
-			cir.setReturnValue(false);
-		}
+		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) cir.setReturnValue(false);
 	}
 	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))
 	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
-		System.out.println("createNewDragon!!!!!!!!!!!!");
 		if(!previouslyKilled && Apathy.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
 			((DragonDuck) cir.getReturnValue()).apathy$disallowAttackingPlayers();
 		}

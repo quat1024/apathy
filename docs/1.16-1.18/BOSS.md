@@ -2,11 +2,11 @@
 
 This file contains controls for various boss-fight sequences in Minecraft. You can disable or modify them.
 
-# Dragon
+# Dragon (before mod version 2.3)
 
 ## No dragon
 
-Disables the Ender Dragon fight.
+Completely removes the Ender Dragon from the game.
 
 * When you visit the End for the first time:
 	* The Ender Dragon will not spawn when you visit the End.
@@ -17,9 +17,55 @@ Disables the Ender Dragon fight.
 	* You will get the "The End... Again..." advancement.
 * Existing Ender Dragons *will* be deleted.
 
-## Dragon control
+# Dragon (after mod version 2.3)
 
-All of these are untested, unfortunately (I added the "No dragon" option for myself, because I find the fight disturbing). They're relatively simple and should work okay. Let me know if there's issues and I'll try and find someone to fix them for me.
+The "No dragon" option has been split into several different options, instead of one massive "completely remove the mob" setting.
+
+If you are playing in a world with an older version of the mod, the requisite upgrades will be made for you (dragonInitialState -> `calm`, portalInitialState -> `open_with_egg`, resummonSequence -> `spawn_gateway`)
+
+## Dragon initial state
+
+Controls the initial state of the Ender Dragon.
+
+* `default`: No changes are made to the vanilla. This is the default value.
+* `passive_dragon`: No changes are made, except the Ender Dragon will not attack any players that didn't attack her first.
+* `calm`: The initial Ender Dragon is removed. 
+  * You probably still want to exit the End, so look at the next option.
+
+This setting must be set before the first player enters the End.
+
+## Portal initial state
+
+Controls the initial state of the exit End Portal at the center of the island.
+
+* `closed`: The portal is closed. This is the default value.
+* `open`: The portal is already open, and can be used to exit the End.
+* `open_with_egg`: The portal is open, and a Dragon Egg is placed on top.
+
+This setting must be set before the first player enters the End.
+
+## Initial End Gateway count
+
+A number from 0 to 20. The corresponding number of End Gateways will already be opened.
+
+This setting must be set before the first player enters the End.
+
+## Resummon Sequence
+
+Controls what happens when a player places four End Crystals on the exit End Portal.
+
+* `default`: An Ender Dragon is summoned, just like vanilla. This is the default value.
+* `spawn_gateway`: A short animation plays, and an End Gateway is created. No fight sequence is required.
+* `disabled`: Nothing happens.
+
+## Simulacra Dragon Advancements
+
+This enables some miscellaneous features relating to vanilla advancements and Apathy's replacements for the mechanics those advancements are for. It defaults to `true`.
+
+* If `dragonInitialState` is `calm` (removing it), players automatically obtain "Free the End" when they first visit the End.
+* If `resummonSequence` is `spawn_gateway`, players obtain the advancement for resummoning the Ender Dragon when they trigger the custom gateway respawn cutscene.
+
+# Dragon control (all versions)
 
 `dragonFlies` - Port of the option from Apathetic Mobs, replaces some flying-attack related dragon phases with an instruction to go perch, dunno the exact gameplay effect.
 

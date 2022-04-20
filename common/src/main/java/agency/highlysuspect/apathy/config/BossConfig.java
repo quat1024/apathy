@@ -6,8 +6,6 @@ import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
-import agency.highlysuspect.apathy.rule.CodecUtil;
-import com.mojang.serialization.Codec;
 
 import java.util.Locale;
 

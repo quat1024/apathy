@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.TriState;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -75,10 +74,7 @@ public class CodecUtil {
 	}, new Decoder<>() {
 		@Override
 		public <T> DataResult<Pair<LocationPredicate, T>> decode(DynamicOps<T> ops, T input) {
-			Apathy.LOG.info(input);
-			
 			JsonElement asJson = ops.convertTo(JsonOps.INSTANCE, input);
-			Apathy.LOG.info(asJson.toString());
 			
 			LocationPredicate pred;
 			try {

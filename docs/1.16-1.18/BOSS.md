@@ -2,7 +2,7 @@
 
 This file contains controls for various boss-fight sequences in Minecraft. You can disable or modify them.
 
-# Dragon (before mod version 2.3)
+# Dragon (before mod version 2.2)
 
 ## No dragon
 
@@ -17,7 +17,7 @@ Completely removes the Ender Dragon from the game.
 	* You will get the "The End... Again..." advancement.
 * Existing Ender Dragons *will* be deleted.
 
-# Dragon (after mod version 2.3)
+# Dragon (after mod version 2.2)
 
 The "No dragon" option has been split into several different options, instead of one massive "completely remove the mob" setting.
 

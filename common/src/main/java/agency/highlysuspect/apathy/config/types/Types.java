@@ -29,6 +29,7 @@ public class Types {
 		builtinParsers.put(BossConfig.DragonInitialState.class, new EnumSerde<>(BossConfig.DragonInitialState.class));
 		builtinParsers.put(BossConfig.PortalInitialState.class, new EnumSerde<>(BossConfig.PortalInitialState.class));
 		builtinParsers.put(BossConfig.ResummonSequence.class, new EnumSerde<>(BossConfig.ResummonSequence.class));
+		builtinParsers.put(BossConfig.ElderGuardianEffect.class, new EnumSerde<>(BossConfig.ElderGuardianEffect.class));
 		
 		//Basically this thing exists because I can't put custom expressions in Java annotations.
 		//So I annotate the field in the config file with @Use("difficultySet"), and that bounces over to here.

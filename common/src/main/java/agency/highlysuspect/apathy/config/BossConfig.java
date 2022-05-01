@@ -104,6 +104,19 @@ public class BossConfig extends Config {
 	@Comment("Does the Wither break nearby blocks after it gets damaged?")
 	public boolean witherBreaksBlocks = true;
 	
+	//////////////////////////
+	@Section("Elder Guardian")
+	//////////////////////////
+	
+	@Comment({
+		"This option affects your own client.",
+		"What happens when an Elder Guardian gives you the Mining Fatigue effect?",
+		"If 'default', the sound effect and particle appear.",
+		"If 'only_sound', only the sound plays, and if 'only_particle', only the particle effect appears.",
+		"If 'disabled', neither of those happen."
+	})
+	public ElderGuardianEffect elderGuardianEffect = ElderGuardianEffect.DEFAULT;
+	
 	@Override
 	protected Config upgrade() {
 		if(configVersion == 0) {
@@ -145,5 +158,21 @@ public class BossConfig extends Config {
 		SPAWN_GATEWAY,
 		DISABLED,
 		;
+	}
+	
+	public enum ElderGuardianEffect {
+		DEFAULT,
+		ONLY_SOUND,
+		ONLY_PARTICLE,
+		DISABLED,
+		;
+		
+		public boolean removeParticle() {
+			return this == ONLY_SOUND || this == DISABLED;
+		}
+		
+		public boolean removeSound() {
+			return this == ONLY_PARTICLE || this == DISABLED;
+		}
 	}
 }

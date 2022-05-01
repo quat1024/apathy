@@ -73,6 +73,16 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Override
+	public void apathy$directlySetProvocationTime(long time) {
+		provocationTime = time;
+	}
+	
+	@Override
+	public long apathy$directlyGetProvocationTime() {
+		return provocationTime;
+	}
+	
+	@Override
 	public boolean apathy$wasProvoked() {
 		return provocationTime != NOT_PROVOKED;
 	}

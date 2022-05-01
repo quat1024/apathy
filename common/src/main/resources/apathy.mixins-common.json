@@ -15,7 +15,8 @@
 		"dragon.phase.DragonSittingScanningPhaseMixin",
 		"wither.LivingEntityInvoker",
 		"wither.WitherBossMixin",
-		"wither.WitherSkullBlockMixin"
+		"wither.WitherSkullBlockMixin",
+		"aggroedgecase.ZombifiedPiglinMixin"
 	],
 	"client": [
 		"client.ClientPacketListenerMixin"

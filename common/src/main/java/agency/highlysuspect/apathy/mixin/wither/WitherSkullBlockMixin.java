@@ -19,9 +19,11 @@ public class WitherSkullBlockMixin {
 			target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
 		)
 	)
-	private static boolean yeet(Level world, Entity entity) {
-		if(!Apathy.bossConfig.noWither) return world.addFreshEntity(entity);
+	private static boolean yeet(Level level, Entity entity) {
+		//If the difficulty is contained within the set, call the normal spawn method
+		if(Apathy.bossConfig.witherDifficulties.contains(level.getDifficulty())) return level.addFreshEntity(entity);
 		
+		//Else, simulate a kill and don't spawn the entity. I have no idea why this grants the advancement btw.
 		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(DamageSource.ANVIL);
 		return false;
 	}

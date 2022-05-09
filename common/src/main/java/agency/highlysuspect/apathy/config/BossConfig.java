@@ -1,17 +1,21 @@
 package agency.highlysuspect.apathy.config;
 
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.AtMost;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
+import net.minecraft.world.Difficulty;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 @SuppressWarnings("CanBeFinal")
 public class BossConfig extends Config {
-	protected static final int CURRENT_CONFIG_VERSION = 1;
+	protected static final int CURRENT_CONFIG_VERSION = 2;
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////
@@ -84,10 +88,11 @@ public class BossConfig extends Config {
 	//////////////////
 	
 	@Comment({
-		"Set to 'true' to remove the Wither fight sequence.",
-		"Building the Wither formation will spawn a Nether Star item and give you the advancement for killing the Wither."
+		"Comma-separated list of difficulties where the Wither is enabled.",
+		"If the current world difficulty does not appear in the set, building the Wither formation will spawn a Nether Star",
+		"item, and give you the advancement for killing the Wither."
 	})
-	public boolean noWither;
+	public Set<Difficulty> witherDifficulties = Apathy.allOf(Difficulty.class);
 	
 	@Comment("Is the Wither allowed to intentionally target players?")
 	public boolean witherTargetsPlayers = true;
@@ -126,6 +131,18 @@ public class BossConfig extends Config {
 				portalInitialState = PortalInitialState.OPEN_WITH_EGG;
 				resummonSequence = ResummonSequence.SPAWN_GATEWAY;
 			}
+			
+			configVersion = 1; //Finished upgrading to v1
+		}
+		
+		if(configVersion == 1) {
+			//noWither option was replaced with a difficulty set. If contained in the set, the wither is enabled.
+			//therefore noWither = true should map to an empty difficulty set
+			if(unknownKeys != null && unknownKeys.getOrDefault("noWither", "false").trim().toLowerCase(Locale.ROOT).equals("true")) {
+				witherDifficulties = new HashSet<>();
+			}
+			
+			configVersion = 2; //Finished upgrading to v2
 		}
 		
 		return this;

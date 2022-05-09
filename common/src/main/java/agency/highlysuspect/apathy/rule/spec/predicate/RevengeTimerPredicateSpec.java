@@ -18,7 +18,7 @@ public record RevengeTimerPredicateSpec(long timer) implements PredicateSpec {
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> MobExt.cast(attacker).apathy$lastAttackedWithin(timer);
+		return (attacker, defender) -> ((MobExt) attacker).apathy$lastAttackedWithin(timer);
 	}
 	
 	@Override

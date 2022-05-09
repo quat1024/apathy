@@ -16,7 +16,7 @@ public class PolarBearHurtByTargetGoalMixin {
 	private void whenAlerting(Mob other, LivingEntity target, CallbackInfo ci) {
 		if(other instanceof PolarBear otherBear && !otherBear.isBaby() && other instanceof MobExt otherExt) {
 			MobExt selfExt = (MobExt) ((TargetGoalAccessor) this).apathy$getMob(); //i love Type safety tbh
-			otherExt.apathy$directlySetProvocationTime(selfExt.apathy$directlyGetProvocationTime());
+			otherExt.apathy$setProvocationTime(selfExt.apathy$getProvocationTime());
 		}
 	}
 }

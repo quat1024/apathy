@@ -42,7 +42,7 @@ public class ZombifiedPiglinMixin {
 			//RIGHT HERE
 			//i need to spread my provocation time to the entity thats about to give chase 
 			MobExt otherExt = (MobExt) $$0x;
-			otherExt.apathy$directlySetProvocationTime(thisExt.apathy$directlyGetProvocationTime());
+			otherExt.apathy$setProvocationTime(thisExt.apathy$getProvocationTime());
 			//back 2 normal
 			
 			$$0x.setTarget(thiss.getTarget());

@@ -56,35 +56,19 @@ public class MobMixin implements MobExt {
 	
 	///////////////
 	
-	@Unique private static final long NOT_PROVOKED = Long.MIN_VALUE;
 	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
 	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
-	@Unique long provocationTime = NOT_PROVOKED;
+	@Unique long provocationTime = MobExt.NOT_PROVOKED;
 	@Unique @Nullable Vec3 spawnPosition;
 	
 	@Override
-	public void apathy$provokeNow() {
-		provocationTime = ((Mob) (Object) this).level.getGameTime();
-	}
-	
-	@Override
-	public long apathy$timeSinceProvocation() {
-		return ((Mob) (Object) this).level.getGameTime() - provocationTime;
-	}
-	
-	@Override
-	public void apathy$directlySetProvocationTime(long time) {
+	public void apathy$setProvocationTime(long time) {
 		provocationTime = time;
 	}
 	
 	@Override
-	public long apathy$directlyGetProvocationTime() {
+	public long apathy$getProvocationTime() {
 		return provocationTime;
-	}
-	
-	@Override
-	public boolean apathy$wasProvoked() {
-		return provocationTime != NOT_PROVOKED;
 	}
 	
 	@Override

@@ -7,6 +7,7 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -74,6 +75,7 @@ public class Apathy {
 		}
 	}
 	
+	//Called from PlatformSupport impls
 	public static void onPoke(Level level, Player poker, Entity poked) {
 		if(!level.isClientSide) {
 			if(poked instanceof MobExt ext) ext.apathy$provokeNow();
@@ -81,9 +83,16 @@ public class Apathy {
 		}
 	}
 	
+	//Random util crap
 	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
 		Set<T> set = new HashSet<>();
 		Collections.addAll(set, enumClass.getEnumConstants());
 		return set;
+	}
+	
+	public static Set<Difficulty> allDifficultiesNotPeaceful() {
+		Set<Difficulty> wow = allOf(Difficulty.class);
+		wow.remove(Difficulty.PEACEFUL);
+		return wow;
 	}
 }

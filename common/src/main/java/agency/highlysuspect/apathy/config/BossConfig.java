@@ -94,7 +94,7 @@ public class BossConfig extends Config {
 		"item, and give you the advancement for killing the Wither."
 	})
 	@Use("difficultySet")
-	public Set<Difficulty> witherDifficulties = Apathy.allOf(Difficulty.class);
+	public Set<Difficulty> witherDifficulties = Apathy.allDifficultiesNotPeaceful();
 	
 	@Comment("Is the Wither allowed to intentionally target players?")
 	public boolean witherTargetsPlayers = true;

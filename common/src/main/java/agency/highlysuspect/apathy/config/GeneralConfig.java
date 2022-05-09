@@ -43,7 +43,7 @@ public class GeneralConfig extends Config {
 		"when a player provokes one."
 	})
 	@Use("difficultySet")
-	public Set<Difficulty> angryPiggies = Apathy.allOf(Difficulty.class);
+	public Set<Difficulty> angryPiggies = Apathy.allDifficultiesNotPeaceful();
 	
 	/////////////////
 	@Section("Debug")

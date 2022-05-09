@@ -179,6 +179,7 @@ The predicate returns `true` if the defending player has at least one of the men
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
 * `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
+* `uniqueId`, any String you want. Only required for `attacker_spawn_location`. **kinda new parameter btw**
 
 This predicate does the following:
 
@@ -189,6 +190,8 @@ This predicate does the following:
 * returns `true` if the location is loaded and passes the `LocationPredicate`.
 
 LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
+
+`uniqueId` is required because (in the latest update) the result of `"who": "attacker_spawn_location"` predicates are tested only one time, and cached on the entity. This helps on performance, but also fixes cases like "the predicate returns false when `attacker_spawn_location` is used, and the mob has walked so far away that the spawn location is now unloaded".
 
 For example, this predicate:
 ```json

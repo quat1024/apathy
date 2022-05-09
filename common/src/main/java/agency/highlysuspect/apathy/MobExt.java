@@ -4,6 +4,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 public interface MobExt {
 	long NOT_PROVOKED = Long.MIN_VALUE;
 	
@@ -29,4 +31,5 @@ public interface MobExt {
 	/// spawn position stuff ///
 	
 	@Nullable Vec3 apathy$getSpawnPosition();
+	Map<String, TriState> apathy$getOrCreateLocationPredicateCache();
 }

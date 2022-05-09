@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,6 +16,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mixin(Mob.class)
 public class MobMixin implements MobExt {
@@ -58,8 +62,11 @@ public class MobMixin implements MobExt {
 	
 	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
 	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
+	@Unique private static final String LOCATION_PREDICATE_CACHE_KEY = "apathy-locationPredicateCache";
+	
 	@Unique long provocationTime = MobExt.NOT_PROVOKED;
 	@Unique @Nullable Vec3 spawnPosition;
+	@Unique @Nullable Map<String, TriState> locationPredicateCache;
 	
 	@Override
 	public void apathy$setProvocationTime(long time) {
@@ -76,6 +83,12 @@ public class MobMixin implements MobExt {
 		return spawnPosition;
 	}
 	
+	@Override
+	public @Nullable Map<String, TriState> apathy$getOrCreateLocationPredicateCache() {
+		if(locationPredicateCache == null) locationPredicateCache = new HashMap<>();
+		return locationPredicateCache;
+	}
+	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
@@ -84,6 +97,12 @@ public class MobMixin implements MobExt {
 		
 		if(spawnPosition != null) {
 			tag.put(SPAWN_POSITION_KEY, CodecUtil.writeVec3(spawnPosition));
+		}
+		
+		if(locationPredicateCache != null) {
+			CompoundTag real = new CompoundTag();
+			locationPredicateCache.forEach((k, v) -> real.putString(k, v.toString()));
+			tag.put(LOCATION_PREDICATE_CACHE_KEY, real);
 		}
 	}
 	
@@ -99,6 +118,17 @@ public class MobMixin implements MobExt {
 			spawnPosition = CodecUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CodecUtil.VEC3_LIST_ID));
 		} else {
 			spawnPosition = null;
+		}
+		
+		if(tag.contains(LOCATION_PREDICATE_CACHE_KEY)) {
+			locationPredicateCache = new HashMap<>();
+			
+			CompoundTag real = tag.getCompound(LOCATION_PREDICATE_CACHE_KEY);
+			for(String k : real.getAllKeys()) {
+				locationPredicateCache.put(k, TriState.fromString(real.getString(k)));
+			}
+		} else {
+			locationPredicateCache = null;
 		}
 	}
 }

@@ -7,6 +7,7 @@ import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
+import agency.highlysuspect.apathy.config.annotation.Use;
 import net.minecraft.world.Difficulty;
 
 import java.util.HashSet;
@@ -92,6 +93,7 @@ public class BossConfig extends Config {
 		"If the current world difficulty does not appear in the set, building the Wither formation will spawn a Nether Star",
 		"item, and give you the advancement for killing the Wither."
 	})
+	@Use("difficultySet")
 	public Set<Difficulty> witherDifficulties = Apathy.allOf(Difficulty.class);
 	
 	@Comment("Is the Wither allowed to intentionally target players?")

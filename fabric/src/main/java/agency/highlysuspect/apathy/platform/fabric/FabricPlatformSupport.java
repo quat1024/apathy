@@ -37,12 +37,8 @@ public class FabricPlatformSupport extends PlatformSupport {
 	
 	@Override
 	public void installAttackCallback() {
-		AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-			if(!world.isClientSide) {
-				if(entity instanceof MobExt ext) ext.apathy$provokeNow();
-				if(entity instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
-			}
-			
+		AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
+			Apathy.onPoke(level, player, entity);
 			return InteractionResult.PASS;
 		});
 	}

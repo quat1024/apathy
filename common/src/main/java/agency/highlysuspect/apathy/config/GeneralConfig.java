@@ -1,9 +1,14 @@
 package agency.highlysuspect.apathy.config;
 
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Section;
+import agency.highlysuspect.apathy.config.annotation.Use;
+import net.minecraft.world.Difficulty;
+
+import java.util.Set;
 
 @SuppressWarnings("CanBeFinal")
 public class GeneralConfig extends Config {
@@ -27,6 +32,18 @@ public class GeneralConfig extends Config {
 		"And report it too, since it's definitely a bug, lol."
 	})
 	public boolean runRuleOptimizer = true;
+	
+	/////////////////
+	@Section("Revenge Spread")
+	/////////////////
+	
+	@Comment({
+		"Comma-separated list of difficulties.",
+		"If the current world difficulty appears in the set, zombified piglins will alert their friends",
+		"when a player provokes one."
+	})
+	@Use("difficultySet")
+	public Set<Difficulty> angryPiggies = Apathy.allOf(Difficulty.class);
 	
 	/////////////////
 	@Section("Debug")

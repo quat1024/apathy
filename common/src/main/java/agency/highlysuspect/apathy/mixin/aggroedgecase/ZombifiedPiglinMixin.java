@@ -1,9 +1,11 @@
 package agency.highlysuspect.apathy.mixin.aggroedgecase;
 
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.MobExt;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -21,6 +23,12 @@ public class ZombifiedPiglinMixin {
 	private void alertOthers() {
 		ZombifiedPiglin thiss = (ZombifiedPiglin) (Object) this;
 		MobExt thisExt = (MobExt) this;
+		
+		Level level = thiss.level;
+		if(!Apathy.generalConfig.angryPiggies.contains(level.getDifficulty())) {
+			//Oh wow, an overwrite-head-cancel! Even better than an inject-head-cancel
+			return;
+		}
 		
 		double $$0 = thiss.getAttributeValue(Attributes.FOLLOW_RANGE);
 		AABB $$1 = AABB.unitCubeFromLowerCorner(thiss.position()).inflate($$0, 10.0D, $$0);

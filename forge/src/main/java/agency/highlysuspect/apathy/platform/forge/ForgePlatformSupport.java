@@ -10,6 +10,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -41,13 +43,7 @@ public class ForgePlatformSupport extends PlatformSupport {
 	
 	@Override
 	public void installAttackCallback() {
-		MinecraftForge.EVENT_BUS.addListener((AttackEntityEvent e) -> {
-			Level level = e.getTarget().level;
-			if(!level.isClientSide()) {
-				if(e.getTarget() instanceof MobExt ext) ext.apathy$provokeNow();
-				if(e.getTarget() instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
-			}
-		});
+		MinecraftForge.EVENT_BUS.addListener((AttackEntityEvent e) -> Apathy.onPoke(e.getPlayer().level, e.getPlayer(), e.getTarget()));
 	}
 	
 	@Override

@@ -7,12 +7,18 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Apathy {
 	public static final String MODID = "apathy";
@@ -66,5 +72,18 @@ public class Apathy {
 				LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
 			}
 		}
+	}
+	
+	public static void onPoke(Level level, Player poker, Entity poked) {
+		if(!level.isClientSide) {
+			if(poked instanceof MobExt ext) ext.apathy$provokeNow();
+			if(poked instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
+		}
+	}
+	
+	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
+		Set<T> set = new HashSet<>();
+		Collections.addAll(set, enumClass.getEnumConstants());
+		return set;
 	}
 }

@@ -40,10 +40,28 @@ public class GeneralConfig extends Config {
 	@Comment({
 		"Comma-separated list of difficulties.",
 		"If the current world difficulty appears in the set, zombified piglins will alert their friends",
-		"when a player provokes one."
+		"when a player provokes one. This will also spread Apathy's revengeTimer to them."
 	})
 	@Use("difficultySet")
 	public Set<Difficulty> angryPiggies = Apathy.allDifficultiesNotPeaceful();
+	
+	@Comment({
+		"Let's say this option is set to 10, and you attack a zombie. Other zombies within 10 blocks will have their revengeTimer set, too.",
+		"This option affects mobs of the same type only.",
+		"Please recall that the revengeTimer is an Apathy concept, and Apathy only ever suppresses normal mob AI.",
+		"i.e, this won't cause a mob to attack a player that already wasn't going to."
+	})
+	@AtLeast(minInt = 0)
+	public int sameTypeRevengeSpread = 0;
+	
+	@Comment({
+		"When attacking any mob, other mobs within this range will have their revengeTimer set, too.",
+		"This option affects all mobs, whether they have the same type or not.",
+		"Please recall that the revengeTimer is an Apathy concept, and Apathy only ever suppresses normal mob AI.",
+		"i.e, this won't cause a mob to attack a player that already wasn't going to."
+	})
+	@AtLeast(minInt = 0)
+	public int differentTypeRevengeSpread = 0;
 	
 	/////////////////
 	@Section("Debug")

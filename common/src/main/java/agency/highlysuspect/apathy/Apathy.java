@@ -11,6 +11,8 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Apathy {
@@ -78,7 +81,25 @@ public class Apathy {
 	//Called from PlatformSupport impls
 	public static void onPoke(Level level, Player poker, Entity poked) {
 		if(!level.isClientSide) {
-			if(poked instanceof MobExt ext) ext.apathy$provokeNow();
+			if(poked instanceof MobExt ext) {
+				//Set the revengetimer on the hit entity
+				ext.apathy$provokeNow();
+				
+				if(Apathy.generalConfig.sameTypeRevengeSpread > 0) {
+					for(Entity nearby : level.getEntitiesOfClass(poked.getClass(), poked.getBoundingBox().inflate(Apathy.generalConfig.sameTypeRevengeSpread))) {
+						if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+					}
+				}
+				
+				if(Apathy.generalConfig.differentTypeRevengeSpread > 0) {
+					//kinda grody sorry
+					for(Entity nearby : level.getEntities((Entity) null, poked.getBoundingBox().inflate(Apathy.generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
+						if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+					}
+				}
+			}
+			
+			//handle the "peaceful-at-the-start dragon" option
 			if(poked instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
 		}
 	}

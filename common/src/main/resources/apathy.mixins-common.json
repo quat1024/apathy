@@ -6,6 +6,7 @@
 	"mixins": [
 		"LivingEntityMixin",
 		"MobMixin",
+		"TargetGoalAccessor",
 		"dragon.EnderDragonMixin",
 		"dragon.EndDragonFightMixin",
 		"dragon.phase.AbstractDragonPhaseInstanceAccessor",
@@ -16,7 +17,8 @@
 		"wither.LivingEntityInvoker",
 		"wither.WitherBossMixin",
 		"wither.WitherSkullBlockMixin",
-		"aggroedgecase.ZombifiedPiglinMixin"
+		"aggroedgecase.ZombifiedPiglinMixin",
+		"aggroedgecase.PolarBearHurtByTargetGoalMixin"
 	],
 	"client": [
 		"client.ClientPacketListenerMixin"

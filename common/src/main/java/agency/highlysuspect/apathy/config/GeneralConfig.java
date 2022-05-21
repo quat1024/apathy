@@ -33,9 +33,19 @@ public class GeneralConfig extends Config {
 	})
 	public boolean runRuleOptimizer = true;
 	
-	/////////////////
+	//////////////////////////////////////
+	@Section("Wow even more misc options")
+	//////////////////////////////////////
+	
+	@Comment({
+		"Comma-separated list of difficulties where zombies are allowed to attack villagers."
+	})
+	@Use("difficultySet")
+	public Set<Difficulty> zombieAttackVillagerDifficulties = Apathy.allDifficultiesNotPeaceful();
+	
+	//////////////////////////
 	@Section("Revenge Spread")
-	/////////////////
+	//////////////////////////
 	
 	@Comment({
 		"Comma-separated list of difficulties.",

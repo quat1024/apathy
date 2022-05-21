@@ -2,20 +2,16 @@ package agency.highlysuspect.apathy.platform.fabric;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.ApathyCommands;
-import agency.highlysuspect.apathy.DragonDuck;
-import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.InteractionResult;
 
 import java.nio.file.Path;
 
@@ -32,14 +28,6 @@ public class FabricPlatformSupport extends PlatformSupport {
 			public void onResourceManagerReload(ResourceManager manager) {
 				Apathy.loadConfig();
 			}
-		});
-	}
-	
-	@Override
-	public void installAttackCallback() {
-		AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
-			Apathy.onPoke(level, player, entity);
-			return InteractionResult.PASS;
 		});
 	}
 	

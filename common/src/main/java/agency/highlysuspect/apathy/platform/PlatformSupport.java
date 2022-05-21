@@ -24,13 +24,11 @@ public abstract class PlatformSupport {
 	
 	public void initialize() {
 		installConfigFileReloader();
-		installAttackCallback();
 		installCommandRegistrationCallback();
 		installPlayerSetManagerTicker();
 	}
 	
 	public abstract void installConfigFileReloader();
-	public abstract void installAttackCallback();
 	public abstract void installCommandRegistrationCallback();
 	public abstract void installPlayerSetManagerTicker();
 	

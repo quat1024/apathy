@@ -76,15 +76,11 @@ public class Apathy {
 	}
 	
 	public static void noticePlayerAttack(Player player, Entity provoked) {
-		LOG.info("noticePlayerAttack {} {}", player, provoked);
-		
 		Level level = player.level;
 		if(level.isClientSide) return;
 		
 		if(provoked instanceof MobExt ext) {
 			//Set the revengetimer on the hit entity
-			
-			LOG.info("calling provokeNow");
 			ext.apathy$provokeNow();
 			
 			if(Apathy.generalConfig.sameTypeRevengeSpread > 0) {

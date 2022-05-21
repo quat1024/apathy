@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(targets = "net.minecraft.world.entity.animal.PolarBear.PolarBearHurtByTargetGoal") //Pkg private class
+@Mixin(targets = "net.minecraft.world.entity.animal.PolarBear$PolarBearHurtByTargetGoal") //Pkg private class
 public class PolarBearHurtByTargetGoalMixin {
 	@Inject(method = "alertOther", at = @At("HEAD"))
 	private void whenAlerting(Mob other, LivingEntity target, CallbackInfo ci) {

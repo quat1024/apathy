@@ -60,34 +60,50 @@ public class Apathy {
 		platformSupport.installPlayerSetManagerTicker();
 	}
 	
-	public void loadConfig() {
+	public boolean loadConfig() {
+		boolean ok = true;
+		
+		GeneralConfig newGeneralConfig = generalConfig;
 		try {
-			generalConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
+			newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
 		} catch (Exception e) {
 			LOG.error("Problem reading general.cfg:", e);
-			generalConfig = new GeneralConfig();
+			ok = false;
+		} finally {
+			generalConfig = newGeneralConfig;
 		}
 		
+		MobConfig newMobConfig = mobConfig;
 		try {
-			mobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+			newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
 		} catch (Exception e) {
 			LOG.error("Problem reading mobs.cfg: ", e);
-			mobConfig = new MobConfig();
+			ok = false;
+		} finally {
+			mobConfig = newMobConfig;
 		}
 		
+		BossConfig newBossConfig = bossConfig;
 		try {
-			bossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+			newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
 		} catch (Exception e) {
 			LOG.error("Problem reading boss.cfg: ", e);
-			bossConfig = new BossConfig();
+			ok = false;
+		} finally {
+			bossConfig = newBossConfig;
 		}
 		
+		Rule newJsonRule = jsonRule;
 		try {
-			jsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
+			newJsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
 		} catch (Exception e) {
 			LOG.error("Problem reading mobs.json: ", e);
-			jsonRule = null;
+			ok = false;
+		} finally {
+			jsonRule = newJsonRule;
 		}
+		
+		return ok;
 	}
 	
 	public void noticePlayerAttack(Player player, Entity provoked) {

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,10 +31,10 @@ public class Apathy {
 	public final PlatformSupport platformSupport;
 	public final Path configFolder;
 	
-	public MobConfig mobConfig;
-	public GeneralConfig generalConfig;
-	public BossConfig bossConfig;
-	public Rule jsonRule;
+	public GeneralConfig generalConfig = new GeneralConfig();
+	public MobConfig mobConfig = new MobConfig();
+	public BossConfig bossConfig = new BossConfig();
+	public @Nullable Rule jsonRule;
 	
 	public Apathy(PlatformSupport platformSupport) {
 		this.platformSupport = platformSupport;

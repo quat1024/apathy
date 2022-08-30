@@ -58,27 +58,17 @@ public class Apathy {
 	}
 	
 	public void loadConfig() {
-		GeneralConfig oldGeneralConfig = generalConfig;
-		MobConfig oldMobConfig = mobConfig;
-		BossConfig oldBossConfig = bossConfig;
-		
 		try {
-			generalConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
-			mobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
-			bossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+			GeneralConfig newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
+			MobConfig newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+			BossConfig newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+			JsonRule.loadJson(); //todo this is kinda tacked on
 			
-			//todo this is kinda tacked on
-			JsonRule.loadJson();
+			generalConfig = newGeneralConfig;
+			mobConfig = newMobConfig;
+			bossConfig = newBossConfig;
 		} catch (Exception e) {
-			if(oldGeneralConfig == null && oldMobConfig == null && oldBossConfig == null) {
-				throw new RuntimeException("Problem initializing config file.", e);
-			} else {
-				generalConfig = oldGeneralConfig;
-				mobConfig = oldMobConfig;
-				bossConfig = oldBossConfig;
-				LOG.error("Problem reloading config file: ", e);
-				LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
-			}
+			LOG.error("Problem reading config file: ", e);
 		}
 	}
 	

@@ -207,7 +207,7 @@ public class ApathyCommands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		Apathy.loadConfig();
+		Apathy.INSTANCE.loadConfig();
 		msg(cmd, "Reloaded Apathy config files. Check the server log for any errors.");
 		return 0;
 	}

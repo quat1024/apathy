@@ -33,13 +33,12 @@ public class Apathy {
 	public MobConfig mobConfig;
 	public GeneralConfig generalConfig;
 	public BossConfig bossConfig;
-	public static Rule jsonRule;
+	public Rule jsonRule;
 	
 	public Apathy(PlatformSupport platformSupport) {
 		this.platformSupport = platformSupport;
 		configFolder = platformSupport.getConfigPath();
 	}
-	
 	
 	public void init() {
 		//Ensure the config subdirectory exists and things can be placed inside it

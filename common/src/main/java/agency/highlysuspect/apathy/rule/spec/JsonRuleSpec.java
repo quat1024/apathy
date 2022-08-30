@@ -11,7 +11,7 @@ public final record JsonRuleSpec() implements RuleSpec {
 	
 	@Override
 	public Rule build() {
-		return (attacker, defender) -> Apathy.jsonRule == null ? TriState.DEFAULT : Apathy.jsonRule.apply(attacker, defender);
+		return (attacker, defender) -> Apathy.INSTANCE.jsonRule == null ? TriState.DEFAULT : Apathy.INSTANCE.jsonRule.apply(attacker, defender);
 	}
 	
 	@Override

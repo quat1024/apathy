@@ -62,7 +62,7 @@ public class Apathy {
 			GeneralConfig newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
 			MobConfig newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
 			BossConfig newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
-			JsonRule.loadJson(); //todo this is kinda tacked on
+			JsonRule.loadJson(configFolder); //todo this is kinda tacked on
 			
 			generalConfig = newGeneralConfig;
 			mobConfig = newMobConfig;

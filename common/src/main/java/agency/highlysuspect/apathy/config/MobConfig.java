@@ -273,10 +273,10 @@ public class MobConfig extends Config {
 			ruleSpec = new ChainRuleSpec(ruleSpecList);
 		}
 		
-		if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule", ruleSpec);
+		if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule");
 		if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
-			if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) JsonRule.dumpSpec("builtin-rule-opt", ruleSpec);
+			if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule-opt");
 		}
 		
 		rule = ruleSpec.build();

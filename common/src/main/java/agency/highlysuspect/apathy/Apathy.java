@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.platform.PlatformSupport;
+import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
@@ -28,14 +29,17 @@ public class Apathy {
 	
 	public final PlatformSupport platformSupport;
 	public final Path configFolder;
+	
 	public MobConfig mobConfig;
 	public GeneralConfig generalConfig;
 	public BossConfig bossConfig;
+	public static Rule jsonRule;
 	
 	public Apathy(PlatformSupport platformSupport) {
 		this.platformSupport = platformSupport;
 		configFolder = platformSupport.getConfigPath();
 	}
+	
 	
 	public void init() {
 		//Ensure the config subdirectory exists and things can be placed inside it
@@ -59,16 +63,31 @@ public class Apathy {
 	
 	public void loadConfig() {
 		try {
-			GeneralConfig newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
-			MobConfig newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
-			BossConfig newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
-			JsonRule.loadJson(configFolder); //todo this is kinda tacked on
-			
-			generalConfig = newGeneralConfig;
-			mobConfig = newMobConfig;
-			bossConfig = newBossConfig;
+			generalConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
 		} catch (Exception e) {
-			LOG.error("Problem reading config file: ", e);
+			LOG.error("Problem reading general.cfg:", e);
+			generalConfig = new GeneralConfig();
+		}
+		
+		try {
+			mobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+		} catch (Exception e) {
+			LOG.error("Problem reading mobs.cfg: ", e);
+			mobConfig = new MobConfig();
+		}
+		
+		try {
+			bossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+		} catch (Exception e) {
+			LOG.error("Problem reading boss.cfg: ", e);
+			bossConfig = new BossConfig();
+		}
+		
+		try {
+			jsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
+		} catch (Exception e) {
+			LOG.error("Problem reading mobs.json: ", e);
+			jsonRule = null;
 		}
 	}
 	

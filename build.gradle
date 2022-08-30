@@ -1,23 +1,38 @@
 subprojects {
 	apply plugin: "java"
-	
 	java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 	java.withSourcesJar()
 	
 	tasks.withType(JavaCompile).configureEach {
-		it.options.encoding = 'UTF-8'
-		
-		//ahh, gradle. never change
-		//noinspection GroovyAssignabilityCheck, GroovyAccessibility
+		it.options.encoding = "UTF-8"
 		it.options.release = 17
 	}
-}
-
-//dont ask me how this works its from stackoverflow
-allprojects {
-	plugins.withType(JavaPlugin) {
-		dependencies {
-			implementation "org.jetbrains:annotations:16.0.2"
+	
+	tasks.withType(GenerateModuleMetadata) {
+		//This shit is broke
+		enabled = false
+	}
+	
+	processResources {
+		inputs.property "version", project.version
+		
+		filesMatching(["**/fabric.mod.json", "**/mods.toml"]) {
+			expand "version": project.version
+		}
+	}
+	
+	dependencies {
+		//This mf keeps disappearing on me
+		implementation "org.jetbrains:annotations:16.0.2"
+	}
+	
+	repositories {
+		maven {
+			name = "spunchbob"
+			url = "https://repo.spongepowered.org/repository/maven-public/"
+			content {
+				includeGroup "org.spongepowered"
+			}
 		}
 	}
 }

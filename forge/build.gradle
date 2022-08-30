@@ -14,41 +14,9 @@ buildscript {
 }
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
 apply plugin: 'org.spongepowered.mixin'
 
-archivesBaseName = "${project.modId}-${project.minecraftVersion}-forge"
-
-/// deps ///
-
-dependencies {
-	minecraft "net.minecraftforge:forge:${project.forgeVersion}"
-	compileOnly project(":common")
-	
-	//Oops all refmaps
-	annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
-
-tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
-}
-
-/// resources ///
-
-//sourceSets.main.resources.srcDir 'src/generated/resources' //Idk why this was here!
-
-processResources {
-	//include common resources
-	from project(":common").sourceSets.main.resources
-	
-	//substitute in version
-	inputs.property "version", project.version
-	filesMatching(["mods.toml", ".*mods.toml", "**/mods.toml"]) {//Fucing work please!!!!!!!!!!
-		expand "version": project.version
-	}
-}
-
-/// mixin ///
+archivesBaseName = "${project.modId}-forge-${project.minecraftVersion}"
 
 mixin {
 	//Tell mixingradle what filename the refmap should use
@@ -59,11 +27,26 @@ mixin {
 	config "${project.modId}.mixins-forge.json"
 }
 
-/// runs ///
+dependencies {
+	minecraft "net.minecraftforge:forge:${project.forgeVersion}"
+	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
+	
+	compileOnly project(":common")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	//include common resources
+	from project(":common").sourceSets.main.resources
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common").sourceSets.main.allSource)
+}
 
 minecraft {
-	//Dep on official mappings
-	mappings channel: 'official', version: project.minecraftVersion
+	mappings channel: 'official', version: project.minecraftVersion //official mappings epic moments
 	
 	runs {
 		client {
@@ -92,8 +75,7 @@ minecraft {
 	}
 }
 
-/// Idk what this is or if it has a purpose, but it's conventional to include it in forge mods ///
-/// it adds MANIFEST.MF properties ///
+//conventional to include a jar manifest in forge mods, for whatever reason. idk, it doesn't hurt 
 
 jar {
 	manifest {

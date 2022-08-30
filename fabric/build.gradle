@@ -1,47 +1,36 @@
 plugins {
-	id "fabric-loom" version "0.10-SNAPSHOT"
-	id "maven-publish"
-	id "idea"
+	id "fabric-loom" version "0.12-SNAPSHOT"
 }
 
-archivesBaseName = "${project.modId}-${project.minecraftVersion}-fabric"
+archivesBaseName = "${project.modId}-fabric-${project.minecraftVersion}"
 
 /// deps ///
 
 dependencies {
+	//basics
 	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}"
+	
+	//fabric api, TODO trim down to required modules
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
 	
+	//xplat
 	implementation project(":common")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	from project(":common").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
 	source(project(":common").sourceSets.main.allSource)
 }
 
-/// resources ///
-
-processResources {
-	//include common resources
-	from project(":common").sourceSets.main.resources
-	
-	//substutute in version
-	inputs.property "version", project.version
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
+//loom doesn't generate run configs by default in subprojects
 loom {
-	/// mixin ///
-	
-	mixin {
-		defaultRefmapName = "${project.modId}.refmap.json"
-	}
-	
-	/// runs ///
 	runs {
 		client {
 			client()
@@ -55,5 +44,10 @@ loom {
 			ideConfigGenerated(true)
 			runDir("run")
 		}
+	}
+	
+	//nor can it figure out the refmap name in this situation
+	mixin {
+		defaultRefmapName = "${project.modId}.refmap.json"
 	}
 }

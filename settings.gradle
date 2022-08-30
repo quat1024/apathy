@@ -13,4 +13,8 @@ pluginManagement {
 }
 
 rootProject.name = "apathy"
-include("common", "fabric", "forge")
+include(
+	"common",
+	"fabric",
+	"forge"
+)

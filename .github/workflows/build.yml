@@ -1,29 +1,26 @@
-name: We do a little building
-on: [pull_request, push]
+name: the real
+
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: setup jdk
-        uses: actions/setup-java@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
         with:
-          distribution: temurin
-          java-version: 17
-      - name: checkout mod
-        uses: actions/checkout@v2
-      - name: validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: chmod gradle wrapper
-        run: chmod +x ./gradlew
-      - name: Print gradle version
-        run: ./gradlew --version
-      - name: build
-        run: ./gradlew build
-      - name: capture build artifacts
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build with Gradle™
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: clean build
+
+      - name: Upload artifacts™
         uses: actions/upload-artifact@v2
         with:
           name: Artifacts
           path: |
-            fabric/build/libs/
-            forge/build/libs/
+            fabric/build/libs
+            forge/build/libs

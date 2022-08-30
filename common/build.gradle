@@ -10,14 +10,5 @@ minecraft {
 }
 
 dependencies {
-	compileOnly group:'org.spongepowered', name:'mixin', version:'0.8.5'
-}
-
-//Lmao idk why this is here but I think it's in multiloader template
-processResources {
-	def buildProps = project.properties.clone()
-	
-	filesMatching(['pack.mcmeta']) {
-		expand buildProps
-	}
+	compileOnly "org.spongepowered:mixin:0.8.5"
 }

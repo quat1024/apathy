@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.JsonRule;
+import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.TriState;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.mojang.serialization.Codec;
@@ -11,7 +11,7 @@ public final record JsonRuleSpec() implements RuleSpec {
 	
 	@Override
 	public Rule build() {
-		return (attacker, defender) -> JsonRule.jsonRule == null ? TriState.DEFAULT : JsonRule.jsonRule.apply(attacker, defender);
+		return (attacker, defender) -> Apathy.jsonRule == null ? TriState.DEFAULT : Apathy.jsonRule.apply(attacker, defender);
 	}
 	
 	@Override

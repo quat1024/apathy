@@ -16,53 +16,48 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 public class JsonRule {
-	public static Rule jsonRule;
-	
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
-	public static void loadJson(Path configFolder) {
-		Path mobsJson = configFolder.resolve("mobs.json");
-		
+	public static Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
 		if(!Files.exists(mobsJson)) {
-			jsonRule = null;
-			return;
+			return null;
 		}
 		
 		String stuff;
 		try {
 			stuff = Files.lines(mobsJson).collect(Collectors.joining("\n"));
 		} catch (IOException e) {
-			Apathy.LOG.error("Problem loading json rule at " + mobsJson, e);
-			return;
+			e.addSuppressed(new RuntimeException("Problem loading json rule at " + mobsJson));
+			throw e;
 		}
 		
 		JsonElement json;
 		try {
 			json = GSON.fromJson(stuff, JsonElement.class);
 		} catch (JsonParseException e) {
-			Apathy.LOG.error("Problem parsing json rule at " + mobsJson, e);
-			return;
+			e.addSuppressed(new RuntimeException("Problem parsing json rule at " + mobsJson));
+			throw e;
 		}
 		
 		DataResult<RuleSpec> ruleSpecResult = Specs.RULE_SPEC_CODEC.parse(JsonOps.INSTANCE, json);
 		if(ruleSpecResult.error().isPresent()) {
-			Apathy.LOG.error("Problem decoding json rule: " + ruleSpecResult.error().get().message());
-			return;
+			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
 		}
 		
 		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy.LOG::error);
 		
 		try {
-			if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(configFolder, "json-rule");
+			if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule");
 			
 			if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(configFolder, "json-rule-opt");
+				if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule-opt");
 			}
 			
-			jsonRule = spec.build();
+			return spec.build();
 		} catch (Exception e) {
-			Apathy.LOG.error("Problem finalizing rule", e);
+			e.addSuppressed(new RuntimeException("Problem finalizing rule"));
+			throw e;
 		}
 	}
 }

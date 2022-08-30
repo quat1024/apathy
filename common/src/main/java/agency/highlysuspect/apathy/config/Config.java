@@ -17,10 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class Config {
-	protected Config() {
-		path = null;
-	}
-	
 	//Read the config file from this path, or save the default one to it.
 	public static <T extends Config> T read(T inst, Path configFilePath) throws IOException {
 		if(Files.exists(configFilePath)) {
@@ -37,9 +33,6 @@ public abstract class Config {
 	//Keys in the config file that I don't know how to parse.
 	//Maybe in the "upgrade" method, you can parse these using the older format, or print a warning.
 	protected transient HashMap<String, String> unknownKeys;
-	
-	//This config file.
-	protected transient final Path path;
 	
 	//Update the config to the latest values.
 	protected Config upgrade() {
@@ -65,7 +58,7 @@ public abstract class Config {
 				//Config file entries look like "key: value". Pull that apart.
 				int colonIdx = line.indexOf(':');
 				if(colonIdx == -1) {
-					throw new ConfigParseException(lineNo, new RuntimeException("No key-value pair (missing : character)"));
+					throw new RuntimeException("No key-value pair (missing : character)");
 				}
 				
 				String key = line.substring(0, colonIdx).trim();
@@ -84,19 +77,13 @@ public abstract class Config {
 				
 				FieldSerde<?> parser = Types.find(keyField);
 				keyField.set(this, parser.parse(keyField, value));
-			} catch (RuntimeException | IllegalAccessException e) {
-				throw new ConfigParseException(lineNo, e);
+			} catch (Exception e) {
+				e.addSuppressed(new RuntimeException("Problem in config file " + configFilePath + " on line " + lineNo));
+				throw new RuntimeException(e);
 			}
 		}
 		
 		return this;
-	}
-	
-	protected /* non-static */ class ConfigParseException extends RuntimeException {
-		public ConfigParseException(int lineNo, Throwable cause) {
-			super("Problem in config file " + path + " on line " + lineNo, cause);
-			setStackTrace(new StackTraceElement[0]); //remove some chaff
-		}
 	}
 	
 	private @Nullable Field findConfigField(String name) {

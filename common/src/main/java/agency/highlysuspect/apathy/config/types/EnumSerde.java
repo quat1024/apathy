@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.Apathy;
+import net.minecraft.world.Difficulty;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -30,6 +31,7 @@ public record EnumSerde<T extends Enum<?>>(Class<T> enumClass) implements FieldS
 	}
 	
 	private String name(T value) {
-		return value.name().toLowerCase(Locale.ROOT);
+		if(value.getClass() == Difficulty.class) return ((Difficulty) value).getKey(); //I am lazy
+		else return value.name().toLowerCase(Locale.ROOT);
 	}
 }

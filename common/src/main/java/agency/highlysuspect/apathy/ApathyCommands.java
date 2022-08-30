@@ -1,12 +1,9 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.platform.PlatformSupport;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 
@@ -82,7 +79,7 @@ public class ApathyCommands {
 	
 	private static Component lit(String msg, Object... args) {
 		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getContents();
-		return new TextComponent(String.format(msg, args));
+		return Starboarding.newTextComponent(String.format(msg, args));
 	}
 	
 	//Joining, parting

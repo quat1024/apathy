@@ -11,7 +11,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -220,7 +219,7 @@ public class PlayerSetManager extends SavedData {
 	
 	public Component printAllPlayerSets() {
 		//prints all sets such that self select ones are marked with a "(self-select)" note
-		return ComponentUtils.formatList(playerSets.entrySet(), entry -> new TextComponent(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
+		return ComponentUtils.formatList(playerSets.entrySet(), entry -> Starboarding.newTextComponent(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
 	}
 	
 	public static record Entry(Set<UUID> members, boolean selfSelect) {

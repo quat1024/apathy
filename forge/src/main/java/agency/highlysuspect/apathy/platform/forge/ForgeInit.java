@@ -12,6 +12,7 @@ public class ForgeInit {
 		//Mark this mod as server-only. Hey Forge quick question. What the fuck is this
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		
-		Apathy.init();
+		Apathy.INSTANCE = new Apathy(new ForgePlatformSupport());
+		Apathy.INSTANCE.init();
 	}
 }

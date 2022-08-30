@@ -24,41 +24,48 @@ import java.util.Set;
 public class Apathy {
 	public static final String MODID = "apathy";
 	public static final Logger LOG = LogManager.getLogger(MODID);
+	public static Apathy INSTANCE;
 	
-	public static final Path CONFIG_FOLDER = PlatformSupport.instance.getConfigPath();
+	public final PlatformSupport platformSupport;
+	public final Path configFolder;
+	public MobConfig mobConfig;
+	public GeneralConfig generalConfig;
+	public BossConfig bossConfig;
 	
-	public static MobConfig mobConfig;
-	public static GeneralConfig generalConfig;
-	public static BossConfig bossConfig;
-	
-	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MODID, path);
+	public Apathy(PlatformSupport platformSupport) {
+		this.platformSupport = platformSupport;
+		configFolder = platformSupport.getConfigPath();
 	}
 	
-	public static void init() {
+	public void init() {
 		//Ensure the config subdirectory exists and things can be placed inside it
 		try {
-			Files.createDirectories(CONFIG_FOLDER);
+			Files.createDirectories(configFolder);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory", e);
 		}
 		
+		//Register all the weird json rule stuff
 		Specs.onInitialize();
 		
+		//Load the config file
 		loadConfig();
 		
-		PlatformSupport.instance.initialize();
+		//Platform dependent init
+		platformSupport.installConfigFileReloader();
+		platformSupport.installCommandRegistrationCallback();
+		platformSupport.installPlayerSetManagerTicker();
 	}
 	
-	public static void loadConfig() {
+	public void loadConfig() {
 		GeneralConfig oldGeneralConfig = generalConfig;
 		MobConfig oldMobConfig = mobConfig;
 		BossConfig oldBossConfig = bossConfig;
 		
 		try {
-			generalConfig = Config.read(new GeneralConfig(), CONFIG_FOLDER.resolve("general.cfg"));
-			mobConfig = Config.read(new MobConfig(), CONFIG_FOLDER.resolve("mobs.cfg"));
-			bossConfig = Config.read(new BossConfig(), CONFIG_FOLDER.resolve("boss.cfg"));
+			generalConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
+			mobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+			bossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
 			
 			//todo this is kinda tacked on
 			JsonRule.loadJson();
@@ -75,7 +82,7 @@ public class Apathy {
 		}
 	}
 	
-	public static void noticePlayerAttack(Player player, Entity provoked) {
+	public void noticePlayerAttack(Player player, Entity provoked) {
 		Level level = player.level;
 		if(level.isClientSide) return;
 		
@@ -83,15 +90,15 @@ public class Apathy {
 			//Set the revengetimer on the hit entity
 			ext.apathy$provokeNow();
 			
-			if(Apathy.generalConfig.sameTypeRevengeSpread > 0) {
-				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(Apathy.generalConfig.sameTypeRevengeSpread))) {
+			if(generalConfig.sameTypeRevengeSpread > 0) {
+				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(generalConfig.sameTypeRevengeSpread))) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}
 			
-			if(Apathy.generalConfig.differentTypeRevengeSpread > 0) {
+			if(generalConfig.differentTypeRevengeSpread > 0) {
 				//kinda grody sorry
-				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(Apathy.generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
+				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}
@@ -102,6 +109,10 @@ public class Apathy {
 	}
 	
 	//Random util crap
+	public static ResourceLocation id(String path) {
+		return new ResourceLocation(MODID, path);
+	}
+	
 	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
 		Set<T> set = new HashSet<>();
 		Collections.addAll(set, enumClass.getEnumConstants());

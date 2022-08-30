@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ForgePlatformSupport extends PlatformSupport {
+public class ForgePlatformSupport implements PlatformSupport {
 	@SuppressWarnings("Convert2Lambda")
 	@Override
 	public void installConfigFileReloader() {
@@ -29,7 +29,7 @@ public class ForgePlatformSupport extends PlatformSupport {
 				public CompletableFuture<Void> reload(final PreparationBarrier stage, final ResourceManager resourceManager, final ProfilerFiller preparationsProfiler, final ProfilerFiller reloadProfiler, final Executor backgroundExecutor, final Executor gameExecutor) {
 					return CompletableFuture.runAsync(() -> {}, backgroundExecutor)
 						.thenCompose(stage::wait)
-						.thenRunAsync(Apathy::loadConfig, gameExecutor);
+						.thenRunAsync(Apathy.INSTANCE::loadConfig, gameExecutor);
 				}
 			});
 		});

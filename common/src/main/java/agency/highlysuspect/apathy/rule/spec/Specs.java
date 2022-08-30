@@ -13,6 +13,7 @@ import java.util.function.Function;
 /**
  * IS USING VANILLA REGISTRY TECH IN 2022 A GOOD IDEA?????? no
  */
+//TODO: Actually move off of Codec lmao
 public class Specs {
 	public static final ResourceKey<Registry<Codec<? extends RuleSpec>>> RULE_SPEC_CODEC_KEY = ResourceKey.createRegistryKey(Apathy.id("rule_spec_codec"));
 	public static final Registry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new MappedRegistry<>(RULE_SPEC_CODEC_KEY, Lifecycle.stable(), null);

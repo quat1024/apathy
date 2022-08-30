@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.nio.file.Path;
 
-public class FabricPlatformSupport extends PlatformSupport {
+public class FabricPlatformSupport implements PlatformSupport {
 	@Override
 	public void installConfigFileReloader() {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
@@ -26,7 +26,7 @@ public class FabricPlatformSupport extends PlatformSupport {
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				Apathy.loadConfig();
+				Apathy.INSTANCE.loadConfig();
 			}
 		});
 	}

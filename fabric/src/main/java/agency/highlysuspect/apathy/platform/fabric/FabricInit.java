@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 public class FabricInit implements ModInitializer {
 	@Override
 	public void onInitialize() {
-		Apathy.init();
+		Apathy.INSTANCE = new Apathy(new FabricPlatformSupport());
+		Apathy.INSTANCE.init();
 	}
 }

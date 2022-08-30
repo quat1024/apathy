@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 public class JsonRule {
 	public static Rule jsonRule;
 	
-	public static final Path MOBS_JSON = Apathy.CONFIG_FOLDER.resolve("mobs.json");
-	public static final Path DUMP_DIR = Apathy.CONFIG_FOLDER.resolve("dumps");
+	public static final Path MOBS_JSON = Apathy.INSTANCE.configFolder.resolve("mobs.json");
+	public static final Path DUMP_DIR = Apathy.INSTANCE.configFolder.resolve("dumps");
 	
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
@@ -54,11 +54,11 @@ public class JsonRule {
 		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy.LOG::error);
 		
 		try {
-			if(Apathy.generalConfig.debugJsonRule) dumpSpec("json-rule", spec);
+			if(Apathy.INSTANCE.generalConfig.debugJsonRule) dumpSpec("json-rule", spec);
 			
-			if(Apathy.generalConfig.runRuleOptimizer) {
+			if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy.generalConfig.debugJsonRule) dumpSpec("json-rule-opt", spec);
+				if(Apathy.INSTANCE.generalConfig.debugJsonRule) dumpSpec("json-rule-opt", spec);
 			}
 			
 			jsonRule = spec.build();

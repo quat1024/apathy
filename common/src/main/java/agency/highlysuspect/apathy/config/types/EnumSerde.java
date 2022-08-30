@@ -25,9 +25,7 @@ public record EnumSerde<T extends Enum<?>>(Class<T> enumClass) implements FieldS
 		
 		//Error case
 		String possibleValues = Arrays.stream(enumClass.getEnumConstants()).map(this::name).collect(Collectors.joining("/"));
-		T defaultValue = enumClass.getEnumConstants()[0];
-		Apathy.LOG.warn("Value " + value + " on field " + sourceField.getName() + " is not one of " + possibleValues + ". Defaulting to " + name(defaultValue));
-		return defaultValue;
+		throw new RuntimeException("Value " + value + " on field " + sourceField.getName() + " is not one of " + possibleValues + ".");
 	}
 	
 	private String name(T value) {

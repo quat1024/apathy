@@ -19,7 +19,11 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CodecUtil {

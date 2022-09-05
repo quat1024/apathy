@@ -9,8 +9,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 

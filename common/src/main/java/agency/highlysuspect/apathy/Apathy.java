@@ -4,7 +4,6 @@ import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
-import agency.highlysuspect.apathy.platform.PlatformSupport;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
@@ -23,12 +22,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Apathy {
+public abstract class Apathy {
 	public static final String MODID = "apathy";
 	public static final Logger LOG = LogManager.getLogger(MODID);
 	public static Apathy INSTANCE;
 	
-	public final PlatformSupport platformSupport;
 	public final Path configFolder;
 	
 	public GeneralConfig generalConfig = new GeneralConfig();
@@ -36,9 +34,9 @@ public class Apathy {
 	public BossConfig bossConfig = new BossConfig();
 	public @Nullable Rule jsonRule;
 	
-	public Apathy(PlatformSupport platformSupport) {
-		this.platformSupport = platformSupport;
-		configFolder = platformSupport.getConfigPath();
+	public Apathy() {
+		Apathy.INSTANCE = this;
+		configFolder = getConfigPath();
 	}
 	
 	public void init() {
@@ -52,13 +50,13 @@ public class Apathy {
 		//Register all the weird json rule stuff
 		Specs.onInitialize();
 		
-		//Load the config file
+		//Load the config files
 		loadConfig();
 		
 		//Platform dependent init
-		platformSupport.installConfigFileReloader();
-		platformSupport.installCommandRegistrationCallback();
-		platformSupport.installPlayerSetManagerTicker();
+		installConfigFileReloader();
+		installCommandRegistrationCallback();
+		installPlayerSetManagerTicker();
 	}
 	
 	public boolean loadConfig() {
@@ -133,7 +131,7 @@ public class Apathy {
 		if(provoked instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
 	}
 	
-	//Random util crap
+	/// Random util crap
 	public static ResourceLocation id(String path) {
 		return new ResourceLocation(MODID, path);
 	}
@@ -149,4 +147,11 @@ public class Apathy {
 		wow.remove(Difficulty.PEACEFUL);
 		return wow;
 	}
+	
+	/// Cross platform stuff
+	
+	public abstract void installConfigFileReloader();
+	public abstract void installCommandRegistrationCallback();
+	public abstract void installPlayerSetManagerTicker();
+	public abstract Path getConfigPath();
 }

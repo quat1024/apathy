@@ -1,6 +1,13 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.config.annotation.*;
+import agency.highlysuspect.apathy.config.annotation.AtLeast;
+import agency.highlysuspect.apathy.config.annotation.AtMost;
+import agency.highlysuspect.apathy.config.annotation.Blankline;
+import agency.highlysuspect.apathy.config.annotation.Comment;
+import agency.highlysuspect.apathy.config.annotation.Example;
+import agency.highlysuspect.apathy.config.annotation.NoDefault;
+import agency.highlysuspect.apathy.config.annotation.Note;
+import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
 import org.apache.commons.lang3.StringUtils;

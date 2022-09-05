@@ -1,19 +1,39 @@
 package agency.highlysuspect.apathy.config;
 
 import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.JsonRule;
-import agency.highlysuspect.apathy.config.annotation.*;
 import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.config.annotation.AtLeast;
+import agency.highlysuspect.apathy.config.annotation.Comment;
+import agency.highlysuspect.apathy.config.annotation.Example;
+import agency.highlysuspect.apathy.config.annotation.NoDefault;
+import agency.highlysuspect.apathy.config.annotation.Note;
+import agency.highlysuspect.apathy.config.annotation.Section;
+import agency.highlysuspect.apathy.config.annotation.Use;
 import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.*;
-import agency.highlysuspect.apathy.rule.spec.predicate.*;
+import agency.highlysuspect.apathy.rule.spec.AlwaysRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.ChainRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.JsonRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.PredicatedRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.RuleSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsBossPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerTaggedWithPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.DefenderInPlayerSetPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.DifficultyIsPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.RevengeTimerPredicateSpec;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "CanBeFinal"})
 public class MobConfig extends Config {

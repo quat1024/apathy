@@ -18,6 +18,7 @@ public class ZombifiedPiglinMixin {
 	 * Time to break out the old favorite COPY PASTE OVERWRITE!!!!!!!!!! Wow its almost like im a five year old!!!!!
 	 * 
 	 * @author quat SORRY
+	 * @reason Skill issues
 	 */
 	@Overwrite
 	private void alertOthers() {

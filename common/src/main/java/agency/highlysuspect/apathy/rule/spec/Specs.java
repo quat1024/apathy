@@ -2,7 +2,20 @@ package agency.highlysuspect.apathy.rule.spec;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.rule.NotRegistry;
-import agency.highlysuspect.apathy.rule.spec.predicate.*;
+import agency.highlysuspect.apathy.rule.spec.predicate.AllPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AlwaysPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AnyPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsBossPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.AttackerTaggedWithPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.DefenderHasAdvancementPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.DefenderInPlayerSetPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.DifficultyIsPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.LocationPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.NotPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.PredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.RevengeTimerPredicateSpec;
+import agency.highlysuspect.apathy.rule.spec.predicate.ScorePredicateSpec;
 import com.mojang.serialization.Codec;
 
 import java.util.function.Function;

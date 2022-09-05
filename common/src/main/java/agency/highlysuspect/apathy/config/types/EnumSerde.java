@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Apathy;
 import net.minecraft.world.Difficulty;
 
 import java.lang.reflect.Field;

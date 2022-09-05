@@ -3,6 +3,11 @@ package agency.highlysuspect.apathy.mixin.dragon;
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.DragonDuck;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,11 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
 @Mixin(EnderDragon.class)
 public class EnderDragonMixin implements DragonDuck {

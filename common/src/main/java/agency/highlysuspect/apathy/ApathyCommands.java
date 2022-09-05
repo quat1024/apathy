@@ -7,17 +7,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
-import static net.minecraft.commands.arguments.EntityArgument.players;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
 
 @SuppressWarnings("SameReturnValue")
 public class ApathyCommands {

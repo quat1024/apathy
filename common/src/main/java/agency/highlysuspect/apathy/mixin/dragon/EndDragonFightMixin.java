@@ -3,12 +3,12 @@ package agency.highlysuspect.apathy.mixin.dragon;
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.DragonDuck;
 import agency.highlysuspect.apathy.config.BossConfig;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -19,7 +19,6 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.dimension.end.DragonRespawnAnimation;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
@@ -35,7 +34,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Predicate;
 
 @SuppressWarnings("SameParameterValue")
@@ -43,15 +41,11 @@ import java.util.function.Predicate;
 public abstract class EndDragonFightMixin {
 	//a zillion shadows
 	@Shadow @Final private static Predicate<Entity> VALID_PLAYER;
-	@Shadow @Final private ServerBossEvent dragonEvent;
 	@Shadow @Final private ServerLevel level;
-	@Shadow @Final private List<Integer> gateways;
+	@Shadow @Final private ObjectArrayList<Integer> gateways;
 	@Shadow private boolean dragonKilled;
 	@Shadow private boolean previouslyKilled;
-	@Shadow private UUID dragonUUID;
-	@Shadow private boolean needsStateScanning;
 	@Shadow private BlockPos portalLocation;
-	@Shadow private DragonRespawnAnimation respawnStage;
 	@Shadow private List<EndCrystal> respawnCrystals;
 	
 	@Shadow protected abstract boolean isArenaLoaded();
@@ -137,9 +131,9 @@ public abstract class EndDragonFightMixin {
 		//4. Handle simulacra advancements.
 		if(Apathy.INSTANCE.bossConfig.simulacraDragonAdvancements && Apathy.INSTANCE.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
 			//this grants the "Free the End" advancement, in a kind of clunky way
-			EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
+			EnderDragon rarrrh = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
-				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, dummy, DamageSource.ANVIL);
+				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, rarrrh, DamageSource.ANVIL);
 			}
 		}
 	}
@@ -228,14 +222,14 @@ public abstract class EndDragonFightMixin {
 		
 		//Grant the advancement for resummoning the Ender Dragon (close enough)
 		if(Apathy.INSTANCE.bossConfig.simulacraDragonAdvancements) {
-			EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
+			EnderDragon secretDragn = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
-				CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);
+				CriteriaTriggers.SUMMONED_ENTITY.trigger(player, secretDragn);
 			}
 		}
 	}
 	
-	//Copypaste of "createNewEndGateway", but simply returns the BlockPos instead of actually creating a gateway there.
+	//Copypaste of "spawnNewGateway()", but simply returns the BlockPos instead of continuing on to actually creating a gateway.
 	//Also peeks the gateway list with "get" instead of popping with "remove".
 	@Unique private @Nullable BlockPos gatewayDryRun() {
 		if(this.gateways.isEmpty()) return null;

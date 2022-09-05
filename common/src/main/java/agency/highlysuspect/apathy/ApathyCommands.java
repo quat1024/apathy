@@ -2,7 +2,9 @@ package agency.highlysuspect.apathy;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -23,7 +25,7 @@ import static net.minecraft.commands.arguments.EntityArgument.players;
 
 @SuppressWarnings("SameReturnValue")
 public class ApathyCommands {
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext what, Commands.CommandSelection side) {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful

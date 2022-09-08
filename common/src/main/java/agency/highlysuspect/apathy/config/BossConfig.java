@@ -128,13 +128,16 @@ public class BossConfig extends Config {
 	@Section("Warden")
 	//////////////////
 	
-	@Comment("Difficulties where the Warden is allowed to apply the Darkness effect.")
+	@Comment({
+		"Difficulties where the Warden is allowed to apply the Darkness effect.",
+		"(To completely disable the Warden, please use the doWardenSpawning gamerule.)"
+	})
 	@Use("difficultySet")
 	public Set<Difficulty> wardenDarknessDifficulties = Apathy.allDifficultiesNotPeaceful();
 	
 	@Comment({
 		"When this setting is 'true', if the Warden is prevented from targeting a player",
-		" due to Apathy rules, it will also not apply the Darkness effect to that player."
+		"due to Apathy rules, it will also not apply the Darkness effect to that player."
 	})
 	public boolean wardenDarknessOnlyToPlayersItCanTarget = false;
 	

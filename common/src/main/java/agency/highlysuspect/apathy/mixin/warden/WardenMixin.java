@@ -15,13 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @SuppressWarnings("ConstantConditions")
 public class WardenMixin {
 	@Inject(method = "canTargetEntity", at = @At("HEAD"), cancellable = true)
-	public void whenCheckingCanTargetEntity(Entity ent, CallbackInfoReturnable<Boolean> cir) {
+	public void apathy$whenCheckingCanTargetEntity(Entity ent, CallbackInfoReturnable<Boolean> cir) {
 		Warden me = (Warden) (Object) this;
 		if(ent instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(me, player)) cir.setReturnValue(false);
 	}
 	
 	@Inject(method = "setAttackTarget", at = @At("HEAD"), cancellable = true)
-	public void whenSettingAttackTarget(LivingEntity ent, CallbackInfo ci) {
+	public void apathy$whenSettingAttackTarget(LivingEntity ent, CallbackInfo ci) {
 		Warden me = (Warden) (Object) this;
 		if(ent instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(me, player)) ci.cancel();
 	}

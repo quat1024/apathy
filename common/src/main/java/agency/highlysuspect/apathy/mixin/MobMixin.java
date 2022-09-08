@@ -26,7 +26,7 @@ public class MobMixin implements MobExt {
 	@Shadow private LivingEntity target;
 	
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
-	public void whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
+	public void apathy$onSetTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
@@ -44,7 +44,7 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Inject(method = "tick", at = @At("HEAD"))
-	public void whenTicking(CallbackInfo ci) {
+	public void apathy$onTick(CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
@@ -91,7 +91,7 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
+	public void apathy$whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$wasProvoked()) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
@@ -108,7 +108,7 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-	public void whenLoading(CompoundTag tag, CallbackInfo ci) {
+	public void apathy$whenLoading(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);
 		} else {

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DragonHoldingPatternPhase.class)
 public class DragonHoldingPatternPhaseMixin {
 	@Inject(method = "strafePlayer", at = @At("HEAD"), cancellable = true)
-	private void maybeDontStrafePlayer(Player player, CallbackInfo ci) {
+	private void apathy$maybeDontStrafePlayer(Player player, CallbackInfo ci) {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		

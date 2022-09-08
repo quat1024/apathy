@@ -19,7 +19,7 @@ public class WitherSkullBlockMixin {
 			target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
 		)
 	)
-	private static boolean yeet(Level level, Entity entity) {
+	private static boolean apathy$onCheckSpawn(Level level, Entity entity) {
 		//If the difficulty is contained within the set, call the normal spawn method
 		if(Apathy.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) return level.addFreshEntity(entity);
 		

@@ -21,7 +21,7 @@ import java.util.List;
 public class MobEffectUtilMixin {
 	@SuppressWarnings("InvalidInjectorMethodSignature") //Mcdev seems to be getting the locals table wrong
 	@Inject(method = "addEffectToPlayersAround", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private static void whenAddingEffectToPlayersAround(ServerLevel level, @Nullable Entity provoker, Vec3 what, double huh, MobEffectInstance effect, int hmm, CallbackInfoReturnable<List<ServerPlayer>> cir, MobEffect hrmm, List<ServerPlayer> original) {
+	private static void apathy$onAddEffectToPlayersAround(ServerLevel level, @Nullable Entity provoker, Vec3 what, double huh, MobEffectInstance effect, int hmm, CallbackInfoReturnable<List<ServerPlayer>> cir, MobEffect hrmm, List<ServerPlayer> original) {
 		Apathy.INSTANCE.filterMobEffectUtilCall(level, provoker, original);
 	}
 }

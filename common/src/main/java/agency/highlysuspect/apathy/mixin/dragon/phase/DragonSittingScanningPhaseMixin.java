@@ -22,7 +22,7 @@ public class DragonSittingScanningPhaseMixin {
 			ordinal = 1
 		)
 	)
-	private LivingEntity filterEntity(LivingEntity in) {
+	private LivingEntity apathy$filterEntity(LivingEntity in) {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		

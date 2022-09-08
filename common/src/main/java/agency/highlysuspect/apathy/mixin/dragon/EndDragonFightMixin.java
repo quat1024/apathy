@@ -64,7 +64,7 @@ public abstract class EndDragonFightMixin {
 	@Unique private boolean apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 	
 	@Inject(method = "<init>", at = @At("TAIL"))
-	void onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
+	void apathy$onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
 		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
 		
 		if(tag.contains(APATHY_GATEWAYTIMER)) {
@@ -83,7 +83,7 @@ public abstract class EndDragonFightMixin {
 	}
 	
 	@Inject(method = "saveData", at = @At(value = "RETURN"))
-	void whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
+	void apathy$whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
 		CompoundTag tag = cir.getReturnValue();
 		
 		tag.putBoolean(APATHY_CREATEDPORTAL, createdApathyPortal);
@@ -92,7 +92,7 @@ public abstract class EndDragonFightMixin {
 	
 	//runs BEFORE vanilla tick().
 	@Inject(method = "tick", at = @At("HEAD"))
-	void dontTick(CallbackInfo ci) {
+	void apathy$dontTick(CallbackInfo ci) {
 		//Vanilla tick() adds a chunk ticket that loads a region around the main End Island if there's anyone standing nearby.
 		if(!isArenaLoaded()) return;
 		
@@ -140,12 +140,12 @@ public abstract class EndDragonFightMixin {
 	
 	//wait wait gimme a sec, i can explain
 	@Inject(method = "scanState", at = @At("HEAD"))
-	void startScanningState(CallbackInfo ci) {
+	void apathy$startScanningState(CallbackInfo ci) {
 		apathyIsManagingTheInitialPortalVanillaDontLookPlease = Apathy.INSTANCE.bossConfig.portalInitialState != BossConfig.PortalInitialState.CLOSED;
 	}
 	
 	@Inject(method = "scanState", at = @At("RETURN"))
-	void finishScanningState(CallbackInfo ci) {
+	void apathy$finishScanningState(CallbackInfo ci) {
 		apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 		
 		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
@@ -164,12 +164,12 @@ public abstract class EndDragonFightMixin {
 	//spawn a dragon on first login. Because "already opened end portal" + "dragon" is a valid setup in apathy, i need to bop
 	//this shit on the head, the solution is to prevent endportals from being discovered in scanState.
 	@Inject(method = "hasActiveExitPortal", at = @At("HEAD"), cancellable = true)
-	void bopActiveExitPortal(CallbackInfoReturnable<Boolean> cir) {
+	void apathy$bopActiveExitPortal(CallbackInfoReturnable<Boolean> cir) {
 		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) cir.setReturnValue(false);
 	}
 	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))
-	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
+	void apathy$whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
 		if(!previouslyKilled && Apathy.INSTANCE.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
 			((DragonDuck) cir.getReturnValue()).apathy$disallowAttackingPlayers();
 		}
@@ -178,7 +178,7 @@ public abstract class EndDragonFightMixin {
 	//tryRespawn handles detecting the 4 end crystals by the exit portal.
 	//respawnDragon gets called with the list of end crystals if there are four, and actually summons the boss.
 	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
-	void whenBeginningRespawnSequence(List<EndCrystal> crystals, CallbackInfo ci) {
+	void apathy$whenBeginningRespawnSequence(List<EndCrystal> crystals, CallbackInfo ci) {
 		switch(Apathy.INSTANCE.bossConfig.resummonSequence) {
 			case DEFAULT -> {} //Nothing to do.
 			case DISABLED -> ci.cancel();

@@ -7,8 +7,11 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public abstract class Apathy {
@@ -129,6 +133,13 @@ public abstract class Apathy {
 		
 		//handle the "peaceful-at-the-start dragon" option
 		if(provoked instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
+	}
+	
+	public void filterMobEffectUtilCall(ServerLevel level, @Nullable Entity provoker, List<ServerPlayer> original) {
+		if(provoker instanceof Warden warden) {
+			if(!bossConfig.wardenDarknessDifficulties.contains(level.getDifficulty())) original.clear();
+			if(bossConfig.wardenDarknessOnlyToPlayersItCanTarget) original.removeIf(player -> !mobConfig.allowedToTargetPlayer(warden, player));
+		}
 	}
 	
 	/// Random util crap

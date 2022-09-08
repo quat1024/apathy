@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("ConstantConditions")
 @Mixin(Mob.class)
 public class MobMixin implements MobExt {
 	@Shadow private LivingEntity target;

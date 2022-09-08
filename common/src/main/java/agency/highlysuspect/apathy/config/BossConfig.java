@@ -16,7 +16,7 @@ import java.util.Set;
 
 @SuppressWarnings("CanBeFinal")
 public class BossConfig extends Config {
-	protected static final int CURRENT_CONFIG_VERSION = 2;
+	protected static final int CURRENT_CONFIG_VERSION = 3;
 	@NoDefault protected int configVersion = CURRENT_CONFIG_VERSION;
 	
 	////////////////////////
@@ -124,6 +124,20 @@ public class BossConfig extends Config {
 	})
 	public ElderGuardianEffect elderGuardianEffect = ElderGuardianEffect.DEFAULT;
 	
+	//////////////////
+	@Section("Warden")
+	//////////////////
+	
+	@Comment("Difficulties where the Warden is allowed to apply the Darkness effect.")
+	@Use("difficultySet")
+	public Set<Difficulty> wardenDarknessDifficulties = Apathy.allDifficultiesNotPeaceful();
+	
+	@Comment({
+		"When this setting is 'true', if the Warden is prevented from targeting a player",
+		" due to Apathy rules, it will also not apply the Darkness effect to that player."
+	})
+	public boolean wardenDarknessOnlyToPlayersItCanTarget = false;
+	
 	@Override
 	protected Config upgrade() {
 		if(configVersion == 0) {
@@ -146,6 +160,8 @@ public class BossConfig extends Config {
 			
 			configVersion = 2; //Finished upgrading to v2
 		}
+		
+		//config version 3 added options relating to the Warden
 		
 		return this;
 	}

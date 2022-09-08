@@ -82,7 +82,7 @@ public class ApathyCommands {
 	}
 	
 	private static Component lit(String msg, Object... args) {
-		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getContents();
+		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getString();
 		return Starboarding.newTextComponent(String.format(msg, args));
 	}
 	
@@ -164,7 +164,7 @@ public class ApathyCommands {
 					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
 						String.format(" - someone with UUID %s", uuid) :
-						String.format(" - %s (UUID %s)", player.getName().getContents(), uuid));
+						String.format(" - %s (UUID %s)", player.getName().getString(), uuid));
 				}
 			}
 		}

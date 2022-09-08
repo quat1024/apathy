@@ -19,7 +19,7 @@ import java.util.List;
 
 @Mixin(MobEffectUtil.class)
 public class MobEffectUtilMixin {
-	@Inject(method = "addEffectToPlayersAround", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"), locals = LocalCapture.PRINT)
+	@Inject(method = "addEffectToPlayersAround", at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"), locals = LocalCapture.CAPTURE_FAILHARD)
 	private static void whenAddingEffectToPlayersAround(ServerLevel level, @Nullable Entity provoker, Vec3 what, double huh, MobEffectInstance effect, int hmm, CallbackInfoReturnable<List<ServerPlayer>> cir, int hrmm, MobEffect whar, List<ServerPlayer> original) {
 		Apathy.INSTANCE.filterMobEffectUtilCall(level, provoker, original);
 	}

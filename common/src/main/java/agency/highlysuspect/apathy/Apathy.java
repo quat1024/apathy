@@ -45,7 +45,9 @@ public class Apathy {
 		
 		Specs.onInitialize();
 		
-		loadConfig();
+		//The config file reloader should take care of this.
+		//See https://github.com/quat1024/apathy/issues/9 .
+		//loadConfig();
 		
 		PlatformSupport.instance.initialize();
 	}

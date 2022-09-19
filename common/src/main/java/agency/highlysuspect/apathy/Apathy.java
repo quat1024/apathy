@@ -54,8 +54,10 @@ public abstract class Apathy {
 		//Register all the weird json rule stuff
 		Specs.onInitialize();
 		
-		//Load the config files
-		loadConfig();
+		//Don't load the config files yet, this should happen on server resource load instead.
+		//installConfigFileReloader should set this up.
+		//See https://github.com/quat1024/apathy/issues/9 . This is kind of embarassing...
+		//loadConfig();
 		
 		//Platform dependent init
 		installConfigFileReloader();

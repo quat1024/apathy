@@ -112,7 +112,7 @@ public class Init implements ModInitializer {
 	
 	public static void installReloadAndRunNow(String name, Runnable funny) {
 		installReload(name, (ignoredManager) -> funny.run());
-		funny.run();
+		//funny.run(); //dont actually run now. sorry for lying in the method name. hotfix for https://github.com/quat1024/apathy/issues/9
 	}
 	
 	//called from the `/apathy reload` command, just reruns my own loaders and not the whole game

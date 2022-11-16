@@ -20,6 +20,10 @@ import agency.highlysuspect.apathy.rule.Specs;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAll;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAny;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerTaggedWith;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
@@ -70,6 +74,10 @@ public abstract class Apathy119 extends ApathyHell {
 		
 		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
+		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
+		partialSerializers.register("apathy:attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
+		partialSerializers.register("apathy:attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
+		partialSerializers.register("apathy:attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
 		
 		super.init();
 	}

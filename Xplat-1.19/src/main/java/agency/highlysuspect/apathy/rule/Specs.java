@@ -2,10 +2,10 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAll;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
-import agency.highlysuspect.apathy.rule.predicate.AnyPredicateSpec;
-import agency.highlysuspect.apathy.rule.predicate.AttackerIsBossPredicateSpec;
-import agency.highlysuspect.apathy.rule.predicate.AttackerIsPredicateSpec;
-import agency.highlysuspect.apathy.rule.predicate.AttackerTaggedWithPredicateSpec;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAny;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.rule.predicate.DefenderHasAdvancementPredicateSpec;
 import agency.highlysuspect.apathy.rule.predicate.DefenderInPlayerSetPredicateSpec;
 import agency.highlysuspect.apathy.rule.predicate.DifficultyIsPredicateSpec;
@@ -32,9 +32,9 @@ public class Specs {
 	@Deprecated(forRemoval = true)
 	public static void onInitialize() {
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:always", PartialSpecAlways.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_tagged_with", AttackerTaggedWithPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is_boss", AttackerIsBossPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is", AttackerIsPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_tagged_with", PartialSpecAttackerTaggedWith.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is_boss", PartialSpecAttackerIsBoss.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is", PartialSpecAttackerIs.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:in_player_set", DefenderInPlayerSetPredicateSpec.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:revenge_timer", RevengeTimerPredicateSpec.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:difficulty_is", DifficultyIsPredicateSpec.CODEC);
@@ -42,7 +42,7 @@ public class Specs {
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:advancements", DefenderHasAdvancementPredicateSpec.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:location", LocationPredicateSpec.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:all", PartialSpecAll.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:any", AnyPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:any", PartialSpecAny.CODEC);
 		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:not", NotPredicateSpec.CODEC);
 	}
 }

@@ -2,21 +2,20 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.rule.CodecUtil;
-import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.Set;
 
-public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) implements PredicateSpec {
+public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) implements PartialSpec {
 	public static final Codec<DefenderInPlayerSetPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(Codec.STRING).fieldOf("player_sets").forGetter(x -> x.playerSetNames)
 	).apply(i, DefenderInPlayerSetPredicateSpec::new));
 	
 	@Override
-	public PredicateSpec optimize() {
-		if(playerSetNames.isEmpty()) return AlwaysPredicateSpec.FALSE;
+	public PartialSpec optimize() {
+		if(playerSetNames.isEmpty()) return PartialSpecAlways.FALSE;
 		else return this;
 	}
 	
@@ -35,7 +34,7 @@ public record DefenderInPlayerSetPredicateSpec(Set<String> playerSetNames) imple
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 }

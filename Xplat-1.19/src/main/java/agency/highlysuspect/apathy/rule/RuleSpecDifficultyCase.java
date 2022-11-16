@@ -30,11 +30,11 @@ public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) imp
 	
 	@Override
 	public RuleSerializer<RuleSpecDifficultyCase> getSerializer() {
-		return DifficultyCaseRuleSerializer.INSTANCE;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class DifficultyCaseRuleSerializer implements RuleSerializer<RuleSpecDifficultyCase> {
-		public static final DifficultyCaseRuleSerializer INSTANCE = new DifficultyCaseRuleSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecDifficultyCase> {
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public JsonObject write(RuleSpecDifficultyCase rule, JsonObject json) {

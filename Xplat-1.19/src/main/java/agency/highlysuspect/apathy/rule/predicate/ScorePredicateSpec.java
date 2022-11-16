@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.rule.predicate;
 
-import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.ThresholdMode;
 import agency.highlysuspect.apathy.rule.Who;
 import com.mojang.serialization.Codec;
@@ -8,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
-public record ScorePredicateSpec(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements PredicateSpec {
+public record ScorePredicateSpec(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements PartialSpec {
 	public static final Codec<ScorePredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Codec.STRING.fieldOf("objective").forGetter(ScorePredicateSpec::scoreboardObjective),
 		Who.CODEC.optionalFieldOf("who", Who.DEFENDER).forGetter(ScorePredicateSpec::who),
@@ -31,7 +30,7 @@ public record ScorePredicateSpec(String scoreboardObjective, Who who, ThresholdM
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 }

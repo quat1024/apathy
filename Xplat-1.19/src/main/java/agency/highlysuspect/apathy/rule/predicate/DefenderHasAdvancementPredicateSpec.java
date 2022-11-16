@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.rule.CodecUtil;
-import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.Advancement;
@@ -12,14 +11,14 @@ import net.minecraft.server.ServerAdvancementManager;
 
 import java.util.Set;
 
-public record DefenderHasAdvancementPredicateSpec(Set<ResourceLocation> advancementIds) implements PredicateSpec {
+public record DefenderHasAdvancementPredicateSpec(Set<ResourceLocation> advancementIds) implements PartialSpec {
 	public static final Codec<DefenderHasAdvancementPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.setOf(ResourceLocation.CODEC).fieldOf("advancements").forGetter(DefenderHasAdvancementPredicateSpec::advancementIds)
 	).apply(i, DefenderHasAdvancementPredicateSpec::new));
 	
 	@Override
-	public PredicateSpec optimize() {
-		if(advancementIds.isEmpty()) return AlwaysPredicateSpec.FALSE;
+	public PartialSpec optimize() {
+		if(advancementIds.isEmpty()) return PartialSpecAlways.FALSE;
 		else return this;
 	}
 	
@@ -40,7 +39,7 @@ public record DefenderHasAdvancementPredicateSpec(Set<ResourceLocation> advancem
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 }

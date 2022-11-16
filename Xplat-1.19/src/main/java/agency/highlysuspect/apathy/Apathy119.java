@@ -6,6 +6,7 @@ import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.LogFacade;
+import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.RuleSpecAlways;
@@ -16,6 +17,9 @@ import agency.highlysuspect.apathy.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.rule.RuleSpec;
 import agency.highlysuspect.apathy.rule.Specs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAll;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
@@ -55,14 +59,17 @@ public abstract class Apathy119 extends ApathyHell {
 		Specs.onInitialize();
 		
 		//Actually register all the weird json rule stuff with the new system TODO find a better home for this
-		ruleSerializers.register("apathy:always", RuleSpecAlways.AlwaysRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:chain", RuleSpecChain.ChainRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedRuleSpecSerializer.INSTANCE);
-		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:debug", RuleSpecDebug.DebugRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.DifficultyCaseRuleSerializer.INSTANCE);
-		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.JsonRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
+		
+		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
+		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
 		
 		super.init();
 	}
@@ -80,6 +87,21 @@ public abstract class Apathy119 extends ApathyHell {
 		JsonObject ok = new JsonObject();
 		ok.addProperty("type", ruleSerializers.getName(rule.getSerializer()));
 		rule.getSerializer().writeErased(rule, ok);
+		return ok;
+	}
+	
+	public PartialSpec<?> readPartial(JsonElement jsonElem) {
+		if(!(jsonElem instanceof JsonObject json)) throw new IllegalArgumentException("Not json object");
+		
+		String type = json.getAsJsonPrimitive("type").getAsString();
+		PartialSerializer<?> pee = partialSerializers.get(type);
+		return (PartialSpec<?>) pee.read(json); //TODO actually unchecked
+	}
+	
+	public JsonObject writePartial(PartialSpec<?> part) {
+		JsonObject ok = new JsonObject();
+		ok.addProperty("type", partialSerializers.getName(part.getSerializer()));
+		part.getSerializer().writeErased(part, ok);
 		return ok;
 	}
 	

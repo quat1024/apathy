@@ -3,7 +3,6 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
-import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.LocationPredicate;
@@ -14,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
 
-public record LocationPredicateSpec(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) implements PredicateSpec {
+public record LocationPredicateSpec(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) implements PartialSpec {
 	public static final Codec<LocationPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		CodecUtil.LOCATION_PREDICATE_CODEC.fieldOf("predicate").forGetter(LocationPredicateSpec::pred),
 		LocationGetter.CODEC.optionalFieldOf("who", LocationGetter.ATTACKER_SPAWN_LOCATION).forGetter(LocationPredicateSpec::who),
@@ -25,8 +24,8 @@ public record LocationPredicateSpec(LocationPredicate pred, LocationGetter who, 
 	).apply(i, LocationPredicateSpec::new));
 	
 	@Override
-	public PredicateSpec optimize() {
-		if(pred == LocationPredicate.ANY) return AlwaysPredicateSpec.TRUE;
+	public PartialSpec optimize() {
+		if(pred == LocationPredicate.ANY) return PartialSpecAlways.TRUE;
 		else return this;
 	}
 	
@@ -82,7 +81,7 @@ public record LocationPredicateSpec(LocationPredicate pred, LocationGetter who, 
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 	

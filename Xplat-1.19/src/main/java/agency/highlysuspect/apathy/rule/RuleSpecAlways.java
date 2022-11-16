@@ -25,11 +25,11 @@ public record RuleSpecAlways(TriState value) implements RuleSpec<RuleSpecAlways>
 	
 	@Override
 	public RuleSerializer<RuleSpecAlways> getSerializer() {
-		return AlwaysRuleSerializer.INSTANCE;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class AlwaysRuleSerializer implements RuleSerializer<RuleSpecAlways> {
-		public static final AlwaysRuleSerializer INSTANCE = new AlwaysRuleSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecAlways> {
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public JsonObject write(RuleSpecAlways rule, JsonObject json) {

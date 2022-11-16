@@ -1,13 +1,12 @@
 package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
-public record AttackerIsBossPredicateSpec() implements PredicateSpec {
+public record AttackerIsBossPredicateSpec() implements PartialSpec {
 	public static final AttackerIsBossPredicateSpec INSTANCE = new AttackerIsBossPredicateSpec();
 	public static final Codec<AttackerIsBossPredicateSpec> CODEC = Codec.unit(INSTANCE);
 	
@@ -19,7 +18,7 @@ public record AttackerIsBossPredicateSpec() implements PredicateSpec {
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 }

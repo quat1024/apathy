@@ -1,19 +1,18 @@
 package agency.highlysuspect.apathy.rule.predicate;
 
-import agency.highlysuspect.apathy.rule.Partial;
 import agency.highlysuspect.apathy.rule.Specs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public record NotPredicateSpec(PredicateSpec other) implements PredicateSpec {
+public record NotPredicateSpec(PartialSpec other) implements PartialSpec {
 	public static final Codec<NotPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.other)
 	).apply(i, NotPredicateSpec::new));
 	
 	@Override
-	public PredicateSpec optimize() {
-		if(other == AlwaysPredicateSpec.FALSE) return AlwaysPredicateSpec.TRUE;
-		if(other == AlwaysPredicateSpec.TRUE) return AlwaysPredicateSpec.FALSE;
+	public PartialSpec optimize() {
+		if(other == PartialSpecAlways.FALSE) return PartialSpecAlways.TRUE;
+		if(other == PartialSpecAlways.TRUE) return PartialSpecAlways.FALSE;
 		else return this;
 	}
 	
@@ -24,7 +23,7 @@ public record NotPredicateSpec(PredicateSpec other) implements PredicateSpec {
 	}
 	
 	@Override
-	public Codec<? extends PredicateSpec> codec() {
+	public Codec<? extends PartialSpec> codec() {
 		return CODEC;
 	}
 }

@@ -26,11 +26,11 @@ public record RuleSpecDebug(RuleSpec<?> rule, String message) implements RuleSpe
 	
 	@Override
 	public RuleSerializer<RuleSpecDebug> getSerializer() {
-		return DebugRuleSerializer.INSTANCE;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class DebugRuleSerializer implements RuleSerializer<RuleSpecDebug> {
-		public static final DebugRuleSerializer INSTANCE = new DebugRuleSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecDebug> {
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public JsonObject write(RuleSpecDebug rule, JsonObject json) {

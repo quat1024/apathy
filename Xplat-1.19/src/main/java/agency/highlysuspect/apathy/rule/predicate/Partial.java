@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.rule.predicate;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;

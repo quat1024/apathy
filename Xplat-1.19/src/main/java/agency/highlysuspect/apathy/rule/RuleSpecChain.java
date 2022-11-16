@@ -51,11 +51,11 @@ public record RuleSpecChain(List<RuleSpec<?>> rules) implements RuleSpec<RuleSpe
 	
 	@Override
 	public RuleSerializer<RuleSpecChain> getSerializer() {
-		return ChainRuleSerializer.INSTANCE;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class ChainRuleSerializer implements RuleSerializer<RuleSpecChain> {
-		public static final ChainRuleSerializer INSTANCE = new ChainRuleSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecChain> {
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public JsonObject write(RuleSpecChain rule, JsonObject json) {
@@ -72,11 +72,7 @@ public record RuleSpecChain(List<RuleSpec<?>> rules) implements RuleSpec<RuleSpe
 		public RuleSpecChain read(JsonObject json) {
 			JsonArray rulesArray = json.getAsJsonArray("rules");
 			ArrayList<RuleSpec<?>> rules = new ArrayList<>();
-			
-			for(JsonElement e : rulesArray) {
-				if(e.isJsonObject()) rules.add(Apathy119.instance119.readRule(e.getAsJsonObject()));
-			}
-			
+			for(JsonElement e : rulesArray) rules.add(Apathy119.instance119.readRule(e.getAsJsonObject()));
 			return new RuleSpecChain(rules);
 		}
 	}

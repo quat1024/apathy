@@ -23,10 +23,7 @@ public class CoolGsonHelper {
 		else return TriState.fromAllowDenyPassString(prim.getAsString());
 	}
 	
-	public static <T> Collector<T, ?, JsonArray> toJsonArray(Function<T, JsonElement> jsonWriter) {
-		return Collector.of(JsonArray::new,
-			(array, thing) -> array.add(jsonWriter.apply(thing)),
-			(left, right) -> { left.addAll(right); return left; }
-		);
+	public static <T extends JsonElement> Collector<T, ?, JsonArray> toJsonArray() {
+		return Collector.of(JsonArray::new, JsonArray::add, (left, right) -> { left.addAll(right); return left; });
 	}
 }

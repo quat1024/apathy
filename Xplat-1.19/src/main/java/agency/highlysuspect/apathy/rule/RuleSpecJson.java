@@ -15,11 +15,11 @@ public final record RuleSpecJson() implements RuleSpec<RuleSpecJson> {
 	
 	@Override
 	public RuleSerializer<RuleSpecJson> getSerializer() {
-		return JsonRuleSerializer.INSTANCE;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class JsonRuleSerializer implements RuleSerializer<RuleSpecJson> {
-		public static final JsonRuleSerializer INSTANCE = new JsonRuleSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecJson> {
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public JsonObject write(RuleSpecJson ruleSpecJson, JsonObject json) {

@@ -1,7 +1,7 @@
-package agency.highlysuspect.apathy.rule.spec.predicate;
+package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.rule.Partial;
-import agency.highlysuspect.apathy.rule.spec.Specs;
+import agency.highlysuspect.apathy.rule.Specs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

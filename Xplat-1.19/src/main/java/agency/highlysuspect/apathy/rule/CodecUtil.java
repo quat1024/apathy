@@ -1,9 +1,7 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.hell.TriState;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
 
 public class CodecUtil {
 	public static final Codec<Difficulty> DIFFICULTY = enumCodec("difficulty", Difficulty.class);
-	public static final Codec<TriState> TRISTATE_ALLOW_DENY_PASS = renamedEnumCodec("tristate", TriState.class, "deny", "pass", "allow");
 	
 	public static <E extends Enum<E>> Codec<E> enumCodec(String errorName, Class<E> classs) {
 		E[] values = classs.getEnumConstants();

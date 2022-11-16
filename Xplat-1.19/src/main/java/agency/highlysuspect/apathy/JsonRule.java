@@ -2,28 +2,28 @@ package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.RuleSpec;
-import agency.highlysuspect.apathy.rule.spec.Specs;
+import agency.highlysuspect.apathy.rule.RuleSpec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
+//this is just a static class but idk where else i should really put it tbh
 public class JsonRule {
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
-	public static Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
+	public static @Nullable Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
 		if(!Files.exists(mobsJson)) {
 			return null;
 		}
 		
+		//read it into string
 		String stuff;
 		try {
 			stuff = Files.lines(mobsJson).collect(Collectors.joining("\n"));
@@ -32,6 +32,7 @@ public class JsonRule {
 			throw e;
 		}
 		
+		//parse the string as unstructured json
 		JsonElement json;
 		try {
 			json = GSON.fromJson(stuff, JsonElement.class);
@@ -40,13 +41,16 @@ public class JsonRule {
 			throw e;
 		}
 		
-		DataResult<RuleSpec<?>> ruleSpecResult = Specs.RULE_SPEC_CODEC.parse(JsonOps.INSTANCE, json);
-		if(ruleSpecResult.error().isPresent()) {
-			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
+		//parse the json into a java object
+		RuleSpec<?> spec;
+		try {
+			spec = Apathy119.instance119.readRule(json);
+		} catch (Exception e) {
+			e.addSuppressed(new RuntimeException("Problem decoding json rule"));
+			throw e;
 		}
 		
-		RuleSpec<?> spec = ruleSpecResult.getOrThrow(false, ApathyHell.instance.log::error);
-		
+		//realize the rulespec into a rule
 		try {
 			if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule");
 			

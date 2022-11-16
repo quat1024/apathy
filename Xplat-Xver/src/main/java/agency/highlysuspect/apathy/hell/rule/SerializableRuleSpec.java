@@ -1,5 +1,5 @@
 package agency.highlysuspect.apathy.hell.rule;
 
-public interface SerializableRule<RULE extends SerializableRule<RULE>> {
+public interface SerializableRuleSpec<RULE extends SerializableRuleSpec<RULE>> {
 	RuleSerializer<RULE> getSerializer();
 }

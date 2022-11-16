@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.rule.spec.predicate;
+package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.rule.Partial;

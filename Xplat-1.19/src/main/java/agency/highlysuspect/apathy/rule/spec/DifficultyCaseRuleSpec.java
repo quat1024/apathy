@@ -11,7 +11,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec> ruleSpecs) implements RuleSpec {
+public record DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec<?>> ruleSpecs) implements RuleSpec<DifficultyCaseRuleSpec> {
 	public static final Codec<DifficultyCaseRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
 		Codec.unboundedMap(CodecUtil.DIFFICULTY, Specs.RULE_SPEC_CODEC).fieldOf("cases").forGetter(x -> x.ruleSpecs)
 	).apply(i, DifficultyCaseRuleSpec::new));
@@ -33,7 +33,7 @@ public record DifficultyCaseRuleSpec(Map<Difficulty, RuleSpec> ruleSpecs) implem
 	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;
 	
 	@Override
-	public Codec<? extends RuleSpec> codec() {
+	public Codec<? extends RuleSpec<?>> codec() {
 		return CODEC;
 	}
 }

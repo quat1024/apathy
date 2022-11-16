@@ -1,9 +1,9 @@
 plugins {
-	id('java')
-	id('org.spongepowered.gradle.vanilla') version '0.2.1-SNAPSHOT'
+	id "java"
+	id "org.spongepowered.gradle.vanilla" version "0.2.1-SNAPSHOT"
 }
 
-archivesBaseName = "${project.modId}-${project.minecraftVersion}-common"
+archivesBaseName = "${project.modId}-xplat-${project.minecraftVersion}"
 
 minecraft {
 	version(project.minecraftVersion)
@@ -12,8 +12,8 @@ minecraft {
 dependencies {
 	compileOnly "org.spongepowered:mixin:0.8.5"
 	
-	compileOnly project(":Xplat-Xver")
+	implementation project(":Xplat-Xver")
 }
 
-processResources { from project(":Xplat-Xver").sourceSets.main.resources }
-tasks.withType(JavaCompile) { source(project(":Xplat-Xver").sourceSets.main.allSource) }
+//processResources { from project(":Xplat-Xver").sourceSets.main.resources }
+//tasks.withType(JavaCompile) { source(project(":Xplat-Xver").sourceSets.main.allSource) }

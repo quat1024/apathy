@@ -1,0 +1,19 @@
+plugins {
+	id "java"
+}
+
+archivesBaseName = "${project.modId}-xplat-xver"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	//Intellij seems to think this dependency is specified somewhere and lets me code with it
+	//but gradle compilation disagrees lol
+	compileOnly "org.jetbrains:annotations:16.0.2"
+	
+	//Keeping this in version-specific code is impossible lmao.
+	//Minecraft provides it at runtime. This is the version used as of 1.19 but the api is pretty stable I think?
+	compileOnly "com.google.code.gson:gson:2.8.9"
+}

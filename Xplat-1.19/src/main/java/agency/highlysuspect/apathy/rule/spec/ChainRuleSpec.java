@@ -1,7 +1,13 @@
 package agency.highlysuspect.apathy.rule.spec;
 
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
+import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import agency.highlysuspect.apathy.rule.Rule;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -9,24 +15,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record ChainRuleSpec(List<RuleSpec> rules) implements RuleSpec {
-	public static final Codec<ChainRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Specs.RULE_SPEC_CODEC.listOf().fieldOf("rules").forGetter(x -> x.rules)
-	).apply(i, ChainRuleSpec::new));
-	
+public record ChainRuleSpec(List<RuleSpec<?>> rules) implements RuleSpec<ChainRuleSpec> {
 	@Override
-	public RuleSpec optimize() {
+	public RuleSpec<?> optimize() {
 		//TODO: flatten multiple layers of ChainRuleSpecs, maybe?
 		
-		List<RuleSpec> optimizedRules = rules.stream().map(RuleSpec::optimize).collect(Collectors.toList());
+		List<RuleSpec<?>> optimizedRules = rules.stream().map(RuleSpec::optimize).collect(Collectors.toList());
 		
 		if(optimizedRules.size() == 0) return AlwaysRuleSpec.ALWAYS_PASS;
 		else if(optimizedRules.size() == 1) return optimizedRules.get(0);
 		else if(optimizedRules.get(0) == AlwaysRuleSpec.ALWAYS_ALLOW) return AlwaysRuleSpec.ALWAYS_ALLOW;
 		else if(optimizedRules.get(0) == AlwaysRuleSpec.ALWAYS_DENY) return AlwaysRuleSpec.ALWAYS_DENY;
 		
-		List<RuleSpec> filteredRules = new ArrayList<>();
-		for(RuleSpec spec : optimizedRules) {
+		List<RuleSpec<?>> filteredRules = new ArrayList<>();
+		for(RuleSpec<?> spec : optimizedRules) {
 			if(spec == AlwaysRuleSpec.ALWAYS_PASS) continue;
 			filteredRules.add(spec);
 			if(spec == AlwaysRuleSpec.ALWAYS_ALLOW) break;
@@ -52,7 +54,56 @@ public record ChainRuleSpec(List<RuleSpec> rules) implements RuleSpec {
 	}
 	
 	@Override
-	public Codec<? extends RuleSpec> codec() {
+	public RuleSerializer<ChainRuleSpec> getSerializer() {
+		return ChainRuleSerializer.INSTANCE;
+	}
+	
+	public static class ChainRuleSerializer implements RuleSerializer<ChainRuleSpec> {
+		public static final ChainRuleSerializer INSTANCE = new ChainRuleSerializer();
+		
+		@Override
+		public JsonObject write(ChainRuleSpec rule, JsonObject json) {
+			JsonArray rulesArray = new JsonArray();
+			for(RuleSpec<?> ruleToWrite : rule.rules) {
+				//TODO: lift this out somewhere
+				JsonObject ok = new JsonObject();
+				ok.addProperty("type", ApathyHell.instance.ruleSerializers.getName(ruleToWrite.getSerializer()));
+				ruleToWrite.getSerializer().writeErased(ruleToWrite, ok);
+				rulesArray.add(ok);
+			}
+			
+			return json;
+		}
+		
+		@Override
+		public ChainRuleSpec read(JsonObject json) {
+			JsonArray rulesArray = json.getAsJsonArray("rules");
+			ArrayList<RuleSpec<?>> rules = new ArrayList<>();
+			
+			for(JsonElement e : rulesArray) {
+				if(e.isJsonObject()) {
+					//TODO: lift this out somewhere too
+					JsonObject o = e.getAsJsonObject();
+					String type = o.getAsJsonPrimitive("type").getAsString();
+					RuleSerializer<?> pee = ApathyHell.instance.ruleSerializers.get(type);
+					rules.add((RuleSpec<?>) pee.read(o)); //TODO
+				}
+			}
+			
+			return new ChainRuleSpec(rules);
+		}
+	}
+	
+	///CODEC HELLZONE///
+	
+	@Deprecated(forRemoval = true)
+	public static final Codec<ChainRuleSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
+		Specs.RULE_SPEC_CODEC.listOf().fieldOf("rules").forGetter(x -> x.rules)
+	).apply(i, ChainRuleSpec::new));
+	
+	@Deprecated(forRemoval = true)
+	@Override
+	public Codec<? extends RuleSpec<?>> codec() {
 		return CODEC;
 	}
 }

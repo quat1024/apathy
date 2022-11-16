@@ -7,6 +7,8 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.LogFacade;
 import agency.highlysuspect.apathy.rule.Rule;
+import agency.highlysuspect.apathy.rule.spec.AlwaysRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.ChainRuleSpec;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -43,6 +45,10 @@ public abstract class Apathy119 extends ApathyHell {
 	public void init() {
 		//Register all the weird json rule stuff
 		Specs.onInitialize();
+		
+		//Actually register all the weird json rule stuff with the new system TODO find a better home for this
+		ruleSerializers.register("apathy:always", AlwaysRuleSpec.AlwaysRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:chain", ChainRuleSpec.ChainRuleSerializer.INSTANCE);
 		
 		super.init();
 	}

@@ -277,7 +277,7 @@ public class MobConfig extends Config {
 			ApathyHell.instance.log.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
 		} else {
-			ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
+			ArrayList<RuleSpec<?>> ruleSpecList = new ArrayList<>();
 			for(String ruleName : ruleOrder) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
 					case "json"       -> ruleSpecList.add(new JsonRuleSpec());

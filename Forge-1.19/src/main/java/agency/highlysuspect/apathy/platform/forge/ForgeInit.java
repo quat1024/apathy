@@ -18,11 +18,11 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.nio.file.Path;
-
 @Mod("apathy")
 public class ForgeInit extends Apathy119 {
 	public ForgeInit() {
+		super(FMLPaths.CONFIGDIR.get().resolve(ApathyHell.MODID));
+		
 		//Mark this mod as server-only. Hey Forge quick question. What the fuck is this
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 		
@@ -64,11 +64,5 @@ public class ForgeInit extends Apathy119 {
 				PlayerSetManager.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
 			}
 		});
-	}
-	
-	@Override
-	public Path getConfigPath() {
-		//TODO should really use an actual forge config
-		return FMLPaths.CONFIGDIR.get().resolve(ApathyHell.MODID);
 	}
 }

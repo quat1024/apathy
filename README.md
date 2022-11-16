@@ -19,7 +19,9 @@ The goal is to release eight artifacts: (1.16, 1.17, 1.18, 1.19) * (forge, fabri
 
 #### where quilt
 
-Fuck you.
+My rate for this will be fifty bucks an hour, including IntelliJ loading time.
+
+Or use qfapi.
 
 # license yadda yadda
 

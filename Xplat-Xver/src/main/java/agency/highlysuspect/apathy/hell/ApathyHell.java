@@ -1,5 +1,7 @@
 package agency.highlysuspect.apathy.hell;
 
+import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +12,8 @@ public abstract class ApathyHell {
 	
 	public final Path configPath;
 	public final LogFacade log;
+	
+	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
 	
 	public ApathyHell(Path configPath, LogFacade log) {
 		if(instance == null) {

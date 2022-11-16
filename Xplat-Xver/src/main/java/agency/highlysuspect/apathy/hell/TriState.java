@@ -19,11 +19,28 @@ public enum TriState {
 		return name().toLowerCase(Locale.ROOT);
 	}
 	
+	public String toAllowDenyPassString() {
+		return switch(this) {
+			case FALSE -> "deny";
+			case DEFAULT -> "pass";
+			case TRUE -> "allow";
+		};
+	}
+	
 	public static TriState fromString(String ya) {
 		return switch(ya.toLowerCase(Locale.ROOT)) {
 			case "false" -> FALSE;
 			case "true" -> TRUE;
 			default -> DEFAULT;
+		};
+	}
+	
+	public static TriState fromAllowDenyPassString(String ya) {
+		return switch(ya.toLowerCase(Locale.ROOT)) {
+			case "deny" -> FALSE;
+			case "pass" -> DEFAULT;
+			case "allow" -> TRUE;
+			default -> throw new IllegalArgumentException("expected 'allow', 'deny', or 'pass'");
 		};
 	}
 	

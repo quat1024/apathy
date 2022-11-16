@@ -1,8 +1,8 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.hell.rule.SerializableRule;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -12,13 +12,18 @@ import com.mojang.serialization.JsonOps;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public interface RuleSpec {
-	default RuleSpec optimize() {
+public interface RuleSpec<RULE extends SerializableRule<RULE>> extends SerializableRule<RULE> {
+	default RuleSpec<?> optimize() {
 		return this;
 	}
 	
 	Rule build();
-	Codec<? extends RuleSpec> codec();
+	
+	/**
+	 * @deprecated Moving away from Codecs.
+	 */
+	@Deprecated(forRemoval = true)
+	Codec<? extends RuleSpec<?>> codec();
 	
 	default void dump(Path configFolder, String filename) {
 		try {

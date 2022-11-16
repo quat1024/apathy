@@ -123,14 +123,6 @@ public class CodecUtil {
 		return result;
 	}
 	
-	// See https://github.com/Mojang/DataFixerUpper/issues/62
-	public static void main(String[] args) {
-		JsonObject j = new JsonObject();
-		j.add("test", JsonNull.INSTANCE);
-		
-		System.out.println(JsonOps.INSTANCE.convertTo(JsonOps.INSTANCE, j));
-	}
-	
 	//Its not actually Codecs but idk i already have this class to throw stuff in
 	public static ListTag writeVec3(Vec3 yes) {
 		ListTag asdf = new ListTag();

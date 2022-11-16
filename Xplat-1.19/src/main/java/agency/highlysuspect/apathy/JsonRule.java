@@ -40,12 +40,12 @@ public class JsonRule {
 			throw e;
 		}
 		
-		DataResult<RuleSpec> ruleSpecResult = Specs.RULE_SPEC_CODEC.parse(JsonOps.INSTANCE, json);
+		DataResult<RuleSpec<?>> ruleSpecResult = Specs.RULE_SPEC_CODEC.parse(JsonOps.INSTANCE, json);
 		if(ruleSpecResult.error().isPresent()) {
 			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
 		}
 		
-		RuleSpec spec = ruleSpecResult.getOrThrow(false, ApathyHell.instance.log::error);
+		RuleSpec<?> spec = ruleSpecResult.getOrThrow(false, ApathyHell.instance.log::error);
 		
 		try {
 			if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule");

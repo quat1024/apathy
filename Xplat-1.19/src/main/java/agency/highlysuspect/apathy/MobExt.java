@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.hell.TriState;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;

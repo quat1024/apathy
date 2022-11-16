@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.hell.TriState;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;

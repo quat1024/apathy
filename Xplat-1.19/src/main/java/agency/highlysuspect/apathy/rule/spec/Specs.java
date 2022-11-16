@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.rule.NotRegistry;
 import agency.highlysuspect.apathy.rule.spec.predicate.AllPredicateSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.AlwaysPredicateSpec;
@@ -35,27 +35,27 @@ public class Specs {
 	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(PredicateSpec::codec, Function.identity());
 	
 	public static void onInitialize() {
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("always"), AlwaysRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("chain"), ChainRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("predicated"), PredicatedRuleSpec.PREDICATED_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("allow_if"), PredicatedRuleSpec.ALLOW_IF_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("deny_if"), PredicatedRuleSpec.DENY_IF_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("debug"), DebugRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("difficulty_case"), DifficultyCaseRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("evaluate_json_file"), JsonRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("always"), AlwaysRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("chain"), ChainRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("predicated"), PredicatedRuleSpec.PREDICATED_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("allow_if"), PredicatedRuleSpec.ALLOW_IF_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("deny_if"), PredicatedRuleSpec.DENY_IF_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("debug"), DebugRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("difficulty_case"), DifficultyCaseRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register(Apathy119.id("evaluate_json_file"), JsonRuleSpec.CODEC);
 		
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("always"), AlwaysPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_tagged_with"), AttackerTaggedWithPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_is_boss"), AttackerIsBossPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_is"), AttackerIsPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("in_player_set"), DefenderInPlayerSetPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("revenge_timer"), RevengeTimerPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("difficulty_is"), DifficultyIsPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("score"), ScorePredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("advancements"), DefenderHasAdvancementPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("location"), LocationPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("all"), AllPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("any"), AnyPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("not"), NotPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("always"), AlwaysPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("attacker_tagged_with"), AttackerTaggedWithPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("attacker_is_boss"), AttackerIsBossPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("attacker_is"), AttackerIsPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("in_player_set"), DefenderInPlayerSetPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("revenge_timer"), RevengeTimerPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("difficulty_is"), DifficultyIsPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("score"), ScorePredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("advancements"), DefenderHasAdvancementPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("location"), LocationPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("all"), AllPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("any"), AnyPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy119.id("not"), NotPredicateSpec.CODEC);
 	}
 }

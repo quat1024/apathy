@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +16,7 @@ public class LivingEntityMixin {
 	@SuppressWarnings("ConstantConditions") //Cast funny
 	@Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void apathy$onCanAttack(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
-		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, player)) {
+		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy119.instance119.mobConfig.allowedToTargetPlayer(mob, player)) {
 			cir.setReturnValue(false);
 		}
 	}
@@ -32,7 +32,7 @@ public class LivingEntityMixin {
 	)
 	private void apathy$onActuallyHurt(DamageSource source, float amount, CallbackInfo ci) {
 		if(((Object) this) instanceof Mob haplessMob && source.getEntity() instanceof ServerPlayer recklessPlayer) {
-			Apathy.INSTANCE.noticePlayerAttack(recklessPlayer, haplessMob);
+			Apathy119.instance119.noticePlayerAttack(recklessPlayer, haplessMob);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.Example;
@@ -9,6 +9,7 @@ import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.annotation.Use;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.AlwaysRuleSpec;
 import agency.highlysuspect.apathy.rule.spec.ChainRuleSpec;
@@ -259,7 +260,7 @@ public class MobConfig extends Config {
 		
 		if(unknownKeys != null) {
 			//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
-			unknownKeys.forEach((key, value) -> Apathy.LOG.warn("Unknown config field: " + key));
+			unknownKeys.forEach((key, value) -> ApathyHell.instance.log.warn("Unknown config field: " + key));
 			//We don't need to keep track of them anymore.
 			unknownKeys = null;
 		}
@@ -273,7 +274,7 @@ public class MobConfig extends Config {
 		super.finish();
 		
 		if(nuclearOption) {
-			Apathy.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			ApathyHell.instance.log.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
 		} else {
 			ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
@@ -286,17 +287,17 @@ public class MobConfig extends Config {
 					case "tagset"     -> ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
 					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
 					case "revenge"    -> ruleSpecList.add(PredicatedRuleSpec.allowIf(new RevengeTimerPredicateSpec(revengeTimer)));
-					default -> Apathy.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+					default -> ApathyHell.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 				}
 			}
 			
 			ruleSpec = new ChainRuleSpec(ruleSpecList);
 		}
 		
-		if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule");
-		if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
+		if(Apathy119.instance119.generalConfig.debugBuiltinRule) ruleSpec.dump(ApathyHell.instance.configPath, "builtin-rule");
+		if(Apathy119.instance119.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
-			if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule-opt");
+			if(Apathy119.instance119.generalConfig.debugBuiltinRule) ruleSpec.dump(ApathyHell.instance.configPath, "builtin-rule-opt");
 		}
 		
 		rule = ruleSpec.build();

@@ -14,6 +14,8 @@ pluginManagement {
 
 rootProject.name = "apathy"
 include(
+	"Xplat-Xver",
+	
 	"Xplat-1.19",
 	"Fabric-1.19",
 	"Forge-1.19"

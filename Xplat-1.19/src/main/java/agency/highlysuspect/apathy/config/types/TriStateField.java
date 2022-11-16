@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.hell.TriState;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 
 import java.lang.reflect.Field;
 
@@ -14,7 +14,7 @@ public class TriStateField {
 				case "deny": return TriState.FALSE;
 				case "pass": return TriState.DEFAULT;
 				default:
-					Apathy.LOG.warn("Value " + value + " on field " + sourceField.getName() + " is not one of allow/deny/pass. Defaulting to 'pass'.");
+					ApathyHell.instance.log.warn("Value " + value + " on field " + sourceField.getName() + " is not one of allow/deny/pass. Defaulting to 'pass'.");
 					return TriState.DEFAULT;
 			}
 		}

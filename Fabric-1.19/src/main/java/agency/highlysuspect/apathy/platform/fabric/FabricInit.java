@@ -1,8 +1,9 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -13,9 +14,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import java.nio.file.Path;
-
-public class FabricInit extends Apathy implements ModInitializer {
+public class FabricInit extends Apathy119 implements ModInitializer {
+	public FabricInit() {
+		super(FabricLoader.getInstance().getConfigDir().resolve(ApathyHell.MODID));
+	}
+	
 	@Override
 	public void onInitialize() {
 		init();
@@ -26,12 +29,12 @@ public class FabricInit extends Apathy implements ModInitializer {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
-				return Apathy.id("reload-config");
+				return Apathy119.id("reload-config");
 			}
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				Apathy.INSTANCE.loadConfig();
+				Apathy119.instance119.loadConfig();
 			}
 		});
 	}
@@ -44,10 +47,5 @@ public class FabricInit extends Apathy implements ModInitializer {
 	@Override
 	public void installPlayerSetManagerTicker() {
 		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
-	}
-	
-	@Override
-	public Path getConfigPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
 	}
 }

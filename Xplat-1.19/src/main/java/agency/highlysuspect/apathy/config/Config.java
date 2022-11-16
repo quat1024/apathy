@@ -10,7 +10,6 @@ import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.types.FieldSerde;
 import agency.highlysuspect.apathy.config.types.Types;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -128,7 +127,7 @@ public abstract class Config {
 			Section section = field.getDeclaredAnnotation(Section.class);
 			if(section != null) {
 				String s = section.value();
-				String bar = StringUtils.repeat('#', s.length() + 6);
+				String bar = "#".repeat(s.length() + 6);
 				
 				lines.add(bar);
 				lines.add("## " + s + " ##");

@@ -1,8 +1,8 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.MobExt;
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,7 +31,7 @@ public class MobMixin implements MobExt {
 		if(thi$.level.isClientSide) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayer && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
+		if(newTarget instanceof ServerPlayer && !Apathy119.instance119.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
 			
 			//Btw this is the reason i don't use the forge attack target event and use this mixin even on Forge too.
@@ -52,9 +52,9 @@ public class MobMixin implements MobExt {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.INSTANCE.generalConfig.recheckInterval == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % Apathy119.instance119.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayer
-			&& !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+			&& !Apathy119.instance119.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}

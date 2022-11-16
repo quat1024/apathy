@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.client;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.particles.ParticleOptions;
@@ -24,7 +24,7 @@ public class ClientPacketListenerMixin {
 		)
 	)
 	private void apathy$dontPlaySound(ClientLevel instance, Player player, double x, double y, double z, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
-		if(SoundEvents.ELDER_GUARDIAN_CURSE.equals(soundEvent) && Apathy.INSTANCE.bossConfig.elderGuardianEffect.removeSound()) {
+		if(SoundEvents.ELDER_GUARDIAN_CURSE.equals(soundEvent) && Apathy119.instance119.bossConfig.elderGuardianEffect.removeSound()) {
 			return;
 		} else {
 			instance.playSound(player, x, y, z, soundEvent, soundSource, volume, pitch);
@@ -39,7 +39,7 @@ public class ClientPacketListenerMixin {
 		)
 	)
 	private void apathy$dontAddParticle(ClientLevel instance, ParticleOptions options, double $$1, double $$2, double $$3, double $$4, double $$5, double $$6) {
-		if(options.getType() == ParticleTypes.ELDER_GUARDIAN && Apathy.INSTANCE.bossConfig.elderGuardianEffect.removeParticle()) {
+		if(options.getType() == ParticleTypes.ELDER_GUARDIAN && Apathy119.instance119.bossConfig.elderGuardianEffect.removeParticle()) {
 			return;
 		} else {
 			instance.addParticle(options, $$1, $$2, $$3, $$4, $$5, $$6);

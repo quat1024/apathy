@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy.platform.forge;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
-import net.minecraft.commands.Commands;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,7 +21,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import java.nio.file.Path;
 
 @Mod("apathy")
-public class ForgeInit extends Apathy {
+public class ForgeInit extends Apathy119 {
 	public ForgeInit() {
 		//Mark this mod as server-only. Hey Forge quick question. What the fuck is this
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
@@ -41,7 +41,7 @@ public class ForgeInit extends Apathy {
 				
 				@Override
 				protected void apply(Object preparedObject, ResourceManager mgr, ProfilerFiller prof) {
-					Apathy.INSTANCE.loadConfig();
+					Apathy119.instance119.loadConfig();
 				}
 			});
 		});
@@ -69,6 +69,6 @@ public class ForgeInit extends Apathy {
 	@Override
 	public Path getConfigPath() {
 		//TODO should really use an actual forge config
-		return FMLPaths.CONFIGDIR.get().resolve(Apathy.MODID);
+		return FMLPaths.CONFIGDIR.get().resolve(ApathyHell.MODID);
 	}
 }

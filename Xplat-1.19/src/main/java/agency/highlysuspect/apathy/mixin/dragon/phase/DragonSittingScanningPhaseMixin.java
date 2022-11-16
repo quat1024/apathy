@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.DragonDuck;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +26,7 @@ public class DragonSittingScanningPhaseMixin {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(in instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
+		if(in instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy119.instance119.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
 			return null;
 		} else return in;
 	}

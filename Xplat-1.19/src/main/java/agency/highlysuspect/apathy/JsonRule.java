@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.RuleSpec;
 import agency.highlysuspect.apathy.rule.spec.Specs;
@@ -44,14 +45,14 @@ public class JsonRule {
 			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
 		}
 		
-		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy.LOG::error);
+		RuleSpec spec = ruleSpecResult.getOrThrow(false, ApathyHell.instance.log::error);
 		
 		try {
-			if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule");
+			if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule");
 			
-			if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
+			if(Apathy119.instance119.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule-opt");
+				if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule-opt");
 			}
 			
 			return spec.build();

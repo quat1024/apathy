@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.platform.fabric.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -24,7 +24,7 @@ public interface EntityGetterMixin {
 		//Normally this is a bit redundant, the main purpose of Apathy is to hook MobEntity#setTarget, which catches most cases.
 		//This mixin catches some cases where an entity is attacked without formally being targeted, like the Wither firing black skulls.
 		if(targetingEntity instanceof Mob mob) {
-			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, (ServerPlayer) target));
+			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy119.instance119.mobConfig.allowedToTargetPlayer(mob, (ServerPlayer) target));
 		}
 		
 		return targets;

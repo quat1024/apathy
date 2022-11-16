@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.DragonDuck;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,32 +24,32 @@ import java.util.List;
 public class EnderDragonMixin implements DragonDuck {
 	@ModifyVariable(method = "knockBack", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> apathy$filterKnockBack(List<Entity> entities) {
-		if(!Apathy.INSTANCE.bossConfig.dragonKnockback) {
+		if(!Apathy119.instance119.bossConfig.dragonKnockback) {
 			return Collections.emptyList();
 		}
 		
 		EnderDragon dergon = (EnderDragon) (Object) this;
 		List<Entity> copy = new ArrayList<>(entities); //unneeded copies, reh reh, it's fine
-		copy.removeIf(e -> e instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, player));
+		copy.removeIf(e -> e instanceof ServerPlayer player && !Apathy119.instance119.mobConfig.allowedToTargetPlayer(dergon, player));
 		return copy;
 	}
 	
 	@ModifyVariable(method = "hurt(Ljava/util/List;)V", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> apathy$filterHurt(List<Entity> entities) {
-		if(!Apathy.INSTANCE.bossConfig.dragonDamage) {
+		if(!Apathy119.instance119.bossConfig.dragonDamage) {
 			return Collections.emptyList();
 		}
 		
 		EnderDragon dergon = (EnderDragon) (Object) this;
 		List<Entity> copy = new ArrayList<>(entities);
-		copy.removeIf(e -> e instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, player)));
+		copy.removeIf(e -> e instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy119.instance119.mobConfig.allowedToTargetPlayer(dergon, player)));
 		return copy;
 	}
 	
 	@Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
 	private void apathy$copypasteFromLivingEntityMixin(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
 		//EnderDragonEntity overrides canTarget and doesn't call super()
-		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, player))) {
+		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy119.instance119.mobConfig.allowedToTargetPlayer(mob, player))) {
 			cir.setReturnValue(false);
 		}
 	}

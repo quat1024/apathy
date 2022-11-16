@@ -16,16 +16,19 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
 	
 	//xplat
+	implementation project(":Xplat-Xver")
 	implementation project(":Xplat-1.19")
 }
 
 //fold in xplat resources and sources
 
 processResources {
+	from project(":Xplat-Xver").sourceSets.main.resources
 	from project(":Xplat-1.19").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
+	source(project(":Xplat-Xver").sourceSets.main.allSource)
 	source(project(":Xplat-1.19").sourceSets.main.allSource)
 }
 

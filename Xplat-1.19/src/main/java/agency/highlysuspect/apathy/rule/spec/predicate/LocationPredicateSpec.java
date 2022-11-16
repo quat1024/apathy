@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.rule.spec.predicate;
 
 import agency.highlysuspect.apathy.MobExt;
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;

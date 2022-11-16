@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.platform.forge.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -31,7 +31,7 @@ public class WitherBossCrustyMixin {
 		//I also did this in fabric on 1.17- which also had a crusty version of mixin.
 		
 		List<LivingEntity> defensiveCopy = new ArrayList<>(nearbyEntities);
-		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(wither, player));
+		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy119.instance119.mobConfig.allowedToTargetPlayer(wither, player));
 		return defensiveCopy;
 	}
 }

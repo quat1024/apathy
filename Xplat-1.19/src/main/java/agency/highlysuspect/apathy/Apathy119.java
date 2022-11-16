@@ -4,6 +4,8 @@ import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
+import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.hell.LogFacade;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
@@ -18,51 +20,31 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class Apathy {
-	public static final String MODID = "apathy";
-	public static final Logger LOG = LogManager.getLogger(MODID);
-	public static Apathy INSTANCE;
-	
-	public final Path configFolder;
+public abstract class Apathy119 extends ApathyHell {
+	public static Apathy119 instance119;
 	
 	public GeneralConfig generalConfig = new GeneralConfig();
 	public MobConfig mobConfig = new MobConfig();
 	public BossConfig bossConfig = new BossConfig();
 	public @Nullable Rule jsonRule;
 	
-	public Apathy() {
-		Apathy.INSTANCE = this;
-		configFolder = getConfigPath();
+	public Apathy119(Path configPath) {
+		super(configPath, new Log4jLoggingFacade(LogManager.getLogger(ApathyHell.MODID)));
+		
+		Apathy119.instance119 = this;
 	}
 	
 	public void init() {
-		//Ensure the config subdirectory exists and things can be placed inside it
-		try {
-			Files.createDirectories(configFolder);
-		} catch (IOException e) {
-			throw new RuntimeException("Problem creating config/apathy/ subdirectory", e);
-		}
-		
 		//Register all the weird json rule stuff
 		Specs.onInitialize();
 		
-		//Don't load the config files yet, this should happen on server resource load instead.
-		//installConfigFileReloader should set this up.
-		//See https://github.com/quat1024/apathy/issues/9 . This is kind of embarassing...
-		//loadConfig();
-		
-		//Platform dependent init
-		installConfigFileReloader();
-		installCommandRegistrationCallback();
-		installPlayerSetManagerTicker();
+		super.init();
 	}
 	
 	public boolean loadConfig() {
@@ -70,9 +52,9 @@ public abstract class Apathy {
 		
 		GeneralConfig newGeneralConfig = generalConfig;
 		try {
-			newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
+			newGeneralConfig = Config.read(new GeneralConfig(), configPath.resolve("general.cfg"));
 		} catch (Exception e) {
-			LOG.error("Problem reading general.cfg:", e);
+			log.error("Problem reading general.cfg:", e);
 			ok = false;
 		} finally {
 			generalConfig = newGeneralConfig;
@@ -80,9 +62,9 @@ public abstract class Apathy {
 		
 		MobConfig newMobConfig = mobConfig;
 		try {
-			newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+			newMobConfig = Config.read(new MobConfig(), configPath.resolve("mobs.cfg"));
 		} catch (Exception e) {
-			LOG.error("Problem reading mobs.cfg: ", e);
+			log.error("Problem reading mobs.cfg: ", e);
 			ok = false;
 		} finally {
 			mobConfig = newMobConfig;
@@ -90,9 +72,9 @@ public abstract class Apathy {
 		
 		BossConfig newBossConfig = bossConfig;
 		try {
-			newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+			newBossConfig = Config.read(new BossConfig(), configPath.resolve("boss.cfg"));
 		} catch (Exception e) {
-			LOG.error("Problem reading boss.cfg: ", e);
+			log.error("Problem reading boss.cfg: ", e);
 			ok = false;
 		} finally {
 			bossConfig = newBossConfig;
@@ -100,9 +82,9 @@ public abstract class Apathy {
 		
 		Rule newJsonRule = jsonRule;
 		try {
-			newJsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
+			newJsonRule = JsonRule.loadJson(configPath.resolve("mobs.json"));
 		} catch (Exception e) {
-			LOG.error("Problem reading mobs.json: ", e);
+			log.error("Problem reading mobs.json: ", e);
 			ok = false;
 		} finally {
 			jsonRule = newJsonRule;
@@ -146,7 +128,7 @@ public abstract class Apathy {
 	
 	/// Random util crap
 	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MODID, path);
+		return new ResourceLocation(ApathyHell.MODID, path);
 	}
 	
 	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
@@ -161,10 +143,20 @@ public abstract class Apathy {
 		return wow;
 	}
 	
-	/// Cross platform stuff
-	
-	public abstract void installConfigFileReloader();
-	public abstract void installCommandRegistrationCallback();
-	public abstract void installPlayerSetManagerTicker();
-	public abstract Path getConfigPath();
+	private record Log4jLoggingFacade(Logger log) implements LogFacade {
+		@Override
+		public void info(String message, Object... args) {
+			log.info(message, args);
+		}
+		
+		@Override
+		public void warn(String message, Object... args) {
+			log.warn(message, args);
+		}
+		
+		@Override
+		public void error(String message, Object... args) {
+			log.error(message, args);
+		}
+	}
 }

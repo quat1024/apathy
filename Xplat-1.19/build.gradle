@@ -11,4 +11,9 @@ minecraft {
 
 dependencies {
 	compileOnly "org.spongepowered:mixin:0.8.5"
+	
+	compileOnly project(":Xplat-Xver")
 }
+
+processResources { from project(":Xplat-Xver").sourceSets.main.resources }
+tasks.withType(JavaCompile) { source(project(":Xplat-Xver").sourceSets.main.allSource) }

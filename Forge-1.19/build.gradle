@@ -31,18 +31,18 @@ dependencies {
 	minecraft "net.minecraftforge:forge:${project.forgeVersion}"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
 	
-	compileOnly project(":common")
+	compileOnly project(":Xplat-1.19")
 }
 
 //fold in xplat resources and sources
 
 processResources {
 	//include common resources
-	from project(":common").sourceSets.main.resources
+	from project(":Xplat-1.19").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
+	source(project(":Xplat-1.19").sourceSets.main.allSource)
 }
 
 minecraft {
@@ -50,25 +50,25 @@ minecraft {
 	
 	runs {
 		client {
-			taskName 'Client'
+			taskName 'Forge Client 1.19'
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common").sourceSets.main
+					source project(":Xplat-1.19").sourceSets.main
 				}
 			}
 		}
 		
 		server {
-			taskName 'Server'
+			taskName 'Forge Server 1.19'
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common").sourceSets.main
+					source project(":Xplat-1.19").sourceSets.main
 				}
 			}
 		}

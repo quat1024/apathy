@@ -11,7 +11,7 @@ For documentation, view the `docs/` folder.
 
 ### Why are the fabric and forge subprojects lowercase in this one but all your other multiloader mods have them uppercase
 
-I don't know
+~~I don't know~~ I fixed it now
 
 ### license yadda yadda
 

@@ -16,31 +16,31 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
 	
 	//xplat
-	implementation project(":common")
+	implementation project(":Xplat-1.19")
 }
 
 //fold in xplat resources and sources
 
 processResources {
-	from project(":common").sourceSets.main.resources
+	from project(":Xplat-1.19").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
+	source(project(":Xplat-1.19").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects
 loom {
 	runs {
-		client {
+		"client 1.19" {
 			client()
-			setConfigName("Fabric Client")
+			setConfigName("Fabric Client 1.19")
 			ideConfigGenerated(true)
 			runDir("run")
 		}
-		server {
+		"server 1.19" {
 			server()
-			setConfigName("Fabric Server")
+			setConfigName("Fabric Server 1.19")
 			ideConfigGenerated(true)
 			runDir("run")
 		}

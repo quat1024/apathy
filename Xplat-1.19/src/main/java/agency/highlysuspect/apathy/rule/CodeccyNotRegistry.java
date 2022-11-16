@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 /**
- * @deprecated It's time to move away from Codec-based bullshit in this mod.
+ * @deprecated It's time to move away from Codec-based bullshit in this mod
  */
 @Deprecated(forRemoval = true)
 public class CodeccyNotRegistry<T> extends NotRegistry<T> {

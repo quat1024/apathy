@@ -6,10 +6,17 @@ import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.LogFacade;
+import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.AlwaysRuleSpec;
 import agency.highlysuspect.apathy.rule.spec.ChainRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.DebugRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.DifficultyCaseRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.JsonRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.PredicatedRuleSpec;
+import agency.highlysuspect.apathy.rule.spec.RuleSpec;
 import agency.highlysuspect.apathy.rule.spec.Specs;
+import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,8 +56,28 @@ public abstract class Apathy119 extends ApathyHell {
 		//Actually register all the weird json rule stuff with the new system TODO find a better home for this
 		ruleSerializers.register("apathy:always", AlwaysRuleSpec.AlwaysRuleSerializer.INSTANCE);
 		ruleSerializers.register("apathy:chain", ChainRuleSpec.ChainRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:predicated", PredicatedRuleSpec.PredicatedRuleSpecSerializer.INSTANCE);
+		ruleSerializers.register("apathy:allow_if", PredicatedRuleSpec.AllowIfRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:deny_if", PredicatedRuleSpec.DenyIfRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:debug", DebugRuleSpec.DebugRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:difficulty_case", DifficultyCaseRuleSpec.DifficultyCaseRuleSerializer.INSTANCE);
+		ruleSerializers.register("apathy:evaluate_json_file", JsonRuleSpec.JsonRuleSerializer.INSTANCE);
 		
 		super.init();
+	}
+	
+	//TODO HELL: find a better home for these
+	public RuleSpec<?> readRule(JsonObject json) {
+		String type = json.getAsJsonPrimitive("type").getAsString();
+		RuleSerializer<?> pee = ruleSerializers.get(type);
+		return (RuleSpec<?>) pee.read(json); //TODO actually unchecked, it's SerializableRule stuff
+	}
+	
+	public JsonObject writeRule(RuleSpec<?> rule) {
+		JsonObject ok = new JsonObject();
+		ok.addProperty("type", ruleSerializers.getName(rule.getSerializer()));
+		rule.getSerializer().writeErased(rule, ok);
+		return ok;
 	}
 	
 	public boolean loadConfig() {

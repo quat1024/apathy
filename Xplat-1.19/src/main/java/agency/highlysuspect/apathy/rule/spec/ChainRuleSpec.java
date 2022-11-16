@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.google.gson.JsonArray;
@@ -65,11 +64,7 @@ public record ChainRuleSpec(List<RuleSpec<?>> rules) implements RuleSpec<ChainRu
 		public JsonObject write(ChainRuleSpec rule, JsonObject json) {
 			JsonArray rulesArray = new JsonArray();
 			for(RuleSpec<?> ruleToWrite : rule.rules) {
-				//TODO: lift this out somewhere
-				JsonObject ok = new JsonObject();
-				ok.addProperty("type", ApathyHell.instance.ruleSerializers.getName(ruleToWrite.getSerializer()));
-				ruleToWrite.getSerializer().writeErased(ruleToWrite, ok);
-				rulesArray.add(ok);
+				rulesArray.add(Apathy119.instance119.writeRule(ruleToWrite));
 			}
 			
 			return json;
@@ -81,13 +76,7 @@ public record ChainRuleSpec(List<RuleSpec<?>> rules) implements RuleSpec<ChainRu
 			ArrayList<RuleSpec<?>> rules = new ArrayList<>();
 			
 			for(JsonElement e : rulesArray) {
-				if(e.isJsonObject()) {
-					//TODO: lift this out somewhere too
-					JsonObject o = e.getAsJsonObject();
-					String type = o.getAsJsonPrimitive("type").getAsString();
-					RuleSerializer<?> pee = ApathyHell.instance.ruleSerializers.get(type);
-					rules.add((RuleSpec<?>) pee.read(o)); //TODO
-				}
+				if(e.isJsonObject()) rules.add(Apathy119.instance119.readRule(e.getAsJsonObject()));
 			}
 			
 			return new ChainRuleSpec(rules);

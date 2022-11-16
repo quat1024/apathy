@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.hell.ApathyHell;
 import com.google.gson.JsonObject;
 
 public interface RuleSerializer<RULE> {

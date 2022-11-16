@@ -17,6 +17,12 @@ public class CoolGsonHelper {
 		else return TriState.fromAllowDenyPassString(prim.getAsString());
 	}
 	
+	public static TriState getAllowDenyPassTriState(JsonObject json, String key, TriState def) {
+		JsonElement elem = json.get(key);
+		if(!(elem instanceof JsonPrimitive prim)) return def;
+		else return TriState.fromAllowDenyPassString(prim.getAsString());
+	}
+	
 	public static <T> Collector<T, ?, JsonArray> toJsonArray(Function<T, JsonElement> jsonWriter) {
 		return Collector.of(JsonArray::new,
 			(array, thing) -> array.add(jsonWriter.apply(thing)),

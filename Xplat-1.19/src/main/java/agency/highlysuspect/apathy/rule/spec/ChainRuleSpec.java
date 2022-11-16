@@ -66,6 +66,7 @@ public record ChainRuleSpec(List<RuleSpec<?>> rules) implements RuleSpec<ChainRu
 			for(RuleSpec<?> ruleToWrite : rule.rules) {
 				rulesArray.add(Apathy119.instance119.writeRule(ruleToWrite));
 			}
+			json.add("rules", rulesArray);
 			
 			return json;
 		}

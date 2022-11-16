@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public abstract class ApathyHell {
-	public static final String MODID = "Apathy";
+	public static final String MODID = "apathy";
 	public static ApathyHell instance;
 	
 	public final Path configPath;

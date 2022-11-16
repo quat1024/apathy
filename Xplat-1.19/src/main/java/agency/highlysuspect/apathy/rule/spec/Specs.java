@@ -31,7 +31,7 @@ public class Specs {
 	public static final CodeccyNotRegistry<Codec<? extends RuleSpec>> RULE_SPEC_CODEC_REGISTRY = new CodeccyNotRegistry<>("apathy:rule_spec_codec");
 	public static final CodeccyNotRegistry<Codec<? extends PredicateSpec>> PREDICATE_SPEC_CODEC_REGISTRY = new CodeccyNotRegistry<>("apathy:predicate_spec_codec");
 	
-	public static final Codec<RuleSpec<?>> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(RuleSpec::codec, Function.identity());
+	public static final Codec<RuleSpec<?>> RULE_SPEC_CODEC = RULE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(RuleSpec::codec, shit -> (Codec<? extends RuleSpec<?>>) shit);
 	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(PredicateSpec::codec, Function.identity());
 	
 	@Deprecated(forRemoval = true)

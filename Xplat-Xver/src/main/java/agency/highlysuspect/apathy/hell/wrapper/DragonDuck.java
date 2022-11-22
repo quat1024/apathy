@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.hell;
+package agency.highlysuspect.apathy.hell.wrapper;
 
 //A dragon duck is kind of like a wyvern, if you think about it.
 public interface DragonDuck {

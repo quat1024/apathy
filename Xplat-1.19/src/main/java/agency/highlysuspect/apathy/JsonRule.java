@@ -2,10 +2,12 @@ package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.rule.RuleSpec;
+import agency.highlysuspect.apathy.hell.rule.SerializableRuleSpec;
+import agency.highlysuspect.apathy.hell.rule.RuleSpec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +46,7 @@ public class JsonRule {
 		//parse the json into a java object
 		RuleSpec<?> spec;
 		try {
-			spec = Apathy119.instance119.readRule(json);
+			spec = ApathyHell.instance.readRule(json);
 		} catch (Exception e) {
 			e.addSuppressed(new RuntimeException("Problem decoding json rule"));
 			throw e;
@@ -52,17 +54,35 @@ public class JsonRule {
 		
 		//realize the rulespec into a rule
 		try {
-			if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule");
+			if(Apathy119.instance119.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule");
 			
 			if(Apathy119.instance119.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy119.instance119.generalConfig.debugJsonRule) spec.dump(ApathyHell.instance.configPath, "json-rule-opt");
+				if(Apathy119.instance119.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule-opt");
 			}
 			
 			return spec.build();
 		} catch (Exception e) {
 			e.addSuppressed(new RuntimeException("Problem finalizing rule"));
 			throw e;
+		}
+	}
+	
+	/**
+	 * Write a rule as json and poop it out.
+	 */
+	public static <RULE extends SerializableRuleSpec<RULE>> void dump(RuleSpec<RULE> ruleSpec, Path configFolder, String filename) {
+		try {
+			Path dumpDir = configFolder.resolve("dumps");
+			
+			Files.createDirectories(dumpDir);
+			
+			Path outPath = dumpDir.resolve(filename + ".json");
+			ApathyHell.instance.log.info("Dumping rule to " + outPath);
+			JsonObject json = ApathyHell.instance.writeRule(ruleSpec);
+			Files.writeString(outPath, GSON.toJson(json));
+		} catch (Exception e) {
+			ApathyHell.instance.log.error("Problem dumping rule to " + filename, e);
 		}
 	}
 }

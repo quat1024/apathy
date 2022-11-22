@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.DragonDuck;
+import agency.highlysuspect.apathy.hell.wrapper.DragonDuck;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

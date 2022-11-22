@@ -1,9 +1,6 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import com.google.gson.JsonObject;
 
 public record RuleSpecAlways(TriState value) implements RuleSpec<RuleSpecAlways> {

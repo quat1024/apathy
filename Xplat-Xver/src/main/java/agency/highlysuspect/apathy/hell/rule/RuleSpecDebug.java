@@ -1,10 +1,7 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.ApathyHell;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import com.google.gson.JsonObject;
 
 public record RuleSpecDebug(RuleSpec<?> rule, String message) implements RuleSpec<RuleSpecDebug> {
@@ -35,14 +32,14 @@ public record RuleSpecDebug(RuleSpec<?> rule, String message) implements RuleSpe
 		
 		@Override
 		public void write(RuleSpecDebug rule, JsonObject json) {
-			json.add("rule", Apathy119.instance119.writeRule(rule.rule));
+			json.add("rule", ApathyHell.instance.writeRule(rule.rule));
 			json.addProperty("message", rule.message);
 		}
 		
 		@Override
 		public RuleSpecDebug read(JsonObject json) {
 			return new RuleSpecDebug(
-				Apathy119.instance119.readRule(json.getAsJsonObject("rule")),
+				ApathyHell.instance.readRule(json.getAsJsonObject("rule")),
 				json.getAsJsonPrimitive("message").getAsString()
 			);
 		}

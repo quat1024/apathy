@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.hell.rule;
+package agency.highlysuspect.apathy.hell.wrapper;
 
 public interface Defender {
 	/**

@@ -1,6 +1,8 @@
 package agency.highlysuspect.apathy.hell.rule;
 
 import agency.highlysuspect.apathy.hell.TriState;
+import agency.highlysuspect.apathy.hell.wrapper.Attacker;
+import agency.highlysuspect.apathy.hell.wrapper.Defender;
 
 import java.util.function.BiFunction;
 

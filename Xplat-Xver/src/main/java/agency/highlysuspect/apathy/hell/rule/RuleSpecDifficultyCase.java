@@ -1,19 +1,16 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
+import agency.highlysuspect.apathy.hell.wrapper.ApathyDifficulty;
 import com.google.gson.JsonObject;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.Mob;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) implements RuleSpec<RuleSpecDifficultyCase> {
+public record RuleSpecDifficultyCase(Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs) implements RuleSpec<RuleSpecDifficultyCase> {
 	@Override
 	public RuleSpec<?> optimize() {
 		return new RuleSpecDifficultyCase(ruleSpecs.entrySet().stream()
@@ -22,13 +19,10 @@ public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) imp
 	
 	@Override
 	public Rule build() {
-		Map<Difficulty, Rule> built = new EnumMap<>(Difficulty.class);
+		Map<ApathyDifficulty, Rule> built = new EnumMap<>(ApathyDifficulty.class);
 		ruleSpecs.forEach((difficulty, ruleSpec) -> built.put(difficulty, ruleSpec.build()));
 		
-		return (attacker, defender) -> {
-			Mob attackerMob = (Mob) attacker.apathy$getMob();
-			return built.getOrDefault(attackerMob.level.getDifficulty(), alwaysPasses).apply(attacker, defender);
-		};
+		return (attacker, defender) -> built.getOrDefault(attacker.apathy$getDifficulty(), alwaysPasses).apply(attacker, defender);
 	}
 	
 	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;
@@ -44,20 +38,20 @@ public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) imp
 		@Override
 		public void write(RuleSpecDifficultyCase rule, JsonObject json) {
 			JsonObject cases = new JsonObject();
-			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.getKey(), Apathy119.instance119.writeRule(diffRule)));
+			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.toString(), ApathyHell.instance.writeRule(diffRule)));
 			json.add("cases", cases);
 		}
 		
 		@Override
 		public RuleSpecDifficultyCase read(JsonObject json) {
-			Map<Difficulty, RuleSpec<?>> ruleSpecs = new HashMap<>();
+			Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs = new HashMap<>();
 			
 			JsonObject cases = json.getAsJsonObject("cases");
 			for(String key : cases.keySet()) {
-				Difficulty diff = Difficulty.byName(key);
+				ApathyDifficulty diff = ApathyDifficulty.fromStringOrNull(key);
 				if(diff == null) continue;
 				
-				ruleSpecs.put(diff, Apathy119.instance119.readRule(cases.getAsJsonObject(key)));
+				ruleSpecs.put(diff, ApathyHell.instance.readRule(cases.getAsJsonObject(key)));
 			}
 			
 			return new RuleSpecDifficultyCase(ruleSpecs);

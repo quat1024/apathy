@@ -1,7 +1,12 @@
 package agency.highlysuspect.apathy.hell;
 
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
+import agency.highlysuspect.apathy.hell.rule.RuleSpec;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +21,9 @@ public abstract class ApathyHell {
 	
 	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
 	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
+	
+	//werid spot for this, idk
+	public @Nullable Rule jsonRule;
 	
 	public ApathyHell(Path configPath, LogFacade log) {
 		if(instance == null) {
@@ -39,6 +47,21 @@ public abstract class ApathyHell {
 		installConfigFileReloader();
 		installCommandRegistrationCallback();
 		installPlayerSetManagerTicker();
+	}
+	
+	public RuleSpec<?> readRule(JsonElement jsonElem) {
+		if(!(jsonElem instanceof JsonObject json)) throw new IllegalArgumentException("Not json object");
+		
+		String type = json.getAsJsonPrimitive("type").getAsString();
+		RuleSerializer<?> pee = ruleSerializers.get(type);
+		return (RuleSpec<?>) pee.read(json); //TODO actually unchecked, it's SerializableRule stuff
+	}
+	
+	public JsonObject writeRule(RuleSpec<?> rule) {
+		JsonObject ok = new JsonObject();
+		ok.addProperty("type", ruleSerializers.getName(rule.getSerializer()));
+		rule.getSerializer().writeErased(rule, ok);
+		return ok;
 	}
 	
 	public abstract void installConfigFileReloader();

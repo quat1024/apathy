@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.DragonDuck;
+import agency.highlysuspect.apathy.hell.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.config.BossConfig;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.CriteriaTriggers;

@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.impl;
 
-import agency.highlysuspect.apathy.hell.rule.Defender;
+import agency.highlysuspect.apathy.hell.wrapper.Defender;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 

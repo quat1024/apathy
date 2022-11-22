@@ -5,6 +5,8 @@ import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
+import agency.highlysuspect.apathy.hell.rule.RuleSpec;
+import agency.highlysuspect.apathy.hell.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
 import agency.highlysuspect.apathy.rule.predicate.Partial;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;

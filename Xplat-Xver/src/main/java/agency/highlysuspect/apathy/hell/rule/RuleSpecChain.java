@@ -1,9 +1,7 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -62,7 +60,7 @@ public record RuleSpecChain(List<RuleSpec<?>> rules) implements RuleSpec<RuleSpe
 		public void write(RuleSpecChain rule, JsonObject json) {
 			JsonArray rulesArray = new JsonArray();
 			for(RuleSpec<?> ruleToWrite : rule.rules) {
-				rulesArray.add(Apathy119.instance119.writeRule(ruleToWrite));
+				rulesArray.add(ApathyHell.instance.writeRule(ruleToWrite));
 			}
 			json.add("rules", rulesArray);
 		}
@@ -71,7 +69,7 @@ public record RuleSpecChain(List<RuleSpec<?>> rules) implements RuleSpec<RuleSpe
 		public RuleSpecChain read(JsonObject json) {
 			JsonArray rulesArray = json.getAsJsonArray("rules");
 			ArrayList<RuleSpec<?>> rules = new ArrayList<>();
-			for(JsonElement e : rulesArray) rules.add(Apathy119.instance119.readRule(e.getAsJsonObject()));
+			for(JsonElement e : rulesArray) rules.add(ApathyHell.instance.readRule(e.getAsJsonObject()));
 			return new RuleSpecChain(rules);
 		}
 	}

@@ -1,9 +1,7 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import com.google.gson.JsonObject;
 
 public final record RuleSpecJson() implements RuleSpec<RuleSpecJson> {
@@ -11,7 +9,7 @@ public final record RuleSpecJson() implements RuleSpec<RuleSpecJson> {
 	
 	@Override
 	public Rule build() {
-		return (attacker, defender) -> Apathy119.instance119.jsonRule == null ? TriState.DEFAULT : Apathy119.instance119.jsonRule.apply(attacker, defender);
+		return (attacker, defender) -> ApathyHell.instance.jsonRule == null ? TriState.DEFAULT : ApathyHell.instance.jsonRule.apply(attacker, defender);
 	}
 	
 	@Override

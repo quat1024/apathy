@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.DragonDuck;
+import agency.highlysuspect.apathy.hell.wrapper.DragonDuck;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;

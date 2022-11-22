@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.config;
 
 import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
@@ -10,14 +11,14 @@ import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.annotation.Use;
 import agency.highlysuspect.apathy.hell.ApathyHell;
-import agency.highlysuspect.apathy.hell.rule.Attacker;
-import agency.highlysuspect.apathy.hell.rule.Defender;
+import agency.highlysuspect.apathy.hell.wrapper.Attacker;
+import agency.highlysuspect.apathy.hell.wrapper.Defender;
 import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.rule.RuleSpecAlways;
-import agency.highlysuspect.apathy.rule.RuleSpecChain;
-import agency.highlysuspect.apathy.rule.RuleSpecJson;
+import agency.highlysuspect.apathy.hell.rule.RuleSpecAlways;
+import agency.highlysuspect.apathy.hell.rule.RuleSpecChain;
+import agency.highlysuspect.apathy.hell.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.rule.RuleSpecPredicated;
-import agency.highlysuspect.apathy.rule.RuleSpec;
+import agency.highlysuspect.apathy.hell.rule.RuleSpec;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerTaggedWith;
@@ -296,10 +297,10 @@ public class MobConfig extends Config {
 			ruleSpec = new RuleSpecChain(ruleSpecList);
 		}
 		
-		if(Apathy119.instance119.generalConfig.debugBuiltinRule) ruleSpec.dump(ApathyHell.instance.configPath, "builtin-rule");
+		if(Apathy119.instance119.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule");
 		if(Apathy119.instance119.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
-			if(Apathy119.instance119.generalConfig.debugBuiltinRule) ruleSpec.dump(ApathyHell.instance.configPath, "builtin-rule-opt");
+			if(Apathy119.instance119.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule-opt");
 		}
 		
 		rule = ruleSpec.build();

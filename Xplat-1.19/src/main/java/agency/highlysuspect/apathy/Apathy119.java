@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.hell.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.hell.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.hell.LogFacade;
 import agency.highlysuspect.apathy.hell.rule.Rule;
@@ -31,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class Apathy119 extends ApathyHell {
 	public static Apathy119 instance119;
@@ -129,6 +131,17 @@ public abstract class Apathy119 extends ApathyHell {
 		Set<Difficulty> wow = ApathyHell.allOf(Difficulty.class);
 		wow.remove(Difficulty.PEACEFUL);
 		return wow;
+	}
+	
+	//TODO really delete this one (need to look at config stuff again)
+	@Deprecated(forRemoval = true)
+	public static Set<ApathyDifficulty> skillIssue(Set<Difficulty> old) {
+		return old.stream().map(d -> switch(d) {
+			case PEACEFUL -> ApathyDifficulty.PEACEFUL;
+			case EASY -> ApathyDifficulty.EASY;
+			case NORMAL -> ApathyDifficulty.NORMAL;
+			case HARD -> ApathyDifficulty.HARD;
+		}).collect(Collectors.toSet());
 	}
 	
 	private record Log4jLoggingFacade(Logger log) implements LogFacade {

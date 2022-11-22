@@ -284,7 +284,7 @@ public class MobConfig extends Config {
 			for(String ruleName : ruleOrder) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
 					case "json"       -> ruleSpecList.add(new RuleSpecJson());
-					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(difficultySetIncluded, difficultySetExcluded, new PartialSpecDifficultyIs(difficultySet)));
+					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(difficultySetIncluded, difficultySetExcluded, new PartialSpecDifficultyIs(Apathy119.skillIssue(difficultySet))));
 					case "boss"       -> ruleSpecList.add(new RuleSpecPredicated(boss, TriState.DEFAULT, new PartialSpecAttackerIsBoss()));
 					case "mobset"     -> ruleSpecList.add(new RuleSpecPredicated(mobSetIncluded, mobSetExcluded, new PartialSpecAttackerIs(mobSet)));
 					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(tagSetIncluded, tagSetExcluded, new PartialSpecAttackerTaggedWith(tagSet)));

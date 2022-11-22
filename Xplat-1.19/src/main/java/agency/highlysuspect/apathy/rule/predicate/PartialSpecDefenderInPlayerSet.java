@@ -42,11 +42,10 @@ public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) impleme
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecDefenderInPlayerSet part, JsonObject json) {
+		public void write(PartialSpecDefenderInPlayerSet part, JsonObject json) {
 			json.add("player_sets", part.playerSetNames.stream()
 				.map(JsonPrimitive::new)
 				.collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

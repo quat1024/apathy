@@ -25,9 +25,8 @@ public record PartialSpecAlways(boolean always) implements PartialSpec<PartialSp
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecAlways part, JsonObject json) {
+		public void write(PartialSpecAlways part, JsonObject json) {
 			json.addProperty("value", part.always);
-			return json;
 		}
 		
 		@Override

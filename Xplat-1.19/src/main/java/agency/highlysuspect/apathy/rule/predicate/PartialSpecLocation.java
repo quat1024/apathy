@@ -80,7 +80,7 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecLocation part, JsonObject json) {
+		public void write(PartialSpecLocation part, JsonObject json) {
 			json.add("predicate", part.pred.serializeToJson());
 			
 			json.addProperty("who", part.who.toString()); //optional but unconditionally serialized
@@ -89,8 +89,6 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 			if(part.offsetX != 0) json.addProperty("offsetX", part.offsetX);
 			if(part.offsetY != 0) json.addProperty("offsetY", part.offsetY);
 			if(part.offsetZ != 0) json.addProperty("offsetZ", part.offsetZ);
-			
-			return json;
 		}
 		
 		@Override

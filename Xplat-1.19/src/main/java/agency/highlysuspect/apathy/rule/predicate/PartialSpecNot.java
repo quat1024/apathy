@@ -30,9 +30,8 @@ public record PartialSpecNot(PartialSpec<?> other) implements PartialSpec<Partia
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecNot part, JsonObject json) {
+		public void write(PartialSpecNot part, JsonObject json) {
 			json.add("predicate", Apathy119.instance119.writePartial(part.other));
-			return json;
 		}
 		
 		@Override

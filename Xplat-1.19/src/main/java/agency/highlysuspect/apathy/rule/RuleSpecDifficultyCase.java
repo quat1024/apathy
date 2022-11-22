@@ -37,12 +37,10 @@ public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) imp
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(RuleSpecDifficultyCase rule, JsonObject json) {
+		public void write(RuleSpecDifficultyCase rule, JsonObject json) {
 			JsonObject cases = new JsonObject();
 			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.getKey(), Apathy119.instance119.writeRule(diffRule)));
 			json.add("cases", cases);
-			
-			return json;
 		}
 		
 		@Override

@@ -26,8 +26,8 @@ public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAtta
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecAttackerIsBoss asdkashd, JsonObject json) {
-			return json;
+		public void write(PartialSpecAttackerIsBoss asdkashd, JsonObject json) {
+			//Nothing to write
 		}
 		
 		@Override

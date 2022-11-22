@@ -22,8 +22,8 @@ public final record RuleSpecJson() implements RuleSpec<RuleSpecJson> {
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(RuleSpecJson ruleSpecJson, JsonObject json) {
-			return json;
+		public void write(RuleSpecJson ruleSpecJson, JsonObject json) {
+			//Nothing to write
 		}
 		
 		@Override

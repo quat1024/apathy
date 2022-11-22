@@ -33,12 +33,11 @@ public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements P
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecDifficultyIs part, JsonObject json) {
+		public void write(PartialSpecDifficultyIs part, JsonObject json) {
 			json.add("difficulties", part.difficulties.stream()
 				.map(Serializer::difficultyToString)
 				.map(JsonPrimitive::new)
 				.collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

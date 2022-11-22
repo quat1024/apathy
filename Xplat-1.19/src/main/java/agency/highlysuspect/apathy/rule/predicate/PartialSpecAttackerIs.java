@@ -34,12 +34,11 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecAttackerIs part, JsonObject json) {
+		public void write(PartialSpecAttackerIs part, JsonObject json) {
 			json.add("mobs", part.mobSet.stream()
 				.map(Registry.ENTITY_TYPE::getKey)
 				.map(rl -> new JsonPrimitive(rl.toString()))
 				.collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

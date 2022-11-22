@@ -68,11 +68,10 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final PredicatedSerializer INSTANCE = new PredicatedSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+		public void write(RuleSpecPredicated rule, JsonObject json) {
 			json.addProperty("if_true", rule.ifTrue.toAllowDenyPassString());
 			json.addProperty("if_false", rule.ifFalse.toAllowDenyPassString());
 			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
-			return json;
 		}
 		
 		@Override
@@ -88,9 +87,8 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final AllowIfSerializer INSTANCE = new AllowIfSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+		public void write(RuleSpecPredicated rule, JsonObject json) {
 			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
-			return json;
 		}
 		
 		@Override
@@ -103,9 +101,8 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final DenyIfSerializer INSTANCE = new DenyIfSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+		public void write(RuleSpecPredicated rule, JsonObject json) {
 			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
-			return json;
 		}
 		
 		@Override

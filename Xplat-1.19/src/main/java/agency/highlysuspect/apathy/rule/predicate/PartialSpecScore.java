@@ -31,12 +31,11 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecScore part, JsonObject json) {
+		public void write(PartialSpecScore part, JsonObject json) {
 			json.addProperty("objective", part.scoreboardObjective);
 			json.addProperty("who", part.who.toString()); //optional but serialized unconditionally
 			json.addProperty("thresholdMode", part.thresholdMode.toString());
 			json.addProperty("threshold", part.threshold);
-			return json;
 		}
 		
 		@Override

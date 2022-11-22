@@ -25,9 +25,8 @@ public record PartialSpecRevengeTimer(long timer) implements PartialSpec<Partial
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecRevengeTimer part, JsonObject json) {
+		public void write(PartialSpecRevengeTimer part, JsonObject json) {
 			json.addProperty("timeout", part.timer);
-			return json;
 		}
 		
 		@Override

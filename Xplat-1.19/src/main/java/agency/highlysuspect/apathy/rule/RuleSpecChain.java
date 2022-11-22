@@ -58,14 +58,12 @@ public record RuleSpecChain(List<RuleSpec<?>> rules) implements RuleSpec<RuleSpe
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(RuleSpecChain rule, JsonObject json) {
+		public void write(RuleSpecChain rule, JsonObject json) {
 			JsonArray rulesArray = new JsonArray();
 			for(RuleSpec<?> ruleToWrite : rule.rules) {
 				rulesArray.add(Apathy119.instance119.writeRule(ruleToWrite));
 			}
 			json.add("rules", rulesArray);
-			
-			return json;
 		}
 		
 		@Override

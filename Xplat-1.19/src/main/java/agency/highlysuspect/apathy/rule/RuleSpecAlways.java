@@ -32,9 +32,8 @@ public record RuleSpecAlways(TriState value) implements RuleSpec<RuleSpecAlways>
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(RuleSpecAlways rule, JsonObject json) {
+		public void write(RuleSpecAlways rule, JsonObject json) {
 			json.addProperty("value", rule.value.toAllowDenyPassString());
-			return json;
 		}
 		
 		@Override

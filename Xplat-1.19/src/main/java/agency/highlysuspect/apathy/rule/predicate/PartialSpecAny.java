@@ -51,9 +51,8 @@ public record PartialSpecAny(Set<PartialSpec<?>> others) implements PartialSpec<
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecAny pred, JsonObject json) {
+		public void write(PartialSpecAny pred, JsonObject json) {
 			json.add("predicates", pred.others.stream().map(Apathy119.instance119::writePartial).collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

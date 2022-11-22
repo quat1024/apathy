@@ -40,12 +40,11 @@ public record PartialSpecAttackerTaggedWith(Set<TagKey<EntityType<?>>> tags) imp
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecAttackerTaggedWith part, JsonObject json) {
+		public void write(PartialSpecAttackerTaggedWith part, JsonObject json) {
 			json.add("tags", part.tags.stream()
 				.map(TagKey::location)
 				.map(rl -> new JsonPrimitive(rl.toString()))
 				.collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

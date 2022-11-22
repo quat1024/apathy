@@ -33,10 +33,9 @@ public record RuleSpecDebug(RuleSpec<?> rule, String message) implements RuleSpe
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(RuleSpecDebug rule, JsonObject json) {
+		public void write(RuleSpecDebug rule, JsonObject json) {
 			json.add("rule", Apathy119.instance119.writeRule(rule.rule));
 			json.addProperty("message", rule.message);
-			return json;
 		}
 		
 		@Override

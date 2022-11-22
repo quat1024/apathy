@@ -47,11 +47,10 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public JsonObject write(PartialSpecDefenderHasAdvancement part, JsonObject json) {
+		public void write(PartialSpecDefenderHasAdvancement part, JsonObject json) {
 			json.add("advancements", part.advancementIds.stream()
 				.map(rl -> new JsonPrimitive(rl.toString()))
 				.collect(CoolGsonHelper.toJsonArray()));
-			return json;
 		}
 		
 		@Override

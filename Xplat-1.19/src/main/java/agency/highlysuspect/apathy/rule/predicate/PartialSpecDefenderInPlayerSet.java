@@ -3,12 +3,9 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.Set;
@@ -58,17 +55,5 @@ public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) impleme
 				.map(JsonElement::getAsString)
 				.collect(Collectors.toSet()));
 		}
-	}
-	
-	/// CODEC HELL ///
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecDefenderInPlayerSet> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Codec.STRING).fieldOf("player_sets").forGetter(x -> x.playerSetNames)
-	).apply(i, PartialSpecDefenderInPlayerSet::new));
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
 	}
 }

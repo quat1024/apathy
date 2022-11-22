@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.rule;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -30,7 +29,4 @@ public enum Who {
 			default -> throw new IllegalArgumentException("expected 'attacker' or 'defender'");
 		};
 	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<Who> CODEC = CodecUtil.enumCodec("Who", Who.class);
 }

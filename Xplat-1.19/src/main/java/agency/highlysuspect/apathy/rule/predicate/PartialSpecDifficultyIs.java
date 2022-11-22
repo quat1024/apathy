@@ -2,12 +2,9 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.Difficulty;
 
 import java.util.Locale;
@@ -16,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements PartialSpec<PartialSpecDifficultyIs> {
-	
 	@Override
 	public PartialSpec<?> optimize() {
 		if(difficulties.isEmpty()) return PartialSpecAlways.FALSE;
@@ -63,15 +59,4 @@ public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements P
 			return d;
 		}
 	}
-	
-	/// CODEC HELL ///
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecDifficultyIs> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(CodecUtil.DIFFICULTY).fieldOf("difficulties").forGetter(x -> x.difficulties)
-	).apply(i, PartialSpecDifficultyIs::new));
 }

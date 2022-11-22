@@ -2,13 +2,9 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -54,17 +50,5 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 				.map(Registry.ENTITY_TYPE::get)
 				.collect(Collectors.toSet()));
 		}
-	}
-	
-	///CODEC HELL ///
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecAttackerIs> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Registry.ENTITY_TYPE.byNameCodec()).fieldOf("mobs").forGetter(x -> x.mobSet)
-	).apply(i, PartialSpecAttackerIs::new));
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
 	}
 }

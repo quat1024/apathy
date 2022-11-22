@@ -16,7 +16,6 @@ import agency.highlysuspect.apathy.rule.RuleSpecDifficultyCase;
 import agency.highlysuspect.apathy.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.rule.RuleSpec;
-import agency.highlysuspect.apathy.rule.Specs;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecDefenderInPlayerSet;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAll;
@@ -66,10 +65,7 @@ public abstract class Apathy119 extends ApathyHell {
 	}
 	
 	public void init() {
-		//Register all the weird json rule stuff
-		Specs.onInitialize();
-		
-		//Actually register all the weird json rule stuff with the new system TODO find a better home for this
+		//TODO find a better home for this
 		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
 		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);

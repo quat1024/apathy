@@ -3,7 +3,7 @@ package agency.highlysuspect.apathy.mixin;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.rule.CodecUtil;
+import agency.highlysuspect.apathy.rule.CoolNbtUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -97,7 +97,7 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(spawnPosition != null) {
-			tag.put(SPAWN_POSITION_KEY, CodecUtil.writeVec3(spawnPosition));
+			tag.put(SPAWN_POSITION_KEY, CoolNbtUtil.writeVec3(spawnPosition));
 		}
 		
 		if(locationPredicateCache != null) {
@@ -116,7 +116,7 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(tag.contains(SPAWN_POSITION_KEY)) {
-			spawnPosition = CodecUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CodecUtil.VEC3_LIST_ID));
+			spawnPosition = CoolNbtUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CoolNbtUtil.VEC3_LIST_ID));
 		} else {
 			spawnPosition = null;
 		}

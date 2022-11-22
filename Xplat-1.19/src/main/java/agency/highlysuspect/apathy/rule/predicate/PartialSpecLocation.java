@@ -3,10 +3,7 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -130,26 +127,5 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 				default -> throw new IllegalArgumentException("expected 'attacker', 'defender', or 'attacker_spawn_location");
 			};
 		}
-		
-		@Deprecated(forRemoval = true)
-		public static final Codec<LocationGetter> CODEC = CodecUtil.enumCodec("LocationGetter", LocationGetter.class);
-	}
-	
-	/// CODEC HELL ///
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecLocation> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.LOCATION_PREDICATE_CODEC.fieldOf("predicate").forGetter(PartialSpecLocation::pred),
-		LocationGetter.CODEC.optionalFieldOf("who", LocationGetter.ATTACKER_SPAWN_LOCATION).forGetter(PartialSpecLocation::who),
-		Codec.STRING.optionalFieldOf("uniqueId", "defaultUniqueId").forGetter(PartialSpecLocation::uniqueId),
-		Codec.INT.optionalFieldOf("offsetX", 0).forGetter(PartialSpecLocation::offsetX),
-		Codec.INT.optionalFieldOf("offsetY", 0).forGetter(PartialSpecLocation::offsetY),
-		Codec.INT.optionalFieldOf("offsetZ", 0).forGetter(PartialSpecLocation::offsetZ)
-	).apply(i, PartialSpecLocation::new));
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
 	}
 }

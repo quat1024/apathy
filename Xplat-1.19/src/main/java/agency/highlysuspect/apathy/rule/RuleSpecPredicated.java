@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
@@ -9,27 +8,26 @@ import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
 import agency.highlysuspect.apathy.rule.predicate.Partial;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 
 public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
-	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec predSpec) {
+	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec) {
 		this(ifTrue, ifFalse, predSpec, PredicatedSerializer.INSTANCE);
 	}
 	
-	public static RuleSpecPredicated allowIf(PartialSpec spec) {
+	public static RuleSpecPredicated allowIf(PartialSpec<?> spec) {
 		return new RuleSpecPredicated(TriState.TRUE, TriState.DEFAULT, spec, AllowIfSerializer.INSTANCE);
 	}
 	
-	public static RuleSpecPredicated denyIf(PartialSpec spec) {
+	public static RuleSpecPredicated denyIf(PartialSpec<?> spec) {
 		return new RuleSpecPredicated(TriState.FALSE, TriState.DEFAULT, spec, DenyIfSerializer.INSTANCE);
 	}
 	
 	private final TriState ifTrue;
 	private final TriState ifFalse;
-	private final PartialSpec predSpec;
+	private final PartialSpec<?> predSpec;
 	private final RuleSerializer<RuleSpecPredicated> theSerializer;
 	
-	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec predSpec, RuleSerializer<RuleSpecPredicated> theSerializer) {
+	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec, RuleSerializer<RuleSpecPredicated> theSerializer) {
 		this.ifTrue = ifTrue;
 		this.ifFalse = ifFalse;
 		this.predSpec = predSpec;
@@ -40,7 +38,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	public RuleSpec<?> optimize() {
 		if(ifTrue == ifFalse) return RuleSpecAlways.always(ifTrue);
 		
-		PartialSpec predSpecOpt = predSpec.optimize();
+		PartialSpec<?> predSpecOpt = predSpec.optimize();
 		
 		if(predSpec == PartialSpecAlways.TRUE) return RuleSpecAlways.always(ifTrue);
 		if(predSpec == PartialSpecAlways.FALSE) return RuleSpecAlways.always(ifFalse);

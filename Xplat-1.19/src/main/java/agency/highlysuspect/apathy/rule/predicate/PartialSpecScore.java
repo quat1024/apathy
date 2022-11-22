@@ -4,8 +4,6 @@ import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import agency.highlysuspect.apathy.rule.ThresholdMode;
 import agency.highlysuspect.apathy.rule.Who;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
@@ -51,20 +49,4 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 			return new PartialSpecScore(scoreboardObjective, who, thresholdMode, threshold);
 		}
 	}
-	
-	/// CODEC HELL ///
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecScore> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Codec.STRING.fieldOf("objective").forGetter(PartialSpecScore::scoreboardObjective),
-		Who.CODEC.optionalFieldOf("who", Who.DEFENDER).forGetter(PartialSpecScore::who),
-		ThresholdMode.CODEC.fieldOf("thresholdMode").forGetter(PartialSpecScore::thresholdMode),
-		Codec.INT.fieldOf("threshold").forGetter(PartialSpecScore::threshold)
-	).apply(i, PartialSpecScore::new));
 }

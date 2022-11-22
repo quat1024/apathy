@@ -2,12 +2,9 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -65,17 +62,4 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 				.collect(Collectors.toSet()));
 		}
 	}
-	
-	/// CODEC HELL ///
-	
-	@Override
-	@Deprecated(forRemoval = true)
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecDefenderHasAdvancement> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(ResourceLocation.CODEC).fieldOf("advancements").forGetter(PartialSpecDefenderHasAdvancement::advancementIds)
-	).apply(i, PartialSpecDefenderHasAdvancement::new));
 }

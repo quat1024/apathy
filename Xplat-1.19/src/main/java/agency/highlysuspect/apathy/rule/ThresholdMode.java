@@ -1,7 +1,5 @@
 package agency.highlysuspect.apathy.rule;
 
-import com.mojang.serialization.Codec;
-
 import java.util.Locale;
 
 public enum ThresholdMode {
@@ -29,7 +27,4 @@ public enum ThresholdMode {
 			default -> throw new IllegalArgumentException("expected 'at_least', 'at_most', or 'equal'");
 		};
 	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<ThresholdMode> CODEC = CodecUtil.enumCodec("ThresholdMode", ThresholdMode.class);
 }

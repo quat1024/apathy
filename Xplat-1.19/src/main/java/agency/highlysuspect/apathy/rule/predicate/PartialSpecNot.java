@@ -2,10 +2,7 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.Specs;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record PartialSpecNot(PartialSpec<?> other) implements PartialSpec<PartialSpecNot> {
 	@Override
@@ -43,18 +40,5 @@ public record PartialSpecNot(PartialSpec<?> other) implements PartialSpec<Partia
 			PartialSpec<?> other = Apathy119.instance119.readPartial(json.get("predicate"));
 			return new PartialSpecNot(other);
 		}
-	}
-	
-	/// CODEC HELL ///
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecNot> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Specs.PREDICATE_SPEC_CODEC.fieldOf("predicate").forGetter(x -> x.other)
-	).apply(i, PartialSpecNot::new));
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
 	}
 }

@@ -3,7 +3,6 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -36,14 +35,4 @@ public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAtta
 			return PartialSpecAttackerIsBoss.INSTANCE;
 		}
 	}
-	
-	///CODEC HELL///
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecAttackerIsBoss> CODEC = Codec.unit(INSTANCE);
 }

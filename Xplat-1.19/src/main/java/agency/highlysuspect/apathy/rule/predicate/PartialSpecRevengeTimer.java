@@ -3,8 +3,6 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record PartialSpecRevengeTimer(long timer) implements PartialSpec<PartialSpecRevengeTimer> {
 	@Override
@@ -37,17 +35,4 @@ public record PartialSpecRevengeTimer(long timer) implements PartialSpec<Partial
 			return new PartialSpecRevengeTimer(json.getAsJsonPrimitive("timeout").getAsLong());
 		}
 	}
-	
-	/// CODEC HELL ///
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecRevengeTimer> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Codec.LONG.fieldOf("timeout").forGetter(x -> x.timer)
-	).apply(i, PartialSpecRevengeTimer::new));
 }

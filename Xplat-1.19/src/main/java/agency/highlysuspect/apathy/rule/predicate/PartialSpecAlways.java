@@ -2,8 +2,6 @@ package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public record PartialSpecAlways(boolean always) implements PartialSpec<PartialSpecAlways> {
 	public static final PartialSpecAlways TRUE = new PartialSpecAlways(true);
@@ -37,15 +35,4 @@ public record PartialSpecAlways(boolean always) implements PartialSpec<PartialSp
 			return get(json.getAsJsonPrimitive("value").getAsBoolean());
 		}
 	}
-	
-	//CODEC HELL//
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecAlways> CODEC = RecordCodecBuilder.create(i -> i.group(
-		Codec.BOOL.fieldOf("value").forGetter(x -> x.always)
-	).apply(i, PartialSpecAlways::get));
 }

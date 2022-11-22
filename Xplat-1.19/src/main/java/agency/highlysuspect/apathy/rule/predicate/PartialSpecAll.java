@@ -3,13 +3,9 @@ package agency.highlysuspect.apathy.rule.predicate;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.CodecUtil;
-import agency.highlysuspect.apathy.rule.Specs;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -68,17 +64,4 @@ public record PartialSpecAll(Set<PartialSpec<?>> others) implements PartialSpec<
 			return new PartialSpecAll(partials);
 		}
 	}
-	
-	///CODEC HELL///
-	
-	@Deprecated(forRemoval = true)
-	@Override
-	public Codec<? extends PartialSpec<?>> codec() {
-		return CODEC;
-	}
-	
-	@Deprecated(forRemoval = true)
-	public static final Codec<PartialSpecAll> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(Specs.PREDICATE_SPEC_CODEC).fieldOf("predicates").forGetter(x -> x.others)
-	).apply(i, PartialSpecAll::new));
 }

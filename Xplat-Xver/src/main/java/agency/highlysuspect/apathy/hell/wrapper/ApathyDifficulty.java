@@ -22,7 +22,7 @@ public enum ApathyDifficulty {
 	
 	public static ApathyDifficulty fromString(String name) {
 		ApathyDifficulty x = fromStringOrNull(name);
-		if(x == null) throw new IllegalArgumentException("expected 'preaceful', 'easy', 'normal', or 'hard'");
+		if(x == null) throw new IllegalArgumentException("expected 'peaceful', 'easy', 'normal', or 'hard'");
 		return x;
 	}
 }

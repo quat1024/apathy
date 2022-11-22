@@ -19,9 +19,9 @@ import agency.highlysuspect.apathy.rule.RuleSpec;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerTaggedWith;
-import agency.highlysuspect.apathy.rule.predicate.DefenderInPlayerSetPredicateSpec;
-import agency.highlysuspect.apathy.rule.predicate.DifficultyIsPredicateSpec;
-import agency.highlysuspect.apathy.rule.predicate.RevengeTimerPredicateSpec;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecDefenderInPlayerSet;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecRevengeTimer;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -281,12 +281,12 @@ public class MobConfig extends Config {
 			for(String ruleName : ruleOrder) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
 					case "json"       -> ruleSpecList.add(new RuleSpecJson());
-					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
+					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(difficultySetIncluded, difficultySetExcluded, new PartialSpecDifficultyIs(difficultySet)));
 					case "boss"       -> ruleSpecList.add(new RuleSpecPredicated(boss, TriState.DEFAULT, new PartialSpecAttackerIsBoss()));
 					case "mobset"     -> ruleSpecList.add(new RuleSpecPredicated(mobSetIncluded, mobSetExcluded, new PartialSpecAttackerIs(mobSet)));
 					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(tagSetIncluded, tagSetExcluded, new PartialSpecAttackerTaggedWith(tagSet)));
-					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new RuleSpecPredicated(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
-					case "revenge"    -> ruleSpecList.add(RuleSpecPredicated.allowIf(new RevengeTimerPredicateSpec(revengeTimer)));
+					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new RuleSpecPredicated(playerSetIncluded, playerSetExcluded, new PartialSpecDefenderInPlayerSet(Collections.singleton(s)))));
+					case "revenge"    -> ruleSpecList.add(RuleSpecPredicated.allowIf(new PartialSpecRevengeTimer(revengeTimer)));
 					default -> ApathyHell.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 				}
 			}

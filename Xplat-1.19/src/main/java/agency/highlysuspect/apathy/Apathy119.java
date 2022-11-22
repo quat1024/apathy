@@ -17,6 +17,7 @@ import agency.highlysuspect.apathy.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.rule.RuleSpec;
 import agency.highlysuspect.apathy.rule.Specs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecDefenderInPlayerSet;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAll;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
@@ -24,6 +25,12 @@ import agency.highlysuspect.apathy.rule.predicate.PartialSpecAny;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAttackerTaggedWith;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecDefenderHasAdvancement;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecLocation;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecNot;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.rule.predicate.PartialSpecScore;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
@@ -63,21 +70,28 @@ public abstract class Apathy119 extends ApathyHell {
 		Specs.onInitialize();
 		
 		//Actually register all the weird json rule stuff with the new system TODO find a better home for this
+		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
 		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
-		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
 		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
 		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
 		
-		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
+		partialSerializers.register("apathy:advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
 		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
+		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
 		partialSerializers.register("apathy:attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
 		partialSerializers.register("apathy:attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
 		partialSerializers.register("apathy:attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
+		partialSerializers.register("apathy:difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
+		partialSerializers.register("apathy:in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
+		partialSerializers.register("apathy:location", PartialSpecLocation.Serializer.INSTANCE);
+		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
+		partialSerializers.register("apathy:revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
+		partialSerializers.register("apathy:score", PartialSpecScore.Serializer.INSTANCE);
 		
 		super.init();
 	}

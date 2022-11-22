@@ -25,13 +25,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CodecUtil {
+	@Deprecated(forRemoval = true)
 	public static final Codec<Difficulty> DIFFICULTY = enumCodec("difficulty", Difficulty.class);
 	
+	@Deprecated(forRemoval = true)
 	public static <E extends Enum<E>> Codec<E> enumCodec(String errorName, Class<E> classs) {
 		E[] values = classs.getEnumConstants();
 		return renamedEnumCodec(errorName, classs, Arrays.stream(values).map(e -> e.name().toLowerCase(Locale.ROOT)).toArray(String[]::new));
 	}
 	
+	@Deprecated(forRemoval = true)
 	public static <E extends Enum<E>> Codec<E> renamedEnumCodec(String errorName, Class<E> classs, String... names) {
 		E[] values = classs.getEnumConstants();
 		if(names.length != values.length) throw new IllegalArgumentException("Enum has " + values.length + " values but only " + names.length + " names supplied to renamedEnumCodec");
@@ -49,6 +52,7 @@ public class CodecUtil {
 		);
 	}
 	
+	@Deprecated(forRemoval = true)
 	public static <T> Codec<Set<T>> setOf(Codec<T> codec) {
 		//*fart noise*
 		return codec.listOf().xmap(HashSet::new, ArrayList::new);
@@ -57,6 +61,7 @@ public class CodecUtil {
 	//This object from Minecraft has toJson and fromJson methods, but doesn't use a Codec.
 	//This is the best way I found to lift this into the Codec world, but I'm a bit rusty on my codecs.
 	//There might be a nicer way to do it?
+	@Deprecated(forRemoval = true)
 	public static final Codec<LocationPredicate> LOCATION_PREDICATE_CODEC = Codec.of(new Encoder<>() {
 		@Override
 		public <T> DataResult<T> encode(LocationPredicate input, DynamicOps<T> ops, T prefix) {
@@ -94,6 +99,7 @@ public class CodecUtil {
 		}
 	});
 	
+	@Deprecated(forRemoval = true)
 	public static JsonElement filterNulls(JsonElement element) {
 		if(element.isJsonObject()) return filterNullsObject(element.getAsJsonObject());
 		if(element.isJsonArray()) return filterNullsArray(element.getAsJsonArray());
@@ -101,6 +107,7 @@ public class CodecUtil {
 		return element;
 	}
 	
+	@Deprecated(forRemoval = true)
 	public static JsonObject filterNullsObject(JsonObject object) {
 		JsonObject result = new JsonObject();
 		for(String key : object.keySet()) {
@@ -111,6 +118,7 @@ public class CodecUtil {
 		return result;
 	}
 	
+	@Deprecated(forRemoval = true)
 	public static JsonArray filterNullsArray(JsonArray array) {
 		JsonArray result = new JsonArray();
 		for(JsonElement value : array) {

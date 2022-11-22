@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
@@ -69,12 +70,10 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final PredicatedSerializer INSTANCE = new PredicatedSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated ruleSpecPredicated, JsonObject json) {
-			json.addProperty("if_true", ruleSpecPredicated.ifTrue.toAllowDenyPassString());
-			json.addProperty("if_false", ruleSpecPredicated.ifFalse.toAllowDenyPassString());
-			
-			//TODO: predicate writing
-			json.add("predicate", Specs.PREDICATE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpecPredicated.predSpec).getOrThrow(false, ApathyHell.instance.log::error));
+		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+			json.addProperty("if_true", rule.ifTrue.toAllowDenyPassString());
+			json.addProperty("if_false", rule.ifFalse.toAllowDenyPassString());
+			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
 			return json;
 		}
 		
@@ -82,11 +81,8 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public RuleSpecPredicated read(JsonObject json) {
 			TriState ifTrue = CoolGsonHelper.getAllowDenyPassTriState(json, "if_true", TriState.DEFAULT);
 			TriState ifFalse = CoolGsonHelper.getAllowDenyPassTriState(json, "if_false", TriState.DEFAULT);
-			
-			//TODO: predicate reading
-			PartialSpec pred = Specs.PREDICATE_SPEC_CODEC.decode(JsonOps.INSTANCE, json.get("predicate")).getOrThrow(false, ApathyHell.instance.log::error).getFirst();
-			
-			return new RuleSpecPredicated(ifTrue, ifFalse, pred, this);
+			PartialSpec<?> part = Apathy119.instance119.readPartial(json.get("predicate"));
+			return new RuleSpecPredicated(ifTrue, ifFalse, part, this);
 		}
 	}
 	
@@ -94,16 +90,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final AllowIfSerializer INSTANCE = new AllowIfSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated ruleSpecPredicated, JsonObject json) {
-			//TODO: predicate writing
-			json.add("predicate", Specs.PREDICATE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpecPredicated.predSpec).getOrThrow(false, ApathyHell.instance.log::error));
+		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
 			return json;
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			//TODO: predicate reading
-			return RuleSpecPredicated.allowIf(Specs.PREDICATE_SPEC_CODEC.decode(JsonOps.INSTANCE, json.get("predicate")).getOrThrow(false, ApathyHell.instance.log::error).getFirst());
+			return RuleSpecPredicated.allowIf(Apathy119.instance119.readPartial(json.get("predicate")));
 		}
 	}
 	
@@ -111,16 +105,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public static final DenyIfSerializer INSTANCE = new DenyIfSerializer();
 		
 		@Override
-		public JsonObject write(RuleSpecPredicated ruleSpecPredicated, JsonObject json) {
-			//TODO: predicate writing
-			json.add("predicate", Specs.PREDICATE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, ruleSpecPredicated.predSpec).getOrThrow(false, ApathyHell.instance.log::error));
+		public JsonObject write(RuleSpecPredicated rule, JsonObject json) {
+			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
 			return json;
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			//TODO: predicate reading
-			return RuleSpecPredicated.denyIf(Specs.PREDICATE_SPEC_CODEC.decode(JsonOps.INSTANCE, json.get("predicate")).getOrThrow(false, ApathyHell.instance.log::error).getFirst());
+			return RuleSpecPredicated.denyIf(Apathy119.instance119.readPartial(json.get("predicate")));
 		}
 	}
 }

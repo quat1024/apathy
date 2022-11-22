@@ -10,6 +10,7 @@ public enum Who {
 	ATTACKER,
 	DEFENDER;
 	
+	//TODO: this method is the blocker for moving this to xplatxver
 	public Entity choose(Mob attacker, ServerPlayer defender) {
 		return switch(this) {
 			case ATTACKER -> attacker;

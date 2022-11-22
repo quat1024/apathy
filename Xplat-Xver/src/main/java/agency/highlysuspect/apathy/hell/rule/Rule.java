@@ -1,8 +1,6 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
 import agency.highlysuspect.apathy.hell.TriState;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Mob;
 
 import java.util.function.BiFunction;
 
@@ -12,4 +10,4 @@ import java.util.function.BiFunction;
  * - TriState.FALSE when the attacker is *not* allowed to attack
  * - TriState.DEFAULT if the rule doesn't apply and the next rule should be checked
  */
-public interface Rule extends BiFunction<Mob, ServerPlayer, TriState> {}
+public interface Rule extends BiFunction<Attacker, Defender, TriState> {}

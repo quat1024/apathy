@@ -21,7 +21,10 @@
 		"wither.WitherBossMixin",
 		"wither.WitherSkullBlockMixin",
 		"aggroedgecase.ZombifiedPiglinMixin",
-		"aggroedgecase.PolarBearHurtByTargetGoalMixin"
+		"aggroedgecase.PolarBearHurtByTargetGoalMixin",
+		
+		"impl.MobMixin_ImplAttacker",
+		"impl.ServerPlayerMixin_ImplDefender"
 	],
 	"client": [
 		"client.ClientPacketListenerMixin"

@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
 import java.util.Locale;
 

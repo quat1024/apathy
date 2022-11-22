@@ -2,9 +2,11 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.TriState;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import com.google.gson.JsonObject;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.Mob;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -23,7 +25,10 @@ public record RuleSpecDifficultyCase(Map<Difficulty, RuleSpec<?>> ruleSpecs) imp
 		Map<Difficulty, Rule> built = new EnumMap<>(Difficulty.class);
 		ruleSpecs.forEach((difficulty, ruleSpec) -> built.put(difficulty, ruleSpec.build()));
 		
-		return (attacker, defender) -> built.getOrDefault(attacker.level.getDifficulty(), alwaysPasses).apply(attacker, defender);
+		return (attacker, defender) -> {
+			Mob attackerMob = (Mob) attacker.apathy$getMob();
+			return built.getOrDefault(attackerMob.level.getDifficulty(), alwaysPasses).apply(attacker, defender);
+		};
 	}
 	
 	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;

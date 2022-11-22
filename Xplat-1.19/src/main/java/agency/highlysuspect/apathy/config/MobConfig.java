@@ -10,7 +10,9 @@ import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.annotation.Use;
 import agency.highlysuspect.apathy.hell.ApathyHell;
-import agency.highlysuspect.apathy.rule.Rule;
+import agency.highlysuspect.apathy.hell.rule.Attacker;
+import agency.highlysuspect.apathy.hell.rule.Defender;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.rule.RuleSpecChain;
 import agency.highlysuspect.apathy.rule.RuleSpecJson;
@@ -40,14 +42,14 @@ import java.util.Set;
 public class MobConfig extends Config {
 	protected static final int CURRENT_CONFIG_VERSION = 0;
 	
-	protected transient RuleSpec ruleSpec;
+	protected transient RuleSpec<?> ruleSpec;
 	protected transient Rule rule;
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
-	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
+	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer defender) {
 		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
 		
-		TriState result = rule.apply(attacker, player);
+		TriState result = rule.apply((Attacker) attacker, (Defender) defender);
 		if(result != TriState.DEFAULT) return result.get();
 		else return fallthrough;
 	}

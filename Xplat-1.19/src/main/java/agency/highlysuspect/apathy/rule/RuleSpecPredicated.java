@@ -3,11 +3,14 @@ package agency.highlysuspect.apathy.rule;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.hell.TriState;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
 import agency.highlysuspect.apathy.rule.predicate.Partial;
 import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import com.google.gson.JsonObject;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 
 public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec) {
@@ -56,7 +59,8 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	@Override
 	public Rule build() {
 		Partial builtPred = predSpec.build();
-		return (attacker, defender) -> builtPred.test(attacker, defender) ? ifTrue : ifFalse;
+		//TODO HELLZONE: remove downcasts and have predicates work off this system too
+		return (attacker, defender) -> builtPred.test((Mob) attacker.apathy$getMob(), (ServerPlayer) defender.apathy$getServerPlayer()) ? ifTrue : ifFalse;
 	}
 	
 	@Override

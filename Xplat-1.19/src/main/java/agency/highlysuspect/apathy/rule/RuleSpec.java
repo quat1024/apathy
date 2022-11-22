@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.rule;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.hell.rule.SerializableRuleSpec;
 import com.google.gson.JsonObject;
 

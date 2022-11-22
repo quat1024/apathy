@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.hell.ApathyHell;
-import agency.highlysuspect.apathy.rule.Rule;
+import agency.highlysuspect.apathy.hell.rule.Rule;
 import agency.highlysuspect.apathy.rule.RuleSpec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

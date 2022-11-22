@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.rule.predicate;
 
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
-import agency.highlysuspect.apathy.rule.ThresholdMode;
+import agency.highlysuspect.apathy.hell.rule.ThresholdMode;
 import agency.highlysuspect.apathy.rule.Who;
 import com.google.gson.JsonObject;
 import net.minecraft.world.scores.Objective;

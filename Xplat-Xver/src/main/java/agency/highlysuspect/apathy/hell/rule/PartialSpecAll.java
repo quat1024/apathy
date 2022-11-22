@@ -1,8 +1,6 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
-import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -52,14 +50,14 @@ public record PartialSpecAll(Set<PartialSpec<?>> others) implements PartialSpec<
 		
 		@Override
 		public void write(PartialSpecAll pred, JsonObject json) {
-			json.add("predicates", pred.others.stream().map(Apathy119.instance119::writePartial).collect(CoolGsonHelper.toJsonArray()));
+			json.add("predicates", pred.others.stream().map(ApathyHell.instance::writePartial).collect(CoolGsonHelper.toJsonArray()));
 		}
 		
 		@Override
 		public PartialSpecAll read(JsonObject json) {
 			Set<PartialSpec<?>> partials = new HashSet<>();
 			JsonArray partialsArray = json.getAsJsonArray("predicates");
-			for(JsonElement e : partialsArray) partials.add(Apathy119.instance119.readPartial(e));
+			for(JsonElement e : partialsArray) partials.add(ApathyHell.instance.readPartial(e));
 			return new PartialSpecAll(partials);
 		}
 	}

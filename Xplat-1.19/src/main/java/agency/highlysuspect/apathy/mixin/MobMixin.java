@@ -3,7 +3,7 @@ package agency.highlysuspect.apathy.mixin;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.rule.CoolNbtUtil;
+import agency.highlysuspect.apathy.CoolNbtUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;

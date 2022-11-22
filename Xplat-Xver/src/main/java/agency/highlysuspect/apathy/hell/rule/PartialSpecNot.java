@@ -1,7 +1,6 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import com.google.gson.JsonObject;
 
 public record PartialSpecNot(PartialSpec<?> other) implements PartialSpec<PartialSpecNot> {
@@ -31,12 +30,12 @@ public record PartialSpecNot(PartialSpec<?> other) implements PartialSpec<Partia
 		
 		@Override
 		public void write(PartialSpecNot part, JsonObject json) {
-			json.add("predicate", Apathy119.instance119.writePartial(part.other));
+			json.add("predicate", ApathyHell.instance.writePartial(part.other));
 		}
 		
 		@Override
 		public PartialSpecNot read(JsonObject json) {
-			PartialSpec<?> other = Apathy119.instance119.readPartial(json.get("predicate"));
+			PartialSpec<?> other = ApathyHell.instance.readPartial(json.get("predicate"));
 			return new PartialSpecNot(other);
 		}
 	}

@@ -1,7 +1,10 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
 import com.google.gson.JsonObject;
 
 public record PartialSpecRevengeTimer(long timer) implements PartialSpec<PartialSpecRevengeTimer> {
@@ -13,7 +16,7 @@ public record PartialSpecRevengeTimer(long timer) implements PartialSpec<Partial
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> ((MobExt) attacker).apathy$lastAttackedWithin(timer);
+		return (attacker, defender) -> ((MobExt) attacker.apathy$getMob()).apathy$lastAttackedWithin(timer);
 	}
 	
 	@Override

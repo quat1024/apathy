@@ -1,18 +1,8 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.ApathyHell;
 import agency.highlysuspect.apathy.hell.TriState;
-import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
-import agency.highlysuspect.apathy.hell.rule.Rule;
-import agency.highlysuspect.apathy.hell.rule.RuleSerializer;
-import agency.highlysuspect.apathy.hell.rule.RuleSpec;
-import agency.highlysuspect.apathy.hell.rule.RuleSpecAlways;
-import agency.highlysuspect.apathy.rule.predicate.PartialSpecAlways;
-import agency.highlysuspect.apathy.rule.predicate.Partial;
-import agency.highlysuspect.apathy.rule.predicate.PartialSpec;
 import com.google.gson.JsonObject;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Mob;
 
 public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec) {
@@ -61,8 +51,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	@Override
 	public Rule build() {
 		Partial builtPred = predSpec.build();
-		//TODO HELLZONE: remove downcasts and have predicates work off this system too
-		return (attacker, defender) -> builtPred.test((Mob) attacker.apathy$getMob(), (ServerPlayer) defender.apathy$getServerPlayer()) ? ifTrue : ifFalse;
+		return (attacker, defender) -> builtPred.test(attacker, defender) ? ifTrue : ifFalse;
 	}
 	
 	@Override
@@ -77,14 +66,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public void write(RuleSpecPredicated rule, JsonObject json) {
 			json.addProperty("if_true", rule.ifTrue.toAllowDenyPassString());
 			json.addProperty("if_false", rule.ifFalse.toAllowDenyPassString());
-			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
+			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
 			TriState ifTrue = CoolGsonHelper.getAllowDenyPassTriState(json, "if_true", TriState.DEFAULT);
 			TriState ifFalse = CoolGsonHelper.getAllowDenyPassTriState(json, "if_false", TriState.DEFAULT);
-			PartialSpec<?> part = Apathy119.instance119.readPartial(json.get("predicate"));
+			PartialSpec<?> part = ApathyHell.instance.readPartial(json.get("predicate"));
 			return new RuleSpecPredicated(ifTrue, ifFalse, part, this);
 		}
 	}
@@ -94,12 +83,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
-			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
+			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.allowIf(Apathy119.instance119.readPartial(json.get("predicate")));
+			return RuleSpecPredicated.allowIf(ApathyHell.instance.readPartial(json.get("predicate")));
 		}
 	}
 	
@@ -108,12 +97,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
-			json.add("predicate", Apathy119.instance119.writePartial(rule.predSpec));
+			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.denyIf(Apathy119.instance119.readPartial(json.get("predicate")));
+			return RuleSpecPredicated.denyIf(ApathyHell.instance.readPartial(json.get("predicate")));
 		}
 	}
 }

@@ -1,12 +1,16 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,12 +26,14 @@ public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) impleme
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			MinecraftServer server = defender.getServer();
+			ServerPlayer defenderSp = (ServerPlayer) defender.apathy$getServerPlayer();
+			
+			MinecraftServer server = defenderSp.getServer();
 			assert server != null;
 			
 			PlayerSetManager setManager = PlayerSetManager.getFor(server);
 			for(String playerSetName : playerSetNames) {
-				if(setManager.playerInSet(defender, playerSetName)) return true;
+				if(setManager.playerInSet(defenderSp, playerSetName)) return true;
 			}
 			return false;
 		};

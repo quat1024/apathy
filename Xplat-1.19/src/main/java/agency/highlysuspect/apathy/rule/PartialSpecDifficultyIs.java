@@ -1,18 +1,20 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
+import agency.highlysuspect.apathy.hell.wrapper.ApathyDifficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.world.Difficulty;
 
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements PartialSpec<PartialSpecDifficultyIs> {
+public record PartialSpecDifficultyIs(Set<ApathyDifficulty> difficulties) implements PartialSpec<PartialSpecDifficultyIs> {
 	@Override
 	public PartialSpec<?> optimize() {
 		if(difficulties.isEmpty()) return PartialSpecAlways.FALSE;
@@ -21,7 +23,7 @@ public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements P
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> difficulties.contains(attacker.level.getDifficulty());
+		return (attacker, defender) -> difficulties.contains(attacker.apathy$getDifficulty());
 	}
 	
 	@Override
@@ -35,7 +37,7 @@ public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements P
 		@Override
 		public void write(PartialSpecDifficultyIs part, JsonObject json) {
 			json.add("difficulties", part.difficulties.stream()
-				.map(Serializer::difficultyToString)
+				.map(ApathyDifficulty::toString)
 				.map(JsonPrimitive::new)
 				.collect(CoolGsonHelper.toJsonArray()));
 		}
@@ -44,18 +46,8 @@ public record PartialSpecDifficultyIs(Set<Difficulty> difficulties) implements P
 		public PartialSpecDifficultyIs read(JsonObject json) {
 			return new PartialSpecDifficultyIs(StreamSupport.stream(json.getAsJsonArray("difficulties").spliterator(), false)
 				.map(JsonElement::getAsString)
-				.map(Serializer::difficultyFromString)
+				.map(ApathyDifficulty::fromString)
 				.collect(Collectors.toSet()));
-		}
-		
-		private static String difficultyToString(Difficulty d) {
-			return d.getKey();
-		}
-		
-		private static Difficulty difficultyFromString(String s) {
-			Difficulty d = Difficulty.byName(s.toLowerCase(Locale.ROOT));
-			if(d == null) throw new IllegalArgumentException(s + " is not a difficulty name.");
-			return d;
 		}
 	}
 }

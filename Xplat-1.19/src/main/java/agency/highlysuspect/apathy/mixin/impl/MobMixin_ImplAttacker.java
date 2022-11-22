@@ -13,6 +13,11 @@ public class MobMixin_ImplAttacker implements Attacker {
 	}
 	
 	@Override
+	public Object apathy$getEntityType() {
+		return ((Mob) (Object) this).getType();
+	}
+	
+	@Override
 	public ApathyDifficulty apathy$getDifficulty() {
 		return switch(((Mob) (Object) this).level.getDifficulty()) {
 			case PEACEFUL -> ApathyDifficulty.PEACEFUL;

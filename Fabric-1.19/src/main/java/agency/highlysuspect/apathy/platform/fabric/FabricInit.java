@@ -29,7 +29,7 @@ public class FabricInit extends Apathy119 implements ModInitializer {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
-				return Apathy119.id("reload-config");
+				return new ResourceLocation(MODID, "reload-config");
 			}
 			
 			@Override

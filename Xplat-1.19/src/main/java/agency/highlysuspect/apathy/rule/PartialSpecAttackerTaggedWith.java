@@ -1,7 +1,10 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -24,9 +27,9 @@ public record PartialSpecAttackerTaggedWith(Set<TagKey<EntityType<?>>> tags) imp
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			for(TagKey<EntityType<?>> tag : tags) {
-				if(attacker.getType().is(tag)) return true;
-			}
+			EntityType<?> type = (EntityType<?>) attacker.apathy$getEntityType();
+			
+			for(TagKey<EntityType<?>> tag : tags) if(type.is(tag)) return true;
 			return false;
 		};
 	}

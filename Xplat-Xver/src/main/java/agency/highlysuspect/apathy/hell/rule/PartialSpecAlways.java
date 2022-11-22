@@ -1,6 +1,5 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.hell.rule;
 
-import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
 import com.google.gson.JsonObject;
 
 public record PartialSpecAlways(boolean always) implements PartialSpec<PartialSpecAlways> {

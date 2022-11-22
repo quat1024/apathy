@@ -1,20 +1,23 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.hell.ApathyHell;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
 public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAttackerIsBoss> {
 	public static final PartialSpecAttackerIsBoss INSTANCE = new PartialSpecAttackerIsBoss();
 	
-	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, Apathy119.id("bosses"));
+	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(ApathyHell.MODID, "bosses"));
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> attacker.getType().is(BOSS_TAG);
+		return (attacker, defender) -> ((EntityType<?>) attacker.apathy$getEntityType()).is(BOSS_TAG);
 	}
 	
 	@Override

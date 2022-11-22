@@ -6,5 +6,7 @@ public interface Attacker {
 	 */
 	Object apathy$getMob();
 	
+	Object apathy$getEntityType();
+	
 	ApathyDifficulty apathy$getDifficulty();
 }

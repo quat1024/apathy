@@ -1,7 +1,10 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.hell.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -22,7 +25,7 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> mobSet.contains(attacker.getType());
+		return (attacker, defender) -> mobSet.contains((EntityType<?>) attacker.apathy$getEntityType());
 	}
 	
 	@Override

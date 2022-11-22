@@ -1,9 +1,13 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
 import agency.highlysuspect.apathy.hell.rule.ThresholdMode;
-import agency.highlysuspect.apathy.rule.Who;
+import agency.highlysuspect.apathy.hell.rule.Who;
 import com.google.gson.JsonObject;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
@@ -11,11 +15,14 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Scoreboard scoreboard = attacker.level.getScoreboard();
+			Scoreboard scoreboard = ((Mob) attacker.apathy$getMob()).level.getScoreboard();
 			Objective objective = scoreboard.getObjective(scoreboardObjective);
 			if(objective == null) return false;
 			
-			String scoreboardName = who.choose(attacker, defender).getScoreboardName();
+			String scoreboardName;
+			if(who == Who.ATTACKER) scoreboardName = ((Mob) attacker.apathy$getMob()).getScoreboardName();
+			else scoreboardName = ((ServerPlayer) defender.apathy$getServerPlayer()).getScoreboardName();
+			
 			int score = scoreboard.hasPlayerScore(scoreboardName, objective) ? scoreboard.getOrCreatePlayerScore(scoreboardName, objective).getScore() : 0;
 			
 			return thresholdMode.test(score, threshold);

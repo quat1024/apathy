@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy;
 
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;

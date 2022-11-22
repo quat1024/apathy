@@ -1,12 +1,17 @@
-package agency.highlysuspect.apathy.rule.predicate;
+package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.MobExt;
 import agency.highlysuspect.apathy.hell.TriState;
+import agency.highlysuspect.apathy.hell.rule.Partial;
 import agency.highlysuspect.apathy.hell.rule.PartialSerializer;
+import agency.highlysuspect.apathy.hell.rule.PartialSpec;
+import agency.highlysuspect.apathy.hell.rule.PartialSpecAlways;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -23,13 +28,17 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Level level = defender.level;
+			Level level = ((ServerPlayer) defender.apathy$getServerPlayer()).level;
 			if(!(level instanceof ServerLevel slevel)) return false;
+			
+			//too hard to port im lazy
+			Vec3 attackerPos = ((Mob) attacker.apathy$getMob()).position();
+			Vec3 defenderPos = ((ServerPlayer) defender.apathy$getServerPlayer()).position();
 			
 			return switch(who) {
 				//Easy cases (that can't be cached anyways because the entities wander around the world)
-				case ATTACKER -> test(slevel, pred, attacker.position());
-				case DEFENDER -> test(slevel, pred, defender.position());
+				case ATTACKER -> test(slevel, pred, attackerPos);
+				case DEFENDER -> test(slevel, pred, defenderPos);
 				//OK this one is fun!!
 				case ATTACKER_SPAWN_LOCATION -> {
 					//The spawn position is fixed, so there is no need to check the LocationPredicate every single tick.

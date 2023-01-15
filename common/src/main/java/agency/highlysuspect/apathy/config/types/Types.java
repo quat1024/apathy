@@ -2,7 +2,11 @@ package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.annotation.Use;
+import net.minecraft.core.DefaultedRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
@@ -34,12 +38,12 @@ public class Types {
 		//Basically this thing exists because I can't put custom expressions in Java annotations.
 		//So I annotate the field in the config file with @Use("difficultySet"), and that bounces over to here.
 		customParsers.put("difficultySet", difficulty.commaSeparatedSet(Comparator.comparingInt(Difficulty::getId)));
-		customParsers.put("entityTypeSet", rl.dimap(Registry.ENTITY_TYPE::get, Registry.ENTITY_TYPE::getKey).commaSeparatedSet(Comparator.comparing(Registry.ENTITY_TYPE::getKey)));
+		customParsers.put("entityTypeSet", rl.dimap(BuiltInRegistries.ENTITY_TYPE::get, BuiltInRegistries.ENTITY_TYPE::getKey).commaSeparatedSet(Comparator.comparing(BuiltInRegistries.ENTITY_TYPE::getKey)));
 		customParsers.put("triStateAllowDenyPass", new TriStateField.AllowDenyPass());
 		customParsers.put("optionalString", new StringSerde().optional());
 		customParsers.put("boolAllowDeny", new StringSerde().dimap(s -> s.equals("allow"), b -> b ? "allow" : "deny"));
 		customParsers.put("stringList", new StringSerde().commaSeparatedList());
-		customParsers.put("entityTypeTagSet", rl.dimap(x -> TagKey.create(Registry.ENTITY_TYPE_REGISTRY, x), TagKey::location).commaSeparatedSet(Comparator.comparing(TagKey::location)));
+		customParsers.put("entityTypeTagSet", rl.dimap(x -> TagKey.create((ResourceKey)BuiltInRegistries.ENTITY_TYPE, x), TagKey::location).commaSeparatedSet(Comparator.comparing(TagKey::location)));
 	}
 	
 	@SuppressWarnings("unchecked")

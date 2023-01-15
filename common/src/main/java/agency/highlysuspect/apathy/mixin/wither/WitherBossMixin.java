@@ -51,7 +51,7 @@ public class WitherBossMixin {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
 		if(!Apathy.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) {
-			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(DamageSource.ANVIL);
+			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(DamageSource.WITHER);
 			me.discard();
 			ci.cancel();
 		}

@@ -4,7 +4,8 @@ import agency.highlysuspect.apathy.rule.CodecUtil;
 import agency.highlysuspect.apathy.rule.Partial;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 
 public record AttackerTaggedWithPredicateSpec(Set<TagKey<EntityType<?>>> tags) implements PredicateSpec {
 	public static final Codec<AttackerTaggedWithPredicateSpec> CODEC = RecordCodecBuilder.create(i -> i.group(
-		CodecUtil.setOf(TagKey.codec(Registry.ENTITY_TYPE_REGISTRY)).fieldOf("tags").forGetter(x -> x.tags)
+		CodecUtil.setOf(TagKey.codec(Registries.ENTITY_TYPE)).fieldOf("tags").forGetter(x -> x.tags)
 	).apply(i, AttackerTaggedWithPredicateSpec::new));
 	
 	@Override

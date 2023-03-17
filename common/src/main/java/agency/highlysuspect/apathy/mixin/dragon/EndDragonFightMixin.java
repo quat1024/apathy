@@ -12,12 +12,10 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
@@ -134,7 +132,7 @@ public abstract class EndDragonFightMixin {
 			//this grants the "Free the End" advancement, in a kind of clunky way
 			EnderDragon rarrrh = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
-				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, rarrrh, DamageSource.DRAGON_BREATH);
+				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, rarrrh, rarrrh.damageSources().dragonBreath());
 			}
 		}
 	}

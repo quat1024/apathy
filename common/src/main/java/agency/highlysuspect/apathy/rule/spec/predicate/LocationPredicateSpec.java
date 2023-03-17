@@ -62,7 +62,7 @@ public record LocationPredicateSpec(LocationPredicate pred, LocationGetter who, 
 					}
 					
 					//Compute and store the cached result, if the position is loaded
-					if(slevel.isLoaded(new BlockPos(vec))) {
+					if(slevel.isLoaded(new BlockPos((int)vec.x(), (int)vec.y(), (int)vec.z()))) {
 						boolean result = pred.matches(slevel, vec.x + offsetX, vec.y + offsetY, vec.z + offsetZ);
 						cache.put(uniqueId, TriState.fromBoolean(result));
 						yield result;

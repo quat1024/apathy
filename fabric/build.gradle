@@ -1,5 +1,5 @@
 plugins {
-	id "fabric-loom" version "1.0-SNAPSHOT"
+	id "fabric-loom" version "1.1.10"
 }
 
 archivesBaseName = "${project.modId}-fabric-${project.minecraftVersion}"
@@ -49,5 +49,9 @@ loom {
 	//nor can it figure out the refmap name in this situation
 	mixin {
 		defaultRefmapName = "${project.modId}.refmap.json"
+		
+		//see https://github.com/FabricMC/fabric-loom/issues/456
+		//todo, maybe also fixable by updating floader?
+		useLegacyMixinAp = true
 	}
 }

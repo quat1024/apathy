@@ -2,31 +2,31 @@ plugins {
 	id "fabric-loom" version "1.1.10"
 }
 
-archivesBaseName = "${project.modId}-fabric-${project.minecraftVersion}"
+archivesBaseName = "${project.modId}-fabric-1.19.4"
 
 /// deps ///
 
 dependencies {
 	//basics
-	minecraft "com.mojang:minecraft:${project.minecraftVersion}"
+	minecraft "com.mojang:minecraft:1.19.4"
 	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.fabricLoaderVersion}"
+	modImplementation "net.fabricmc:fabric-loader:0.14.17"
 	
 	//fabric api, TODO trim down to required modules
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabricApiVersion}"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.76.0+1.19.4"
 	
 	//xplat
-	implementation project(":common")
+	implementation project(":common-1.19.4")
 }
 
 //fold in xplat resources and sources
 
 processResources {
-	from project(":common").sourceSets.main.resources
+	from project(":common-1.19.4").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
+	source(project(":common-1.19.4").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects

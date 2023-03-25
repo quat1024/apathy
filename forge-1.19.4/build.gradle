@@ -16,7 +16,7 @@ apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-archivesBaseName = "${project.modId}-forge-${project.minecraftVersion}"
+archivesBaseName = "${project.modId}-forge-1.19.4"
 
 mixin {
 	//Tell mixingradle what filename the refmap should use
@@ -28,25 +28,25 @@ mixin {
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:${project.forgeVersion}"
+	minecraft "net.minecraftforge:forge:1.19.4-45.0.9"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
 	
-	compileOnly project(":common")
+	compileOnly project(":common-1.19.4")
 }
 
 //fold in xplat resources and sources
 
 processResources {
 	//include common resources
-	from project(":common").sourceSets.main.resources
+	from project(":common-1.19.4").sourceSets.main.resources
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common").sourceSets.main.allSource)
+	source(project(":common-1.19.4").sourceSets.main.allSource)
 }
 
 minecraft {
-	mappings channel: 'official', version: project.minecraftVersion //official mappings epic moments
+	mappings channel: 'official', version: "1.19.4" //official mappings epic moments
 	
 	runs {
 		client {
@@ -56,7 +56,7 @@ minecraft {
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common").sourceSets.main
+					source project(":common-1.19.4").sourceSets.main
 				}
 			}
 		}
@@ -68,7 +68,7 @@ minecraft {
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common").sourceSets.main
+					source project(":common-1.19.4").sourceSets.main
 				}
 			}
 		}

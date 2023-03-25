@@ -47,8 +47,7 @@ public class CodecUtil {
 			Codec.STRING.comap(e -> names[e.ordinal()]),
 			Codec.STRING.flatMap(s -> { 
 				for(int i = 0; i < values.length; i++) if(s.equals(names[i])) return DataResult.success(values[i]);
-        Supplier<String> supplier = () -> errorA + s + errorB;
-        return DataResult.error(supplier);
+				return DataResult.error(() -> errorA + s + errorB);
 			}),
 			"[renamedEnum " + errorName + "]" 
 		);
@@ -87,8 +86,7 @@ public class CodecUtil {
 				pred = LocationPredicate.fromJson(asJson);
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();
-        Supplier<String> supplier = e::getMessage;
-				return DataResult.error(supplier);
+				return DataResult.error(e::getMessage);
 			}
 			
 			return DataResult.success(Pair.of(pred, input));

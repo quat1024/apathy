@@ -38,8 +38,7 @@ public class NotRegistry<T> {
 		T result = get(name);
 		if(result == null) {
 			String validItems = byName.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(", "));
-      Supplier<String> supplier = () -> "Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems;
-			return DataResult.error(supplier);
+			return DataResult.error(() -> "Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems);
 		}
 		else return DataResult.success(result);
 	}

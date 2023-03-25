@@ -2,7 +2,7 @@
 
 Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ 1.19.4.
 
-For documentation, view the `docs/` folder.
+For documentation, view the `docs/2.x/` folder.
 
 ### before compiling
 

@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class NotRegistry<T> {
@@ -37,7 +38,7 @@ public class NotRegistry<T> {
 		T result = get(name);
 		if(result == null) {
 			String validItems = byName.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(", "));
-			return DataResult.error("Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems);
+			return DataResult.error(() -> "Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems);
 		}
 		else return DataResult.success(result);
 	}

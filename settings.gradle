@@ -16,5 +16,11 @@ rootProject.name = "apathy"
 include(
 	"common-1.19.4",
 	"fabric-1.19.4",
-	"forge-1.19.4"
+	"forge-1.19.4",
+	
+	"common-1.18.2",
+	"fabric-1.18.2",
+	"forge-1.18.2",
+	
+	"fabric-1.16.5"
 )

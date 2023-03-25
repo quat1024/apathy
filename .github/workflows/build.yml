@@ -18,10 +18,10 @@ jobs:
       - uses: gradle/gradle-build-action@v2.4.0
         with:
           arguments: clean build
-
+      
+      - run: ./collect.sh
+      
       - uses: actions/upload-artifact@v3
         with:
           name: Artifacts
-          path: |
-            fabric-1.19.4/build/libs
-            forge-1.19.4/build/libs
+          path: collect

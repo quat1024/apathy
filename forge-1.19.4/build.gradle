@@ -18,6 +18,12 @@ apply plugin: 'org.spongepowered.mixin'
 
 archivesBaseName = "${project.modId}-forge-1.19.4"
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
 mixin {
 	//Tell mixingradle what filename the refmap should use
 	add sourceSets.main, "${project.modId}.refmap.json"
@@ -50,7 +56,7 @@ minecraft {
 	
 	runs {
 		client {
-			taskName 'Client'
+			taskName 'client1.19.4'
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
@@ -62,7 +68,7 @@ minecraft {
 		}
 		
 		server {
-			taskName 'Server'
+			taskName 'server1.19.4'
 			workingDirectory project.file('run')
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {

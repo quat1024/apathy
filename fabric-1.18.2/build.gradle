@@ -1,0 +1,63 @@
+plugins {
+	id "fabric-loom" version "1.1.10"
+}
+
+archivesBaseName = "${project.modId}-fabric-1.18.2"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
+/// deps ///
+
+dependencies {
+	//basics
+	minecraft "com.mojang:minecraft:1.18.2"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:0.13.3"
+	
+	//fabric api, TODO trim down to required modules
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.47.10+1.18.2"
+	
+	//xplat
+	implementation project(":common-1.18.2")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	from project(":common-1.18.2").sourceSets.main.resources
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common-1.18.2").sourceSets.main.allSource)
+}
+
+//loom doesn't generate run configs by default in subprojects
+loom {
+	runs {
+		client {
+			client()
+			setConfigName("Fabric 1.18.2 Client")
+			ideConfigGenerated(true)
+			runDir("run")
+		}
+		server {
+			server()
+			setConfigName("Fabric 1.18.2 Server")
+			ideConfigGenerated(true)
+			runDir("run")
+		}
+	}
+	
+	//nor can it figure out the refmap name in this situation
+	mixin {
+		defaultRefmapName = "${project.modId}.refmap.json"
+		
+		//see https://github.com/FabricMC/fabric-loom/issues/456
+		//todo, maybe also fixable by updating floader?
+		useLegacyMixinAp = true
+	}
+}

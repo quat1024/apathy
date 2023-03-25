@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[38,)"
+license="LGPL-3.0-or-later"
+issueTrackerURL="https://github.com/quat1024/apathy/issues"
+
+[[mods]]
+modId="apathy"
+version="${version}"
+displayName="Apathy"
+displayURL="https://github.com/quat1024/apathy/"
+logoFile="apathy-icon-128.png"
+credits="whizball1 for Apathetic Mobs, jaredl0008 and Darkhax for MultiLoader-Template"
+authors="quaternary"
+description="Mobs don't attack players, or maybe they do! Configurable."
+
+[[dependencies.apathy]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.18,1.19)"
+ordering="NONE"
+side="BOTH"

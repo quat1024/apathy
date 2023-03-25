@@ -4,6 +4,12 @@ plugins {
 
 archivesBaseName = "${project.modId}-fabric-1.19.4"
 
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
 /// deps ///
 
 dependencies {
@@ -34,13 +40,13 @@ loom {
 	runs {
 		client {
 			client()
-			setConfigName("Fabric Client")
+			setConfigName("Fabric 1.19.4 Client")
 			ideConfigGenerated(true)
 			runDir("run")
 		}
 		server {
 			server()
-			setConfigName("Fabric Server")
+			setConfigName("Fabric 1.19.4 Server")
 			ideConfigGenerated(true)
 			runDir("run")
 		}

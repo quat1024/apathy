@@ -1,0 +1,31 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "agency.highlysuspect.apathy.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"LivingEntityMixin",
+		"MobMixin",
+		"TargetGoalAccessor",
+		"ZombieMixin",
+		"dragon.EnderDragonMixin",
+		"dragon.EndDragonFightMixin",
+		"dragon.phase.AbstractDragonPhaseInstanceAccessor",
+		"dragon.phase.EnderDragonPhaseManagerMixin",
+		"dragon.phase.DragonHoldingPatternPhaseMixin",
+		"dragon.phase.DragonStrafePlayerPhaseMixin",
+		"dragon.phase.DragonSittingScanningPhaseMixin",
+		"wither.LivingEntityInvoker",
+		"wither.WitherBossMixin",
+		"wither.WitherSkullBlockMixin",
+		"aggroedgecase.ZombifiedPiglinMixin",
+		"aggroedgecase.PolarBearHurtByTargetGoalMixin"
+	],
+	"client": [
+		"client.ClientPacketListenerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"refmap": "apathy.refmap.json"
+}

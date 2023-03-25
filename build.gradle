@@ -1,18 +1,15 @@
 subprojects {
 	apply plugin: "java"
-	java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+	
 	java.withSourcesJar()
 	
-	tasks.withType(JavaCompile).configureEach {
-		it.options.encoding = "UTF-8"
-		it.options.release = 17
-	}
-	
+	//think this has something to do with published dependencies on your maven servers
+	//which doesnt interact too kindly with modded remapping bullheck
 	tasks.withType(GenerateModuleMetadata) {
-		//This shit is broke
 		enabled = false
 	}
 	
+	//useful variable expansion in the resources folder
 	processResources {
 		inputs.property "version", project.version
 		
@@ -21,11 +18,12 @@ subprojects {
 		}
 	}
 	
+	//Give me Nullable Or Give Me Deatj
 	dependencies {
-		//This mf keeps disappearing on me
 		implementation "org.jetbrains:annotations:16.0.2"
 	}
 	
+	//Hello.. i would like one mixin please :pray:
 	repositories {
 		maven {
 			name = "spunchbob"

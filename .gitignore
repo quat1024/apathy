@@ -35,3 +35,6 @@ run/
 # Oh my godddd kritaaaaaaa stopppppp
 *.kra-autosave
 *.kra~
+
+# collect.sh
+collect/

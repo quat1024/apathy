@@ -1,0 +1,98 @@
+buildscript {
+	repositories {
+		maven { url = 'https://maven.minecraftforge.net' }
+		maven {
+			url = 'https://repo.spongepowered.org/repository/maven-public/'
+			content { includeGroup "org.spongepowered" }
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+	}
+}
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+
+archivesBaseName = "${project.modId}-forge-1.18.2"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = "UTF-8"
+	it.options.release = 17
+}
+
+mixin {
+	//Tell mixingradle what filename the refmap should use
+	add sourceSets.main, "${project.modId}.refmap.json"
+	
+	//Tell mixingradle which mixin configs exist
+	config "${project.modId}.common.mixins.json"
+	config "${project.modId}.forge.mixins.json"
+}
+
+dependencies {
+	minecraft "net.minecraftforge:forge:1.18.2-40.0.35"
+	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
+	
+	compileOnly project(":common-1.18.2")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	//include common resources
+	from project(":common-1.18.2").sourceSets.main.resources
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common-1.18.2").sourceSets.main.allSource)
+}
+
+minecraft {
+	mappings channel: 'official', version: "1.18.2" //official mappings epic moments
+	
+	runs {
+		client {
+			taskName 'client1.18.2'
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			mods {
+				"${project.modId}" {
+					source sourceSets.main
+					source project(":common-1.18.2").sourceSets.main
+				}
+			}
+		}
+		
+		server {
+			taskName 'server1.18.2'
+			workingDirectory project.file('run')
+			ideaModule "${rootProject.name}.${project.name}.main"
+			mods {
+				"${project.modId}" {
+					source sourceSets.main
+					source project(":common-1.18.2").sourceSets.main
+				}
+			}
+		}
+	}
+}
+
+//conventional to include a jar manifest in forge mods, for whatever reason. idk, it doesn't hurt 
+
+jar {
+	manifest {
+		attributes([
+			"Specification-Title": "Apathy",
+			"Specification-Vendor": "quaternary",
+			"Specification-Version": "1",
+			"Implementation-Title": "Apathy",
+			"Implementation-Version": "${archiveVersion.get()}",
+			"Implementation-Vendor": "quaternary"
+		])
+	}
+	finalizedBy 'reobfJar'
+}

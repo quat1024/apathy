@@ -1,28 +1,36 @@
 buildscript {
 	repositories {
-		maven { url = 'https://maven.minecraftforge.net' }
 		maven {
-			url = 'https://repo.spongepowered.org/repository/maven-public/'
+			url = "https://maven.minecraftforge.net"
+			content {
+				includeGroup "net.minecraftforge"
+				includeGroup "net.minecraftforge.gradle"
+			}
+		}
+		maven {
+			url = "https://repo.spongepowered.org/repository/maven-public/"
 			content { includeGroup "org.spongepowered" }
 		}
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+		classpath "net.minecraftforge.gradle:ForgeGradle:5.1.71"
+		classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
 	}
 }
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
+
+apply plugin: "java"
+apply plugin: "net.minecraftforge.gradle"
+apply plugin: "org.spongepowered.mixin"
 
 archivesBaseName = "${project.modId}-forge-1.19.4"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	it.options.release = 17
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.release = 17
 }
+java.withSourcesJar()
 
 mixin {
 	//Tell mixingradle what filename the refmap should use
@@ -37,6 +45,8 @@ dependencies {
 	minecraft "net.minecraftforge:forge:1.19.4-45.0.9"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
 	
+	compileOnly "org.jetbrains:annotations:24.0.1"
+	
 	compileOnly project(":common-1.19.4")
 }
 
@@ -45,6 +55,11 @@ dependencies {
 processResources {
 	//include common resources
 	from project(":common-1.19.4").sourceSets.main.resources
+	
+	inputs.property "version", project.version
+	filesMatching("**/mods.toml") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile) {
@@ -52,12 +67,12 @@ tasks.withType(JavaCompile) {
 }
 
 minecraft {
-	mappings channel: 'official', version: "1.19.4" //official mappings epic moments
+	mappings channel: "official", version: "1.19.4" //official mappings epic moments
 	
 	runs {
 		client {
-			taskName 'client1.19.4'
-			workingDirectory project.file('run')
+			taskName "client1.19.4"
+			workingDirectory project.file("run")
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
@@ -68,8 +83,8 @@ minecraft {
 		}
 		
 		server {
-			taskName 'server1.19.4'
-			workingDirectory project.file('run')
+			taskName "server1.19.4"
+			workingDirectory project.file("run")
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
@@ -81,8 +96,7 @@ minecraft {
 	}
 }
 
-//conventional to include a jar manifest in forge mods, for whatever reason. idk, it doesn't hurt 
-
+//conventional to include a jar manifest in forge mods, for whatever reason. idk, it doesn't hurt
 jar {
 	manifest {
 		attributes([
@@ -94,5 +108,9 @@ jar {
 			"Implementation-Vendor": "quaternary"
 		])
 	}
-	finalizedBy 'reobfJar'
+	finalizedBy "reobfJar" //TODO: common to include this in forge buildscripts, is it necessary?
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
 }

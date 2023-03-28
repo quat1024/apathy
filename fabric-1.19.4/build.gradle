@@ -1,14 +1,30 @@
-plugins {
-	id "fabric-loom" version "1.1.10"
+buildscript {
+	repositories {
+		maven {
+			url = "https://maven.fabricmc.net/"
+			content {
+				includeGroup "net.fabricmc"
+				includeGroup "fabric-loom"
+			}
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath "fabric-loom:fabric-loom.gradle.plugin:1.1.10"
+	}
 }
+
+apply plugin: "java"
+apply plugin: "fabric-loom"
 
 archivesBaseName = "${project.modId}-fabric-1.19.4"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	it.options.release = 17
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.release = 17
 }
+java.withSourcesJar()
 
 /// deps ///
 
@@ -17,6 +33,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:1.19.4"
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.14.17"
+	compileOnly "org.jetbrains:annotations:24.0.1"
 	
 	//fabric api, TODO trim down to required modules
 	modImplementation "net.fabricmc.fabric-api:fabric-api:0.76.0+1.19.4"
@@ -29,6 +46,11 @@ dependencies {
 
 processResources {
 	from project(":common-1.19.4").sourceSets.main.resources
+	
+	inputs.property "version", project.version
+	filesMatching("**/fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile) {
@@ -60,4 +82,8 @@ loom {
 		//todo, maybe also fixable by updating floader?
 		useLegacyMixinAp = true
 	}
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
 }

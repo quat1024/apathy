@@ -1,15 +1,31 @@
-plugins {
-	id "fabric-loom" version "1.1.10"
+buildscript {
+	repositories {
+		maven {
+			url = "https://maven.fabricmc.net/"
+			content {
+				includeGroup "net.fabricmc"
+				includeGroup "fabric-loom"
+			}
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath "fabric-loom:fabric-loom.gradle.plugin:1.1.10"
+	}
 }
+
+apply plugin: "java"
+apply plugin: "fabric-loom"
 
 archivesBaseName = "${project.modId}-fabric-1.16.5"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-tasks.withType(JavaCompile).configureEach {
-	it.options.encoding = "UTF-8"
-	it.sourceCompatibility = "8"
-	it.targetCompatibility = "8"
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	sourceCompatibility = "8"
+	targetCompatibility = "8"
 }
+java.withSourcesJar()
 
 //TODO (amalgamation): Remove this version-specific override
 version = "1.1.2"
@@ -21,6 +37,7 @@ dependencies {
 	minecraft "com.mojang:minecraft:1.16.5"
 	mappings "net.fabricmc:yarn:1.16.5+build.9:v2" //TODO (amalgamation) fuck Yarn
 	modImplementation "net.fabricmc:fabric-loader:0.11.3"
+	compileOnly "org.jetbrains:annotations:24.0.1"
 	
 	//fabric api, TODO trim down to required modules
 	modImplementation "net.fabricmc.fabric-api:fabric-api:0.34.2+1.16"
@@ -32,6 +49,11 @@ dependencies {
 //fold in xplat resources and sources
 processResources {
 	//from project(":common-1.16.5").sourceSets.main.resources //TODO (amalgamation)
+	
+	inputs.property "version", project.version
+	filesMatching("**/fabric.mod.json") {
+		expand "version": project.version
+	}
 }
 
 tasks.withType(JavaCompile) {
@@ -63,4 +85,8 @@ loom {
 		//todo, maybe also fixable by updating floader?
 		useLegacyMixinAp = true
 	}
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
 }

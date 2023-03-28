@@ -1,14 +1,47 @@
-plugins {
-	id('java')
-	id('org.spongepowered.gradle.vanilla') version '0.2.1-SNAPSHOT'
+buildscript {
+	repositories {
+		maven {
+			url = "https://repo.spongepowered.org/repository/maven-public/"
+			content {
+				includeGroup "org.spongepowered"
+				includeGroup "net.minecraftforge" //vanillagradle dep
+			}
+		}
+		gradlePluginPortal()
+	}
+	dependencies {
+		classpath "org.spongepowered:vanillagradle:0.2.1-SNAPSHOT"
+	}
 }
 
+apply plugin: "java"
+apply plugin: "org.spongepowered.gradle.vanilla"
+
 archivesBaseName = "${project.modId}-common-1.19.4"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.release = 17
+}
+java.withSourcesJar()
 
 minecraft {
 	version("1.19.4")
 }
 
+repositories {
+	maven {
+		url = "https://repo.spongepowered.org/repository/maven-public/"
+		content { includeGroup "org.spongepowered" }
+	}
+}
+
 dependencies {
 	compileOnly "org.spongepowered:mixin:0.8.5"
+	compileOnly "org.jetbrains:annotations:24.0.1"
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
 }

@@ -1,3 +1,56 @@
+# zombles chasing players in creative
+
+getting called from `NearestAttackableTargetGoal` which seems to be used by lots and lots entities (slime, creeper, enderman, polarbear, vex, evoker, ghast; to name a few), even though only zombies seem to target players in creative :thinking:
+
+it affects zombies, drowned, husks, and zombie villagers, but not piglins/zombified piglins?
+
+it does call `Mob.setTarget` selecting the player, apathy's rules kick in and have no effect, so the default fallthroguh behavior of "allow" is invoked. but that's weird, why is it calling `setTarget` at all, it's a creative-mode player, in vanilla (untested claim) i don't think it would call settarget on creative players
+
+## Where Does Is The Call Come From
+
+* zombie#tick 219, super() call
+* mob#tick 325, super() call
+* livingentity#tick 2086, this.aiStep
+* zombie#aiStep 244
+  * unrelated helmet-sunlight-damage calculation
+  * super call
+* monster#aiStep 50
+  * swing time, no action time, super call
+* mob#aiStep 497
+  * super call (then item pickup)
+* livingentity#aiStep 2299
+  * jump delay
+  * packet sync
+  * position/angle/velocity update
+  * serverAiStep
+* mob#serverAiStep 691
+  * tick sensing
+  * tick target selector (goal selector)
+* goalselector#tick 100
+  * buncha stuff but iterates through all goals and calls start() on each one that can be started?
+  * second one is a WrappedGoal of NearestAttackableTargetGoal
+  * im not really sure what wrappedgoal is but it seems to independently keep an `isRunning` flag so that the wrapee can't be started when it's already started or stopped when it's already stopped
+* nearestattackabletargetgoal#start
+  * calls mob.setTarget with `this.target`
+  * hey wait a minute why is `this.target` being set
+
+new stacktrace, when does `NearestAttackableTargetGoal#setTarget` get called
+
+* blaming "Library source does not match the bytecode" for this but the stacktrace is going straight from `NearestAttackableTargetGoal#start` to `setTarget`
+
+different direction: where is the actual "don't target creative mode players" check implemented?
+
+starting in `TargetingConditions`:
+
+* eventually it calls `source.canAttack(target)`
+* Apathy hooks the shit out of this but the super implementation of it calls `target.canBeSeenAsEnemy`
+  * apathy's hooks only ever make it return `false` though...
+* that is `!isInvulnerable && canBeSeenByAnyone`, but the implementation in `Player` adds an additional constraint on `!getAbilities().invulnerable` (which is set in creative mode)
+
+RIGHT but, apathy hooks `Zombie#canAttack` and i probably should have checked thatSHIT!!! misbracketed ternary!! lmfao ok that was actually easy
+
+# following stuff is pretty old:
+
 # Wither
 
 setTarget system handles the entity the wither is physically chasing but heads do their own thing

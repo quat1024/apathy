@@ -4,6 +4,10 @@ Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge 
 
 For documentation, view the `docs/2.x/` folder.
 
+# todo
+
+for some reason the 1.18.2 forge workspace is broken (apparently classpath resources are just Fucked, including the mixin json) even though the buildscripts are the same apart from version numbers. no idea why
+
 ## wow there's not any code-sharing across versions
 
 I know. Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked, so I've now hastily pasted the source of everything as subprojects into the same file tree. But the sources are otherwise unmodified from that development period.
@@ -12,7 +16,7 @@ Eventually I hope to publish a v3 that addresses some long-standing issues in th
 
 ### where's 1.19.2/.3?
 
-A couple people (including me) stuck with 1.19.2 when .3 dropped, because it was a ridiculous internal overhaul that added nothing user-facing of note. Imo the situation is a *little* bit different in .4; the sum of .3 and .4's user-facing changes is barely enough to bother porting.
+A couple people (including me) stuck with 1.19.2 when .3 dropped, because it was a ridiculous internal overhaul that added nothing user-facing of note. Imo the situation is a *little* bit different in .4; the sum of .3 and .4's user-facing changes is barely enough to bother porting; it's kind of bordering on asking "where's 1.16.1"
 
 ### where's 1.17?
 

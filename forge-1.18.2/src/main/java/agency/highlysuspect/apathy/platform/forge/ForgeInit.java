@@ -9,8 +9,15 @@ import net.minecraftforge.network.NetworkConstants;
 @Mod("apathy")
 public class ForgeInit {
 	public ForgeInit() {
-		//Mark this mod as server-only. Hey Forge quick question. What the fuck is this
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		//borrowed from IExtensionPoint javadoc in fmlcore
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
+			() -> new IExtensionPoint.DisplayTest(
+				// Ignore this mod if not present on the client
+				() -> NetworkConstants.IGNORESERVERONLY,
+				// If present on the client, accept any version if from a server
+				(remoteVersion, isFromServer) -> true
+			)
+		);
 		
 		Apathy.init();
 	}

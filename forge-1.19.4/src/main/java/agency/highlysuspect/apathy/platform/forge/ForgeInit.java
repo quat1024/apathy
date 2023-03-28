@@ -23,8 +23,13 @@ import java.nio.file.Path;
 @Mod("apathy")
 public class ForgeInit extends Apathy {
 	public ForgeInit() {
-		//Mark this mod as server-only. Hey Forge quick question. What the fuck is this
-		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+		//borrowed from IExtensionPoint javadoc in fmlcore
+		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
+			() -> new IExtensionPoint.DisplayTest(
+				() -> NetworkConstants.IGNORESERVERONLY,
+				(remoteVersion, isFromServer) -> true
+			)
+		);
 		
 		init();
 	}

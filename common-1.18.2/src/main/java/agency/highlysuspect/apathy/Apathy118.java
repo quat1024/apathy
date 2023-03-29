@@ -147,15 +147,15 @@ public abstract class Apathy118 extends Apathy {
 		super.addRules();
 		
 		//TODO: add private constructors to all of these LOL, lost time debugging because i used to have "new xxx.serializer()" here
-		partialSerializers.register("apathy:attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
-		partialSerializers.register("apathy:attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
-		partialSerializers.register("apathy:attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
-		partialSerializers.register("apathy:advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
-		partialSerializers.register("apathy:in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
-		partialSerializers.register("apathy:difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
-		partialSerializers.register("apathy:location", PartialSpecLocation.Serializer.INSTANCE);
-		partialSerializers.register("apathy:revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
-		partialSerializers.register("apathy:score", PartialSpecScore.Serializer.INSTANCE);
+		partialSerializers.register("attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
+		partialSerializers.register("attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
+		partialSerializers.register("attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
+		partialSerializers.register("advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
+		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
+		partialSerializers.register("difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
+		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
+		partialSerializers.register("revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
+		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
 	}
 	
 	@Override

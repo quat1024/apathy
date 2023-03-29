@@ -127,19 +127,19 @@ public abstract class Apathy {
 	}
 	
 	public void addRules() {
-		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		ruleSerializers.register("allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
+		ruleSerializers.register("always", RuleSpecAlways.Serializer.INSTANCE);
+		ruleSerializers.register("chain", RuleSpecChain.Serializer.INSTANCE);
+		ruleSerializers.register("debug", RuleSpecDebug.Serializer.INSTANCE);
+		ruleSerializers.register("deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
+		ruleSerializers.register("difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
+		ruleSerializers.register("evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
+		ruleSerializers.register("predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
 		
-		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
-		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
-		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
-		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
+		partialSerializers.register("all", PartialSpecAll.Serializer.INSTANCE);
+		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);
+		partialSerializers.register("any", PartialSpecAny.Serializer.INSTANCE);
+		partialSerializers.register("not", PartialSpecNot.Serializer.INSTANCE);
 	}
 	
 	public void addGeneralConfig(ConfigSchema schema) {

@@ -41,6 +41,7 @@ public record PartialSpecAttackerTaggedWith(Set<TagKey<EntityType<?>>> tags) imp
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecAttackerTaggedWith> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

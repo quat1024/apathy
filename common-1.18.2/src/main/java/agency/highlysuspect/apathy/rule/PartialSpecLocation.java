@@ -87,6 +87,7 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecLocation> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

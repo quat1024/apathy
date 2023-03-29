@@ -27,6 +27,7 @@ public class PartialSpecAlways implements PartialSpec<PartialSpecAlways> {
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecAlways> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

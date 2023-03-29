@@ -39,6 +39,7 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 	}
 	
 	public static class Serializer implements RuleSerializer<RuleSpecDifficultyCase> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

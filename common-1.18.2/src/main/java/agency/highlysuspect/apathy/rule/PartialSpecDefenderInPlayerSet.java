@@ -45,6 +45,7 @@ public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) impleme
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecDefenderInPlayerSet> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

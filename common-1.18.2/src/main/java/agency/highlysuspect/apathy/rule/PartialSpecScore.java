@@ -35,6 +35,7 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecScore> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

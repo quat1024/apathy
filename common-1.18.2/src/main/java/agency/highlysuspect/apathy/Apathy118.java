@@ -146,7 +146,6 @@ public abstract class Apathy118 extends Apathy {
 	public void addRules() {
 		super.addRules();
 		
-		//TODO: add private constructors to all of these LOL, lost time debugging because i used to have "new xxx.serializer()" here
 		partialSerializers.register("attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
 		partialSerializers.register("attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
 		partialSerializers.register("attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);

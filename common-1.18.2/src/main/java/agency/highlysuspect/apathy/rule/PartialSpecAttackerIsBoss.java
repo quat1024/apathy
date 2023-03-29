@@ -27,6 +27,7 @@ public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAtta
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecAttackerIsBoss> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

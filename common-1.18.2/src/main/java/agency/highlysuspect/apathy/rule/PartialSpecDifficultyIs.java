@@ -32,6 +32,7 @@ public record PartialSpecDifficultyIs(Set<ApathyDifficulty> difficulties) implem
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecDifficultyIs> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

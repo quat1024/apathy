@@ -35,6 +35,7 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecAttackerIs> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

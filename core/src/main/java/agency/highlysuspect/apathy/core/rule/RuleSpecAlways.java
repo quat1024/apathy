@@ -38,6 +38,7 @@ public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
 	}
 	
 	public static class Serializer implements RuleSerializer<RuleSpecAlways> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

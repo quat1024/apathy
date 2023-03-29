@@ -36,6 +36,7 @@ public class RuleSpecDebug implements RuleSpec<RuleSpecDebug> {
 	}
 	
 	public static class Serializer implements RuleSerializer<RuleSpecDebug> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

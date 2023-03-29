@@ -35,6 +35,7 @@ public class PartialSpecNot implements PartialSpec<PartialSpecNot> {
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecNot> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

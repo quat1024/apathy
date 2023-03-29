@@ -60,6 +60,7 @@ public class RuleSpecChain implements RuleSpec<RuleSpecChain> {
 	}
 	
 	public static class Serializer implements RuleSerializer<RuleSpecChain> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

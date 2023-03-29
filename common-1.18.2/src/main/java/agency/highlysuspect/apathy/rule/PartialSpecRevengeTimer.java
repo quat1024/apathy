@@ -25,6 +25,7 @@ public record PartialSpecRevengeTimer(long timer) implements PartialSpec<Partial
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecRevengeTimer> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

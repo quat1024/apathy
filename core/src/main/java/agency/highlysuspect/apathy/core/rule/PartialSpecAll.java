@@ -52,6 +52,7 @@ public class PartialSpecAll implements PartialSpec<PartialSpecAll> {
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecAll> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

@@ -18,6 +18,7 @@ public final class RuleSpecJson implements RuleSpec<RuleSpecJson> {
 	}
 	
 	public static class Serializer implements RuleSerializer<RuleSpecJson> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

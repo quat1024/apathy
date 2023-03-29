@@ -52,6 +52,7 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 	}
 	
 	public static class Serializer implements PartialSerializer<PartialSpecDefenderHasAdvancement> {
+		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

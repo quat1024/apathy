@@ -60,6 +60,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	}
 	
 	public static class PredicatedSerializer implements RuleSerializer<RuleSpecPredicated> {
+		private PredicatedSerializer() {}
 		public static final PredicatedSerializer INSTANCE = new PredicatedSerializer();
 		
 		@Override
@@ -79,6 +80,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	}
 	
 	public static class AllowIfSerializer implements RuleSerializer<RuleSpecPredicated> {
+		private AllowIfSerializer() {}
 		public static final AllowIfSerializer INSTANCE = new AllowIfSerializer();
 		
 		@Override
@@ -93,6 +95,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	}
 	
 	public static class DenyIfSerializer implements RuleSerializer<RuleSpecPredicated> {
+		private DenyIfSerializer() {}
 		public static final DenyIfSerializer INSTANCE = new DenyIfSerializer();
 		
 		@Override

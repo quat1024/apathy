@@ -4,25 +4,26 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.UUID;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.BoolArgumentType.getBool;
 import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
-import static net.minecraft.commands.arguments.EntityArgument.players;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayers;
+import static net.minecraft.commands.arguments.EntityArgument.players;
 
 @SuppressWarnings("SameReturnValue")
 public class ApathyCommands {
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful
@@ -79,8 +80,8 @@ public class ApathyCommands {
 	}
 	
 	private static Component lit(String msg, Object... args) {
-		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getContents();
-		return new TextComponent(String.format(msg, args));
+		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = Portage.stringifyComponent((Component) args[i]);
+		return Portage.literal(String.format(msg, args));
 	}
 	
 	//Joining, parting
@@ -111,7 +112,7 @@ public class ApathyCommands {
 			switch(result) {
 				case SUCCESS -> {
 					successCount++;
-					msg(cmd, "%s parted set %s.", player.getName(), name);
+					msg(cmd, "%s parted set %s.", Portage.stringifyComponent(player.getName()), name);
 				}
 				case NO_SUCH_SET -> err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name);
 				case ALREADY_NOT_IN_SET -> err(cmd, "Player %s is already not in set %s. Try /apathy set join.", player.getName(), name);
@@ -161,7 +162,7 @@ public class ApathyCommands {
 					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
 						String.format(" - someone with UUID %s", uuid) :
-						String.format(" - %s (UUID %s)", player.getName().getContents(), uuid));
+						String.format(" - %s (UUID %s)", Portage.stringifyComponent(player.getName()), uuid));
 				}
 			}
 		}

@@ -56,7 +56,7 @@ public class ForgeInit extends Apathy {
 	@Override
 	public void installCommandRegistrationCallback() {
 		MinecraftForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> {
-			ApathyCommands.registerCommands(e.getDispatcher(), e.getEnvironment() == Commands.CommandSelection.DEDICATED);
+			ApathyCommands.registerCommands(e.getDispatcher());
 		});
 	}
 	

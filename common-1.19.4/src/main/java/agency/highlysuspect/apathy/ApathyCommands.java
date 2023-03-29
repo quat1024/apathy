@@ -2,9 +2,7 @@ package agency.highlysuspect.apathy;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -25,7 +23,7 @@ import static net.minecraft.commands.arguments.EntityArgument.players;
 
 @SuppressWarnings("SameReturnValue")
 public class ApathyCommands {
-	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext what, Commands.CommandSelection side) {
+	public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
 		//Do not trust the indentation lmao
 		//I've been burned before
 		//Be careful
@@ -82,8 +80,8 @@ public class ApathyCommands {
 	}
 	
 	private static Component lit(String msg, Object... args) {
-		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ((Component) args[i]).getString();
-		return Starboarding.newTextComponent(String.format(msg, args));
+		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = Portage.stringifyComponent((Component) args[i]);
+		return Portage.literal(String.format(msg, args));
 	}
 	
 	//Joining, parting
@@ -114,7 +112,7 @@ public class ApathyCommands {
 			switch(result) {
 				case SUCCESS -> {
 					successCount++;
-					msg(cmd, "%s parted set %s.", player.getName(), name);
+					msg(cmd, "%s parted set %s.", Portage.stringifyComponent(player.getName()), name);
 				}
 				case NO_SUCH_SET -> err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name);
 				case ALREADY_NOT_IN_SET -> err(cmd, "Player %s is already not in set %s. Try /apathy set join.", player.getName(), name);
@@ -164,7 +162,7 @@ public class ApathyCommands {
 					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
 						String.format(" - someone with UUID %s", uuid) :
-						String.format(" - %s (UUID %s)", player.getName().getString(), uuid));
+						String.format(" - %s (UUID %s)", Portage.stringifyComponent(player.getName()), uuid));
 				}
 			}
 		}

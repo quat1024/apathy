@@ -38,7 +38,7 @@ public class FabricInit extends Apathy implements ModInitializer {
 	
 	@Override
 	public void installCommandRegistrationCallback() {
-		CommandRegistrationCallback.EVENT.register(ApathyCommands::registerCommands);
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ApathyCommands.registerCommands(dispatcher));
 	}
 	
 	@Override

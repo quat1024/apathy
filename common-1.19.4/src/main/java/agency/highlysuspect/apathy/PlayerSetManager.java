@@ -219,7 +219,10 @@ public class PlayerSetManager extends SavedData {
 	
 	public Component printAllPlayerSets() {
 		//prints all sets such that self select ones are marked with a "(self-select)" note
-		return ComponentUtils.formatList(playerSets.entrySet(), entry -> Starboarding.newTextComponent(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
+		return ComponentUtils.formatList(playerSets.entrySet(), entry -> {
+			String key = entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "");
+			return Component.literal(key);
+		});
 	}
 	
 	public static record Entry(Set<UUID> members, boolean selfSelect) {

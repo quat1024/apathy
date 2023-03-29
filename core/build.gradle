@@ -1,0 +1,20 @@
+apply plugin: "java"
+
+archivesBaseName = "apathy-core"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	sourceCompatibility = "8"
+	targetCompatibility = "8"
+}
+java.withSourcesJar()
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation "com.google.code.gson:gson:2.8.0" //pretty old version, lowest-common-denominator
+	compileOnly "org.jetbrains:annotations:24.0.1"
+}

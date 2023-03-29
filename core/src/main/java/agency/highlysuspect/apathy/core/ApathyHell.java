@@ -41,7 +41,7 @@ public abstract class ApathyHell {
 	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
 	
 	public CookedConfig generalConfigCooked; //TODO remove -cooked suffix after migrating over, it name-clashes rn
-	public CookedConfig mobConfigCooked;
+	public CookedConfig mobsConfigCooked;
 	public CookedConfig bossConfigCooked;
 	public @Nullable Rule jsonRule;
 	
@@ -71,6 +71,14 @@ public abstract class ApathyHell {
 		addGeneralConfig(generalConfigSchema);
 		generalConfigCooked = generalConfigBakery().cook(generalConfigSchema);
 		
+		ConfigSchema mobsConfigSchema = new ConfigSchema();
+		addMobConfig(mobsConfigSchema);
+		mobsConfigCooked = mobsConfigBakery().cook(mobsConfigSchema);
+		
+		ConfigSchema bossConfigSchema = new ConfigSchema();
+		addBossConfig(bossConfigSchema);
+		bossConfigCooked = bossConfigBakery().cook(bossConfigSchema);
+		
 		//Misc
 		installConfigFileReloader();
 		installCommandRegistrationCallback();
@@ -81,6 +89,8 @@ public abstract class ApathyHell {
 		boolean ok = true;
 		
 		ok &= generalConfigCooked.refresh();
+		ok &= mobsConfigCooked.refresh();
+		ok &= bossConfigCooked.refresh();
 		
 		Rule newJsonRule = jsonRule;
 		try {
@@ -115,14 +125,16 @@ public abstract class ApathyHell {
 	}
 	
 	public void addMobConfig(ConfigSchema schema) {
-		
+		CoreOptions.Mobs.visit(schema);
 	}
 	
 	public void addBossConfig(ConfigSchema schema) {
-		
+		CoreOptions.Boss.visit(schema);
 	}
 	
 	public abstract ConfigSchema.Bakery generalConfigBakery();
+	public abstract ConfigSchema.Bakery mobsConfigBakery();
+	public abstract ConfigSchema.Bakery bossConfigBakery();
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();

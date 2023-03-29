@@ -7,19 +7,42 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigSchema {
-	List<Object> entries = new ArrayList<>();
+	private final Map<String, List<ConfigProperty<?>>> entries = new LinkedHashMap<>();
+	
+	private static final String SECTIONLESS = "\ud83d\udc09";
+	private String currentSection = SECTIONLESS;
 	
 	public void section(String sectionName) {
-		entries.add(sectionName);
+		currentSection = sectionName == null ? SECTIONLESS : sectionName;
 	}
 	
 	public void option(ConfigProperty<?>... options) {
-		entries.addAll(Arrays.asList(options));
+		getSection(currentSection).addAll(Arrays.asList(options));
 	}
 	
 	public void section(String sectionName, ConfigProperty<?>... options) {
 		section(sectionName);
 		option(options);
+	}
+	
+	///
+	
+	public List<ConfigProperty<?>> getSection(String name) {
+		return entries.computeIfAbsent(name, __ -> new ArrayList<>());
+	}
+	
+	///
+	
+	public interface Visitor {
+		default void visitSection(String section) {}
+		default <T> void visitOption(ConfigProperty<T> option) {}
+	}
+	
+	public void accept(Visitor visitor) {
+		entries.forEach((section, options) -> {
+			if(!SECTIONLESS.equals(section)) visitor.visitSection(section);
+			options.forEach(visitor::visitOption);
+		});
 	}
 	
 	public Map<String, ConfigProperty<?>> propertiesByName() {
@@ -33,17 +56,7 @@ public class ConfigSchema {
 		return props;
 	}
 	
-	public void accept(Visitor visitor) {
-		for(Object thing : entries) {
-			if(thing instanceof String) visitor.visitSection((String) thing);
-			else if(thing instanceof ConfigProperty<?>) visitor.visitOption((ConfigProperty<?>) thing);
-		}
-	}
-	
-	public interface Visitor {
-		default void visitSection(String section) {}
-		default <T> void visitOption(ConfigProperty<T> option) {}
-	}
+	///
 	
 	public interface Bakery {
 		CookedConfig cook(ConfigSchema schema);

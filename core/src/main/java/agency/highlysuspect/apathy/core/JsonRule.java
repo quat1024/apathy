@@ -11,6 +11,7 @@ import com.google.gson.JsonParseException;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -79,7 +80,7 @@ public class JsonRule {
 			Path outPath = dumpDir.resolve(filename + ".json");
 			ApathyHell.instance.log.info("Dumping rule to " + outPath);
 			JsonObject json = ApathyHell.instance.writeRule(ruleSpec);
-			Files.writeString(outPath, GSON.toJson(json));
+			Files.write(outPath, GSON.toJson(json).getBytes(StandardCharsets.UTF_8));
 		} catch (Exception e) {
 			ApathyHell.instance.log.error("Problem dumping rule to " + filename, e);
 		}

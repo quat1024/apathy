@@ -30,7 +30,7 @@ public class FabricInit extends Apathy118 implements ModInitializer {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
-				return id("reload-config");
+				return new ResourceLocation(MODID, "reload-config");
 			}
 			
 			@Override
@@ -53,5 +53,15 @@ public class FabricInit extends Apathy118 implements ModInitializer {
 	@Override
 	public ConfigSchema.Bakery generalConfigBakery() {
 		return new CrummyConfig.Bakery(configPath.resolve("general.cfg"));
+	}
+	
+	@Override
+	public ConfigSchema.Bakery mobsConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("mobs.cfg"));
+	}
+	
+	@Override
+	public ConfigSchema.Bakery bossConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("boss.cfg"));
 	}
 }

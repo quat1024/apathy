@@ -74,8 +74,21 @@ public class ForgeInit extends Apathy118 {
 		});
 	}
 	
+	//TODO, write a forge config bakery
 	@Override
 	public ConfigSchema.Bakery generalConfigBakery() {
-		return new CrummyConfig.Bakery(configPath.resolve("general.cfg")); //TODO, write a forge config bakery
+		return new CrummyConfig.Bakery(configPath.resolve("general.cfg"));
+	}
+	
+	//TODO, write a forge config bakery
+	@Override
+	public ConfigSchema.Bakery mobsConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("mobs.cfg"));
+	}
+	
+	//TODO, write a forge config bakery
+	@Override
+	public ConfigSchema.Bakery bossConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("boss.cfg"));
 	}
 }

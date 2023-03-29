@@ -5,9 +5,8 @@ import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.core.ApathyHell;
 import agency.highlysuspect.apathy.core.CoreOptions;
-import agency.highlysuspect.apathy.core.JsonRule;
 import agency.highlysuspect.apathy.core.TriState;
-import agency.highlysuspect.apathy.core.rule.Rule;
+import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
@@ -21,7 +20,6 @@ import agency.highlysuspect.apathy.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.rule.PartialSpecLocation;
 import agency.highlysuspect.apathy.rule.PartialSpecRevengeTimer;
 import agency.highlysuspect.apathy.rule.PartialSpecScore;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
@@ -110,23 +108,6 @@ public abstract class Apathy118 extends ApathyHell {
 		if(provoked instanceof DragonDuck dragn) dragn.apathy$allowAttackingPlayers();
 	}
 	
-	//Random util crap
-	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MODID, path);
-	}
-	
-	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
-		Set<T> set = new HashSet<>();
-		Collections.addAll(set, enumClass.getEnumConstants());
-		return set;
-	}
-	
-	public static Set<Difficulty> allDifficultiesNotPeaceful() {
-		Set<Difficulty> wow = allOf(Difficulty.class);
-		wow.remove(Difficulty.PEACEFUL);
-		return wow;
-	}
-	
 	/// Cross platform stuff
 	
 	@Override
@@ -145,7 +126,23 @@ public abstract class Apathy118 extends ApathyHell {
 		partialSerializers.register("apathy:score", PartialSpecScore.Serializer.INSTANCE);
 	}
 	
-	public abstract void installConfigFileReloader();
-	public abstract void installCommandRegistrationCallback();
-	public abstract void installPlayerSetManagerTicker();
+	@Override
+	public void addMobConfig(ConfigSchema schema) {
+		super.addMobConfig(schema);
+		PlatformOptions.Mobs.visit(schema);
+	}
+	
+	@Deprecated(forRemoval = true)
+	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
+		Set<T> set = new HashSet<>();
+		Collections.addAll(set, enumClass.getEnumConstants());
+		return set;
+	}
+	
+	@Deprecated(forRemoval = true)
+	public static Set<Difficulty> allDifficultiesNotPeaceful() {
+		Set<Difficulty> wow = allOf(Difficulty.class);
+		wow.remove(Difficulty.PEACEFUL);
+		return wow;
+	}
 }

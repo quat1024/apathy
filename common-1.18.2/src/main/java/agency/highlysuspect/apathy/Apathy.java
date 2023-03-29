@@ -4,7 +4,7 @@ import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
-import agency.highlysuspect.apathy.platform.PlatformSupport;
+import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,63 +22,92 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Apathy {
+public abstract class Apathy {
 	public static final String MODID = "apathy";
 	public static final Logger LOG = LogManager.getLogger(MODID);
+	public static Apathy INSTANCE;
 	
-	public static final Path CONFIG_FOLDER = PlatformSupport.instance.getConfigPath();
+	public final Path configFolder;
 	
-	public static MobConfig mobConfig;
-	public static GeneralConfig generalConfig;
-	public static BossConfig bossConfig;
+	public GeneralConfig generalConfig = new GeneralConfig();
+	public MobConfig mobConfig = new MobConfig();
+	public BossConfig bossConfig = new BossConfig();
+	public @Nullable Rule jsonRule;
 	
-	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MODID, path);
+	public Apathy() {
+		Apathy.INSTANCE = this;
+		configFolder = getConfigPath();
 	}
 	
-	public static void init() {
+	public void init() {
 		//Ensure the config subdirectory exists and things can be placed inside it
 		try {
-			Files.createDirectories(CONFIG_FOLDER);
+			Files.createDirectories(configFolder);
 		} catch (IOException e) {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory", e);
 		}
 		
+		//Register all the weird json rule stuff
 		Specs.onInitialize();
 		
-		//The config file reloader should take care of this.
-		//See https://github.com/quat1024/apathy/issues/9 .
+		//Don't load the config files yet, this should happen on server resource load instead.
+		//installConfigFileReloader should set this up.
+		//See https://github.com/quat1024/apathy/issues/9 . This is kind of embarassing...
 		//loadConfig();
 		
-		PlatformSupport.instance.initialize();
+		//Platform dependent init
+		installConfigFileReloader();
+		installCommandRegistrationCallback();
+		installPlayerSetManagerTicker();
 	}
 	
-	public static void loadConfig() {
-		GeneralConfig oldGeneralConfig = generalConfig;
-		MobConfig oldMobConfig = mobConfig;
-		BossConfig oldBossConfig = bossConfig;
+	public boolean loadConfig() {
+		boolean ok = true;
 		
+		GeneralConfig newGeneralConfig = generalConfig;
 		try {
-			generalConfig = Config.read(new GeneralConfig(), CONFIG_FOLDER.resolve("general.cfg"));
-			mobConfig = Config.read(new MobConfig(), CONFIG_FOLDER.resolve("mobs.cfg"));
-			bossConfig = Config.read(new BossConfig(), CONFIG_FOLDER.resolve("boss.cfg"));
-			
-			//todo this is kinda tacked on
-			JsonRule.loadJson();
+			newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
 		} catch (Exception e) {
-			if(oldGeneralConfig == null && oldMobConfig == null && oldBossConfig == null) {
-				throw new RuntimeException("Problem initializing config file.", e);
-			} else {
-				generalConfig = oldGeneralConfig;
-				mobConfig = oldMobConfig;
-				bossConfig = oldBossConfig;
-				LOG.error("Problem reloading config file: ", e);
-				LOG.error("The current config has not been changed. Resolve the error, and try loading the config file again.");
-			}
+			LOG.error("Problem reading general.cfg:", e);
+			ok = false;
+		} finally {
+			generalConfig = newGeneralConfig;
 		}
+		
+		MobConfig newMobConfig = mobConfig;
+		try {
+			newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
+		} catch (Exception e) {
+			LOG.error("Problem reading mobs.cfg: ", e);
+			ok = false;
+		} finally {
+			mobConfig = newMobConfig;
+		}
+		
+		BossConfig newBossConfig = bossConfig;
+		try {
+			newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
+		} catch (Exception e) {
+			LOG.error("Problem reading boss.cfg: ", e);
+			ok = false;
+		} finally {
+			bossConfig = newBossConfig;
+		}
+		
+		Rule newJsonRule = jsonRule;
+		try {
+			newJsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
+		} catch (Exception e) {
+			LOG.error("Problem reading mobs.json: ", e);
+			ok = false;
+		} finally {
+			jsonRule = newJsonRule;
+		}
+		
+		return ok;
 	}
 	
-	public static void noticePlayerAttack(Player player, Entity provoked) {
+	public void noticePlayerAttack(Player player, Entity provoked) {
 		Level level = player.level;
 		if(level.isClientSide) return;
 		
@@ -85,15 +115,15 @@ public class Apathy {
 			//Set the revengetimer on the hit entity
 			ext.apathy$provokeNow();
 			
-			if(Apathy.generalConfig.sameTypeRevengeSpread > 0) {
-				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(Apathy.generalConfig.sameTypeRevengeSpread))) {
+			if(generalConfig.sameTypeRevengeSpread > 0) {
+				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(generalConfig.sameTypeRevengeSpread))) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}
 			
-			if(Apathy.generalConfig.differentTypeRevengeSpread > 0) {
+			if(generalConfig.differentTypeRevengeSpread > 0) {
 				//kinda grody sorry
-				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(Apathy.generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
+				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}
@@ -104,6 +134,10 @@ public class Apathy {
 	}
 	
 	//Random util crap
+	public static ResourceLocation id(String path) {
+		return new ResourceLocation(MODID, path);
+	}
+	
 	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
 		Set<T> set = new HashSet<>();
 		Collections.addAll(set, enumClass.getEnumConstants());
@@ -115,4 +149,11 @@ public class Apathy {
 		wow.remove(Difficulty.PEACEFUL);
 		return wow;
 	}
+	
+	/// Cross platform stuff
+	
+	public abstract void installConfigFileReloader();
+	public abstract void installCommandRegistrationCallback();
+	public abstract void installPlayerSetManagerTicker();
+	public abstract Path getConfigPath();
 }

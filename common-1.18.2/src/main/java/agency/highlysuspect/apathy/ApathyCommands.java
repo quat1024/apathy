@@ -1,8 +1,6 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.platform.PlatformSupport;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -210,8 +208,11 @@ public class ApathyCommands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		Apathy.loadConfig();
-		msg(cmd, "Reloaded Apathy config files. Check the server log for any errors.");
+		boolean ok = Apathy.INSTANCE.loadConfig();
+		
+		if(ok) msg(cmd, "Reloaded Apathy config files.");
+		else err(cmd, "Error reloading Apathy config files. Check the server log.");
+		
 		return 0;
 	}
 }

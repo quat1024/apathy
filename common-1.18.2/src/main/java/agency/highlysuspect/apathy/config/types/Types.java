@@ -2,10 +2,8 @@ package agency.highlysuspect.apathy.config.types;
 
 import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.annotation.Use;
-import agency.highlysuspect.apathy.platform.PlatformSupport;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 

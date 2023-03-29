@@ -25,7 +25,7 @@ public class ZombifiedPiglinMixin {
 		MobExt thisExt = (MobExt) this;
 		
 		Level level = thiss.level;
-		if(!Apathy.generalConfig.angryPiggies.contains(level.getDifficulty())) {
+		if(!Apathy.INSTANCE.generalConfig.angryPiggies.contains(level.getDifficulty())) {
 			//Oh wow, an overwrite-head-cancel! Even better than an inject-head-cancel
 			return;
 		}

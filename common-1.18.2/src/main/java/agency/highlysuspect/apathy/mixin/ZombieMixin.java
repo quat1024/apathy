@@ -22,6 +22,6 @@ public abstract class ZombieMixin extends Mob {
 	@Intrinsic(displace = true) //mixin wizards feel free to correct me on this
 	public boolean canAttack(LivingEntity other) {
 		return super.canAttack(other) &&
-			(other instanceof Villager ? Apathy.generalConfig.zombieAttackVillagerDifficulties.contains(level.getDifficulty()) : true);
+			(other instanceof Villager ? Apathy.INSTANCE.generalConfig.zombieAttackVillagerDifficulties.contains(level.getDifficulty()) : true);
 	}
 }

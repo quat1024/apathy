@@ -18,7 +18,7 @@ public class DragonHoldingPatternPhaseMixin {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(player instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
+		if(player instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
 			ci.cancel();
 		}
 	}

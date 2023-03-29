@@ -30,7 +30,7 @@ public class WitherBossCrustyMixin {
 		//I also did this in fabric on 1.17- which also had a crusty version of mixin.
 		
 		List<LivingEntity> defensiveCopy = new ArrayList<>(nearbyEntities);
-		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy.mobConfig.allowedToTargetPlayer(wither, player));
+		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(wither, player));
 		return defensiveCopy;
 	}
 }

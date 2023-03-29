@@ -21,7 +21,7 @@ public class WitherSkullBlockMixin {
 	)
 	private static boolean yeet(Level level, Entity entity) {
 		//If the difficulty is contained within the set, call the normal spawn method
-		if(Apathy.bossConfig.witherDifficulties.contains(level.getDifficulty())) return level.addFreshEntity(entity);
+		if(Apathy.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) return level.addFreshEntity(entity);
 		
 		//Else, simulate a kill and don't spawn the entity. I have no idea why this grants the advancement btw.
 		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(DamageSource.ANVIL);

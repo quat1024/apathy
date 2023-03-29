@@ -43,7 +43,7 @@ public class JsonRule {
 		//parse the json into a java object
 		RuleSpec<?> spec;
 		try {
-			spec = ApathyHell.instance.readRule(json);
+			spec = Apathy.instance.readRule(json);
 		} catch (Exception e) {
 			e.addSuppressed(new RuntimeException("Problem decoding json rule"));
 			throw e;
@@ -51,14 +51,14 @@ public class JsonRule {
 		
 		//realize the rulespec into a rule
 		try {
-			boolean debug = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.debugJsonRule);
-			boolean opt = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.runRuleOptimizer);
+			boolean debug = Apathy.instance.generalCfg.get(CoreGenOptions.debugJsonRule);
+			boolean opt = Apathy.instance.generalCfg.get(CoreGenOptions.runRuleOptimizer);
 			
-			if(debug) dump(spec, ApathyHell.instance.configPath, "json-rule");
+			if(debug) dump(spec, Apathy.instance.configPath, "json-rule");
 			
 			if(opt) {
 				spec = spec.optimize();
-				if(debug) dump(spec, ApathyHell.instance.configPath, "json-rule-opt");
+				if(debug) dump(spec, Apathy.instance.configPath, "json-rule-opt");
 			}
 			
 			return spec.build();
@@ -78,11 +78,11 @@ public class JsonRule {
 			Files.createDirectories(dumpDir);
 			
 			Path outPath = dumpDir.resolve(filename + ".json");
-			ApathyHell.instance.log.info("Dumping rule to " + outPath);
-			JsonObject json = ApathyHell.instance.writeRule(ruleSpec);
+			Apathy.instance.log.info("Dumping rule to " + outPath);
+			JsonObject json = Apathy.instance.writeRule(ruleSpec);
 			Files.write(outPath, GSON.toJson(json).getBytes(StandardCharsets.UTF_8));
 		} catch (Exception e) {
-			ApathyHell.instance.log.error("Problem dumping rule to " + filename, e);
+			Apathy.instance.log.error("Problem dumping rule to " + filename, e);
 		}
 	}
 }

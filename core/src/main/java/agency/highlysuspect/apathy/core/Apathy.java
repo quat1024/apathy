@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.core;
 
-import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
-import agency.highlysuspect.apathy.core.newconfig.CookedConfig;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
+import agency.highlysuspect.apathy.core.config.CookedConfig;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAll;
@@ -21,6 +21,7 @@ import agency.highlysuspect.apathy.core.rule.SerializablePartialSpec;
 import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
+import agency.highlysuspect.apathy.core.wrapper.LogFacade;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -28,13 +29,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-public abstract class ApathyHell {
+public abstract class Apathy {
 	public static final String MODID = "apathy";
-	public static ApathyHell instance;
+	public static Apathy instance;
 	
 	public final Path configPath;
 	public final LogFacade log;
@@ -42,19 +40,20 @@ public abstract class ApathyHell {
 	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
 	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
 	
-	public CookedConfig generalConfigCooked; //TODO remove -cooked suffix after migrating over, it name-clashes rn
-	public CookedConfig mobsConfigCooked;
-	public CookedConfig bossConfigCooked;
+	public CookedConfig generalCfg;
+	public CookedConfig mobCfg;
+	public CookedConfig bossCfg;
 	
 	public Rule configuredRule = RuleSpecAlways.ALWAYS_ALLOW.build();
 	public @Nullable Rule jsonRule;
 	
-	public ApathyHell(Path configPath, LogFacade log) {
+	public Apathy(Path configPath, LogFacade log) {
 		if(instance == null) {
 			instance = this;
 		} else {
-			log.error("Apathy instantiated twice");
-			throw new IllegalStateException("Apathy instantiated twice");
+			IllegalStateException e = new IllegalStateException("Apathy instantiated twice!");
+			log.error("Apathy instantiated twice!", e);
+			throw e;
 		}
 		
 		this.configPath = configPath;
@@ -74,15 +73,15 @@ public abstract class ApathyHell {
 		//config
 		ConfigSchema generalConfigSchema = new ConfigSchema();
 		addGeneralConfig(generalConfigSchema);
-		generalConfigCooked = generalConfigBakery().cook(generalConfigSchema);
+		generalCfg = generalConfigBakery().cook(generalConfigSchema);
 		
 		ConfigSchema mobsConfigSchema = new ConfigSchema();
 		addMobConfig(mobsConfigSchema);
-		mobsConfigCooked = mobsConfigBakery().cook(mobsConfigSchema);
+		mobCfg = mobsConfigBakery().cook(mobsConfigSchema);
 		
 		ConfigSchema bossConfigSchema = new ConfigSchema();
 		addBossConfig(bossConfigSchema);
-		bossConfigCooked = bossConfigBakery().cook(bossConfigSchema);
+		bossCfg = bossConfigBakery().cook(bossConfigSchema);
 		
 		//misc
 		installConfigFileReloader();
@@ -93,17 +92,16 @@ public abstract class ApathyHell {
 	public boolean allowedToTargetPlayer(Attacker attacker, Defender defender) {
 		TriState result = configuredRule.apply(attacker, defender);
 		if(result != TriState.DEFAULT) return result.get();
-		else return mobsConfigCooked.get(CoreOptions.Mobs.fallthrough);
+		else return mobCfg.get(CoreMobOptions.fallthrough);
 	}
 	
 	public boolean loadConfig() {
 		boolean ok = true;
 		
-		ok &= generalConfigCooked.refresh();
-		ok &= mobsConfigCooked.refresh();
-		ok &= bossConfigCooked.refresh();
-		
-		configuredRule = bakeRule();
+		//TODO: rethink error handling here (keep the old config around)
+		ok &= generalCfg.refresh();
+		ok &= mobCfg.refresh();
+		ok &= bossCfg.refresh();
 		
 		Rule newConfiguredRule = configuredRule;
 		try {
@@ -137,6 +135,7 @@ public abstract class ApathyHell {
 		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		
 		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
@@ -144,15 +143,15 @@ public abstract class ApathyHell {
 	}
 	
 	public void addGeneralConfig(ConfigSchema schema) {
-		CoreOptions.General.visit(schema);
+		CoreGenOptions.visit(schema);
 	}
 	
 	public void addMobConfig(ConfigSchema schema) {
-		CoreOptions.Mobs.visit(schema);
+		CoreMobOptions.visit(schema);
 	}
 	
 	public void addBossConfig(ConfigSchema schema) {
-		CoreOptions.Boss.visit(schema);
+		CoreBossOptions.visit(schema);
 	}
 	
 	public abstract ConfigSchema.Bakery generalConfigBakery();
@@ -214,11 +213,5 @@ public abstract class ApathyHell {
 		ok.addProperty("type", name);
 		serializer.writeErased(part, ok);
 		return ok;
-	}
-	
-	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
-		Set<T> set = new HashSet<>();
-		Collections.addAll(set, enumClass.getEnumConstants());
-		return set;
 	}
 }

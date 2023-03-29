@@ -1,10 +1,7 @@
 package agency.highlysuspect.apathy.core.etc;
 
-public enum PortalInitialStateN {
-	CLOSED,
-	OPEN,
-	OPEN_WITH_EGG,
-	;
+public enum PortalInitialState {
+	CLOSED, OPEN, OPEN_WITH_EGG;
 	
 	public boolean isOpenByDefault() {
 		return this != CLOSED;

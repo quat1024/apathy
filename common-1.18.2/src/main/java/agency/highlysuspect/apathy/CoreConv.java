@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.core.LogFacade;
+import agency.highlysuspect.apathy.core.wrapper.LogFacade;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;

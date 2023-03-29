@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.CoreConv;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;

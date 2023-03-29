@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -66,7 +66,7 @@ public class RuleSpecChain implements RuleSpec<RuleSpecChain> {
 		public void write(RuleSpecChain rule, JsonObject json) {
 			JsonArray rulesArray = new JsonArray();
 			for(RuleSpec<?> ruleToWrite : rule.rules) {
-				rulesArray.add(ApathyHell.instance.writeRule(ruleToWrite));
+				rulesArray.add(Apathy.instance.writeRule(ruleToWrite));
 			}
 			json.add("rules", rulesArray);
 		}
@@ -75,7 +75,7 @@ public class RuleSpecChain implements RuleSpec<RuleSpecChain> {
 		public RuleSpecChain read(JsonObject json) {
 			JsonArray rulesArray = json.getAsJsonArray("rules");
 			ArrayList<RuleSpec<?>> rules = new ArrayList<>();
-			for(JsonElement e : rulesArray) rules.add(ApathyHell.instance.readRule(e.getAsJsonObject()));
+			for(JsonElement e : rulesArray) rules.add(Apathy.instance.readRule(e.getAsJsonObject()));
 			return new RuleSpecChain(rules);
 		}
 	}

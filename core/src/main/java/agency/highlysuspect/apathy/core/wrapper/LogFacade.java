@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.core;
+package agency.highlysuspect.apathy.core.wrapper;
 
 public interface LogFacade {
 	void info(String message, Object... args);

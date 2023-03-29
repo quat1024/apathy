@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
@@ -9,7 +9,7 @@ public final class RuleSpecJson implements RuleSpec<RuleSpecJson> {
 	
 	@Override
 	public Rule build() {
-		return (attacker, defender) -> ApathyHell.instance.jsonRule == null ? TriState.DEFAULT : ApathyHell.instance.jsonRule.apply(attacker, defender);
+		return (attacker, defender) -> Apathy.instance.jsonRule == null ? TriState.DEFAULT : Apathy.instance.jsonRule.apply(attacker, defender);
 	}
 	
 	@Override

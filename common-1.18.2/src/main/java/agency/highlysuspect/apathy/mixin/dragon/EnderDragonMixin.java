@@ -1,10 +1,15 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy118;
-import agency.highlysuspect.apathy.core.ApathyHell;
-import agency.highlysuspect.apathy.core.CoreOptions;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreBossOptions;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,17 +21,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
 @Mixin(EnderDragon.class)
 public class EnderDragonMixin implements DragonDuck {
 	@ModifyVariable(method = "knockBack", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> filterKnockBack(List<Entity> entities) {
-		if(!ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonKnockback)) {
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.dragonKnockback)) {
 			return Collections.emptyList();
 		}
 		
@@ -38,7 +38,7 @@ public class EnderDragonMixin implements DragonDuck {
 	
 	@ModifyVariable(method = "hurt(Ljava/util/List;)V", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> filterHurt(List<Entity> entities) {
-		if(!ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonDamage)) {
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.dragonDamage)) {
 			return Collections.emptyList();
 		}
 		

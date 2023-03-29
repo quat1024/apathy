@@ -1,14 +1,15 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy118;
-import agency.highlysuspect.apathy.CoolNbtUtil;
 import agency.highlysuspect.apathy.CoreConv;
-import agency.highlysuspect.apathy.core.ApathyHell;
-import agency.highlysuspect.apathy.core.CoreOptions;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreGenOptions;
 import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -55,7 +56,7 @@ public class MobMixin implements MobExt {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.recheckInterval) == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.instance.generalCfg.get(CoreGenOptions.recheckInterval) == 0
 			&& target instanceof ServerPlayer
 			&& !Apathy118.instance118.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
@@ -105,7 +106,11 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(spawnPosition != null) {
-			tag.put(SPAWN_POSITION_KEY, CoolNbtUtil.writeVec3(spawnPosition));
+			ListTag asdf = new ListTag();
+			asdf.add(DoubleTag.valueOf(spawnPosition.x));
+			asdf.add(DoubleTag.valueOf(spawnPosition.y));
+			asdf.add(DoubleTag.valueOf(spawnPosition.z));
+			tag.put(SPAWN_POSITION_KEY, asdf);
 		}
 		
 		if(locationPredicateCache != null) {
@@ -124,7 +129,8 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(tag.contains(SPAWN_POSITION_KEY)) {
-			spawnPosition = CoolNbtUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CoolNbtUtil.VEC3_LIST_ID));
+			ListTag asdf = tag.getList(SPAWN_POSITION_KEY, DoubleTag.valueOf(69420).getId());
+			spawnPosition = new Vec3(asdf.getDouble(0), asdf.getDouble(1), asdf.getDouble(2));
 		} else {
 			spawnPosition = null;
 		}

@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.core.newconfig.ConfigProperty;
-import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
+import agency.highlysuspect.apathy.core.config.ConfigProperty;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PlatformOptions {
+public class VerMobOptions {
 	private static <B extends ConfigProperty.Builder<Set<EntityType<?>>, B>> B entityTypeSetOpt(String name, Set<EntityType<?>> defaultValue, String... comment) {
 		return new ConfigProperty.Builder<Set<EntityType<?>>, B>(name, Set.class, defaultValue)
 			.comment(comment)
@@ -41,18 +41,16 @@ public class PlatformOptions {
 				.collect(Collectors.toSet()));
 	}
 	
-	public static class Mobs {
-		public static final ConfigProperty<Set<EntityType<?>>> mobSet = entityTypeSetOpt("mobSet", Collections.emptySet(), "A comma-separated set of mob IDs.")
-			.example("minecraft:creeper, minecraft:spider")
-			.build();
-		
-		public static final ConfigProperty<Set<TagKey<EntityType<?>>>> tagSet = entityTypeTagKeySetOpt("tagSet", Collections.emptySet(), "A comma-separated set of entity type tags.")
-			.example("minecraft:raiders, some_datapack:some_tag")
-			.build();
-		
-		public static void visit(ConfigSchema schema) {
-			schema.getSection("Mob Set Rule").add(0, mobSet);
-			schema.getSection("Tag Set Rule").add(0, tagSet);
-		}
+	public static final ConfigProperty<Set<EntityType<?>>> mobSet = entityTypeSetOpt("mobSet", Collections.emptySet(), "A comma-separated set of mob IDs.")
+		.example("minecraft:creeper, minecraft:spider")
+		.build();
+	
+	public static final ConfigProperty<Set<TagKey<EntityType<?>>>> tagSet = entityTypeTagKeySetOpt("tagSet", Collections.emptySet(), "A comma-separated set of entity type tags.")
+		.example("minecraft:raiders, some_datapack:some_tag")
+		.build();
+	
+	public static void visit(ConfigSchema schema) {
+		schema.getSection("Mob Set Rule").add(0, mobSet);
+		schema.getSection("Tag Set Rule").add(0, tagSet);
 	}
 }

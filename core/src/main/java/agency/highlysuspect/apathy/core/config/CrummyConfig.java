@@ -1,6 +1,6 @@
-package agency.highlysuspect.apathy.core.newconfig;
+package agency.highlysuspect.apathy.core.config;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +36,7 @@ public class CrummyConfig implements CookedConfig {
 			write();
 			return true;
 		} catch (Exception e) {
-			ApathyHell.instance.log.error("Problem loading config at " + path + ": " + e.getMessage(), e);
+			Apathy.instance.log.error("Problem loading config at " + path + ": " + e.getMessage(), e);
 			return false;
 		}
 	}
@@ -66,7 +66,7 @@ public class CrummyConfig implements CookedConfig {
 			ConfigProperty<?> prop = props.get(key);
 			if(prop == null) {
 				//TODO: keep track of these?
-				ApathyHell.instance.log.warn("On line " + lineNo + ", there's no option named '" + key + "'.");
+				Apathy.instance.log.warn("On line " + lineNo + ", there's no option named '" + key + "'.");
 				continue;
 			}
 			

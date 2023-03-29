@@ -1,10 +1,7 @@
 package agency.highlysuspect.apathy.core.etc;
 
-public enum DragonInitialStateN {
-	DEFAULT,
-	PASSIVE_DRAGON,
-	CALM,
-	;
+public enum DragonInitialState {
+	DEFAULT, PASSIVE_DRAGON, CALM;
 	
 	public boolean isPassive() {
 		return this == PASSIVE_DRAGON;

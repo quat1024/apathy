@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.CoreConv;
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EntityType;
 public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAttackerIsBoss> {
 	public static final PartialSpecAttackerIsBoss INSTANCE = new PartialSpecAttackerIsBoss();
 	
-	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(ApathyHell.MODID, "bosses"));
+	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Apathy.MODID, "bosses"));
 	
 	@Override
 	public Partial build() {

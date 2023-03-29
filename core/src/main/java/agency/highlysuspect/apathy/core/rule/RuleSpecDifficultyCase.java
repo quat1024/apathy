@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import com.google.gson.JsonObject;
@@ -44,7 +44,7 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 		@Override
 		public void write(RuleSpecDifficultyCase rule, JsonObject json) {
 			JsonObject cases = new JsonObject();
-			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.toString(), ApathyHell.instance.writeRule(diffRule)));
+			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.toString(), Apathy.instance.writeRule(diffRule)));
 			json.add("cases", cases);
 		}
 		
@@ -57,7 +57,7 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 				ApathyDifficulty diff = ApathyDifficulty.fromStringOrNull(key);
 				if(diff == null) continue;
 				
-				ruleSpecs.put(diff, ApathyHell.instance.readRule(cases.getAsJsonObject(key)));
+				ruleSpecs.put(diff, Apathy.instance.readRule(cases.getAsJsonObject(key)));
 			}
 			
 			return new RuleSpecDifficultyCase(ruleSpecs);

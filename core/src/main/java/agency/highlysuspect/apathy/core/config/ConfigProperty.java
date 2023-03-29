@@ -1,6 +1,6 @@
-package agency.highlysuspect.apathy.core.newconfig;
+package agency.highlysuspect.apathy.core.config;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import org.jetbrains.annotations.Nullable;
@@ -266,7 +266,7 @@ public interface ConfigProperty<T> {
 				//error case
 				//TODO make the other serdes this permissive as well, instead of throwing
 				String possibleValues = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining("/"));
-				ApathyHell.instance.log.warn("Value " + s + " on field " + name + " is not one of " + possibleValues + ". Defaulting to " + defaultValue.name().toLowerCase(Locale.ROOT));
+				Apathy.instance.log.warn("Value " + s + " on field " + name + " is not one of " + possibleValues + ". Defaulting to " + defaultValue.name().toLowerCase(Locale.ROOT));
 				return defaultValue;
 			});
 	}

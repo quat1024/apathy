@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
@@ -66,14 +66,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		public void write(RuleSpecPredicated rule, JsonObject json) {
 			json.addProperty("if_true", rule.ifTrue.toAllowDenyPassString());
 			json.addProperty("if_false", rule.ifFalse.toAllowDenyPassString());
-			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
+			json.add("predicate", Apathy.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
 			TriState ifTrue = CoolGsonHelper.getAllowDenyPassTriState(json, "if_true", TriState.DEFAULT);
 			TriState ifFalse = CoolGsonHelper.getAllowDenyPassTriState(json, "if_false", TriState.DEFAULT);
-			PartialSpec<?> part = ApathyHell.instance.readPartial(json.get("predicate"));
+			PartialSpec<?> part = Apathy.instance.readPartial(json.get("predicate"));
 			return new RuleSpecPredicated(ifTrue, ifFalse, part, this);
 		}
 	}
@@ -83,12 +83,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
-			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
+			json.add("predicate", Apathy.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.allowIf(ApathyHell.instance.readPartial(json.get("predicate")));
+			return RuleSpecPredicated.allowIf(Apathy.instance.readPartial(json.get("predicate")));
 		}
 	}
 	
@@ -97,12 +97,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
-			json.add("predicate", ApathyHell.instance.writePartial(rule.predSpec));
+			json.add("predicate", Apathy.instance.writePartial(rule.predSpec));
 		}
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.denyIf(ApathyHell.instance.readPartial(json.get("predicate")));
+			return RuleSpecPredicated.denyIf(Apathy.instance.readPartial(json.get("predicate")));
 		}
 	}
 }

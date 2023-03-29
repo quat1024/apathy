@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
-import agency.highlysuspect.apathy.core.CoreOptions;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreMobOptions;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -13,7 +13,6 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -76,10 +75,10 @@ public class PlayerSetManager extends SavedData {
 	}
 	
 	public void syncWithConfig() {
-		Optional<String> configSetName = ApathyHell.instance.mobsConfigCooked.get(CoreOptions.Mobs.playerSetName);
+		Optional<String> configSetName = Apathy.instance.mobCfg.get(CoreMobOptions.playerSetName);
 		if(configSetName.isPresent()) {
 			String name = configSetName.get();
-			boolean selfselectiness = ApathyHell.instance.mobsConfigCooked.get(CoreOptions.Mobs.playerSetSelfSelect);
+			boolean selfselectiness = Apathy.instance.mobCfg.get(CoreMobOptions.playerSetSelfSelect);
 			
 			Entry set = playerSets.get(name);
 			
@@ -223,7 +222,7 @@ public class PlayerSetManager extends SavedData {
 	
 	public Component printAllPlayerSets() {
 		//prints all sets such that self select ones are marked with a "(self-select)" note
-		return ComponentUtils.formatList(playerSets.entrySet(), entry -> new TextComponent(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
+		return ComponentUtils.formatList(playerSets.entrySet(), entry -> Portage.literal(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
 	}
 	
 	public static record Entry(Set<UUID> members, boolean selfSelect) {

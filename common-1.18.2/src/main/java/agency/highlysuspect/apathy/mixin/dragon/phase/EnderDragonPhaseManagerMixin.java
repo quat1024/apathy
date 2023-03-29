@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
-import agency.highlysuspect.apathy.core.CoreOptions;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreBossOptions;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhaseManager;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class EnderDragonPhaseManagerMixin {
 	@ModifyVariable(method = "setPhase", at = @At("HEAD"))
 	private EnderDragonPhase<?> whenSettingPhase(EnderDragonPhase<?> type) {
-		boolean noFlies = !ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonFlies);
-		boolean noSits = !ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonSits);
+		boolean noFlies = !Apathy.instance.bossCfg.get(CoreBossOptions.dragonFlies);
+		boolean noSits = !Apathy.instance.bossCfg.get(CoreBossOptions.dragonSits);
 		
 		if(noFlies && (type == EnderDragonPhase.STRAFE_PLAYER || type == EnderDragonPhase.CHARGING_PLAYER)) return EnderDragonPhase.LANDING_APPROACH;
 		else if(noSits && (type == EnderDragonPhase.SITTING_FLAMING || type == EnderDragonPhase.SITTING_ATTACKING)) return EnderDragonPhase.SITTING_SCANNING;

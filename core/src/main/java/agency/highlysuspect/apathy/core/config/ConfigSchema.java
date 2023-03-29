@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.core.newconfig;
+package agency.highlysuspect.apathy.core.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;

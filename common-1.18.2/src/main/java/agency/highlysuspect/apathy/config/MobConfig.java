@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.CoreConv;
-import agency.highlysuspect.apathy.JsonRule;
+import agency.highlysuspect.apathy.core.JsonRule;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.Example;

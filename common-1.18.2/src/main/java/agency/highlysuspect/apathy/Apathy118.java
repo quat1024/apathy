@@ -2,10 +2,10 @@ package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.config.BossConfig;
 import agency.highlysuspect.apathy.config.Config;
-import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.core.ApathyHell;
 import agency.highlysuspect.apathy.core.CoreOptions;
+import agency.highlysuspect.apathy.core.JsonRule;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
@@ -29,8 +29,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
-import org.jetbrains.annotations.Nullable;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +39,6 @@ public abstract class Apathy118 extends ApathyHell {
 	
 	public MobConfig mobConfig = new MobConfig();
 	public BossConfig bossConfig = new BossConfig();
-	public @Nullable Rule jsonRule;
 	
 	public Apathy118(Path configPath) {
 		super(configPath, CoreConv.toLogFacade(LogManager.getLogger(MODID)));
@@ -49,10 +46,9 @@ public abstract class Apathy118 extends ApathyHell {
 		Apathy118.instance118 = this;
 	}
 	
+	@Override
 	public boolean loadConfig() {
-		loadConfig_toplevel();
-		
-		boolean ok = true;
+		boolean ok = super.loadConfig();
 		
 		MobConfig newMobConfig = mobConfig;
 		try {
@@ -72,16 +68,6 @@ public abstract class Apathy118 extends ApathyHell {
 			ok = false;
 		} finally {
 			bossConfig = newBossConfig;
-		}
-		
-		Rule newJsonRule = jsonRule;
-		try {
-			newJsonRule = JsonRule.loadJson(configPath.resolve("mobs.json"));
-		} catch (Exception e) {
-			log.error("Problem reading mobs.json: ", e);
-			ok = false;
-		} finally {
-			jsonRule = newJsonRule;
 		}
 		
 		return ok;

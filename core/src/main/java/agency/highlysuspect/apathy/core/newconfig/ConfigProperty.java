@@ -1,5 +1,7 @@
 package agency.highlysuspect.apathy.core.newconfig;
 
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -17,6 +20,8 @@ import java.util.stream.Collectors;
 public interface ConfigProperty<T> {
 	String name();
 	List<String> comment();
+	List<String> note();
+	List<String> example();
 	
 	Type type();
 	T defaultValue();
@@ -41,6 +46,8 @@ public interface ConfigProperty<T> {
 		
 		private final String name;
 		private final List<String> comment = new ArrayList<>();
+		private final List<String> note = new ArrayList<>();
+		private final List<String> example = new ArrayList<>();
 		private final Type type;
 		private final T defaultValue;
 		private @Nullable Function<T, String> writer;
@@ -49,6 +56,16 @@ public interface ConfigProperty<T> {
 		
 		public BUILDER comment(String... comment) {
 			this.comment.addAll(Arrays.asList(comment));
+			return self();
+		}
+		
+		public BUILDER note(String... note) {
+			this.note.addAll(Arrays.asList(note));
+			return self();
+		}
+		
+		public BUILDER example(String... example) {
+			this.example.addAll(Arrays.asList(example));
 			return self();
 		}
 		
@@ -80,6 +97,16 @@ public interface ConfigProperty<T> {
 				@Override
 				public List<String> comment() {
 					return comment;
+				}
+				
+				@Override
+				public List<String> note() {
+					return note;
+				}
+				
+				@Override
+				public List<String> example() {
+					return example;
 				}
 				
 				@Override
@@ -140,6 +167,34 @@ public interface ConfigProperty<T> {
 		}
 	}
 	
+	class LongBuilder extends Builder<Long, LongBuilder> {
+		public LongBuilder(String name, Long defaultValue) {
+			super(name, Long.class, defaultValue);
+			writer(l -> Long.toString(l));
+			parser(Long::parseLong);
+		}
+		
+		public LongBuilder atLeast(long min) {
+			return addValidator((self, x) -> {
+				if(x < min) throw new IllegalArgumentException("Expected value of " + self.name() + " to be at least " + min + ".");
+			});
+		}
+		
+		public LongBuilder atMost(long max) {
+			return addValidator((self, x) -> {
+				if(x > max) throw new IllegalArgumentException("Expected value of " + self.name() + " to be at most " + max + ".");
+			});
+		}
+	}
+	
+	static IntBuilder intOpt(String name, int defaultValue, String... comment) {
+		return new IntBuilder(name, defaultValue).comment(comment);
+	}
+	
+	static LongBuilder longOpt(String name, long defaultValue, String... comment) {
+		return new LongBuilder(name, defaultValue).comment(comment);
+	}
+	
 	static <B extends Builder<Boolean, B>> B boolOpt(String name, boolean defaultValue, String... comment) {
 		return new Builder<Boolean, B>(name, Boolean.class, defaultValue)
 			.comment(comment)
@@ -147,8 +202,27 @@ public interface ConfigProperty<T> {
 			.parser(Boolean::parseBoolean);
 	}
 	
-	static IntBuilder intOpt(String name, int defaultValue, String... comment) {
-		return new IntBuilder(name, defaultValue).comment(comment);
+	static <B extends Builder<String, B>> B stringOpt(String name, String defaultValue, String... comment) {
+		return new Builder<String, B>(name, String.class, defaultValue)
+			.comment(comment)
+			.writer(String::trim)
+			.parser(String::trim);
+	}
+	
+	static <B extends Builder<Optional<String>, B>> B optionalStringOpt(String name, Optional<String> defaultValue, String... comment) {
+		return new Builder<Optional<String>, B>(name, Optional.class, defaultValue)
+			.comment(comment)
+			.writer(opt -> opt.orElse(""))
+			.parser(s -> s.trim().isEmpty() ? Optional.empty() : Optional.of(s));
+	}
+	
+	static <B extends Builder<List<String>, B>> B stringListOpt(String name, List<String> defaultValue, String... comment) {
+		return new Builder<List<String>, B>(name, List.class, defaultValue)
+			.comment(comment)
+			.writer(l -> String.join(", ", l))
+			.parser(s -> Arrays.stream(s.split(","))
+				.map(String::trim)
+				.collect(Collectors.toList()));
 	}
 	
 	static <B extends Builder<Set<ApathyDifficulty>, B>> B difficultySetOpt(String name, Set<ApathyDifficulty> defaultValue, String... comment) {
@@ -163,5 +237,37 @@ public interface ConfigProperty<T> {
 				.map(ApathyDifficulty::fromStringOrNull)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet()));
+	}
+	
+	static <B extends Builder<TriState, B>> B allowDenyPassOpt(String name, TriState defaultValue, String... comment) {
+		return new Builder<TriState, B>(name, TriState.class, defaultValue)
+			.comment(comment)
+			.writer(TriState::toAllowDenyPassString)
+			.parser(TriState::fromAllowDenyPassString);
+	}
+	
+	static <B extends Builder<Boolean, B>> B boolAllowDenyOpt(String name, boolean defaultValue, String... comment) {
+		return new Builder<Boolean, B>(name, Boolean.class, defaultValue)
+			.comment(comment)
+			.writer(b -> b ? "allow" : "deny")
+			.parser(s -> s.equalsIgnoreCase("allow"));
+	}
+	
+	static <E extends Enum<?>, B extends Builder<E, B>> B enumOpt(String name, E defaultValue, String... comment) {
+		@SuppressWarnings("unchecked") Class<E> enumClass = (Class<E>) defaultValue.getClass();
+		return new Builder<E, B>(name, enumClass, defaultValue)
+			.comment(comment)
+			.writer(e -> e.name().toLowerCase(Locale.ROOT))
+			.parser(s -> {
+				for(E e : enumClass.getEnumConstants()) {
+					if(e.name().equalsIgnoreCase(s)) return e;
+				}
+				
+				//error case
+				//TODO make the other serdes this permissive as well, instead of throwing
+				String possibleValues = Arrays.stream(enumClass.getEnumConstants()).map(Enum::name).collect(Collectors.joining("/"));
+				ApathyHell.instance.log.warn("Value " + s + " on field " + name + " is not one of " + possibleValues + ". Defaulting to " + defaultValue.name().toLowerCase(Locale.ROOT));
+				return defaultValue;
+			});
 	}
 }

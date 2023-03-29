@@ -1,7 +1,5 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.core;
 
-import agency.highlysuspect.apathy.core.ApathyHell;
-import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpec;
 import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
@@ -17,14 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
-//TODO: Move to core, currently blocked on dumping logic which requires the config to be moved first
 public class JsonRule {
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
 	public static @Nullable Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
-		if(!Files.exists(mobsJson)) {
-			return null;
-		}
+		if(!Files.exists(mobsJson)) return null;
 		
 		//read it into string
 		String stuff;

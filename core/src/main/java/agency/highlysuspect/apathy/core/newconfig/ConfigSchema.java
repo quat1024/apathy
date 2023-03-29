@@ -1,10 +1,10 @@
 package agency.highlysuspect.apathy.core.newconfig;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class ConfigSchema {
 	List<Object> entries = new ArrayList<>();
@@ -13,17 +13,13 @@ public class ConfigSchema {
 		entries.add(sectionName);
 	}
 	
-	public void option(ConfigProperty<?> option) {
-		entries.add(option);
+	public void option(ConfigProperty<?>... options) {
+		entries.addAll(Arrays.asList(options));
 	}
 	
-	public <B extends ConfigProperty.Builder<?, B>> void option(B builder) {
-		option(builder.build());
-	}
-	
-	public void section(String sectionName, Consumer<Consumer<ConfigProperty<?>>> optionsInSection) {
+	public void section(String sectionName, ConfigProperty<?>... options) {
 		section(sectionName);
-		optionsInSection.accept(this::option);
+		option(options);
 	}
 	
 	public Map<String, ConfigProperty<?>> propertiesByName() {

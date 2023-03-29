@@ -40,15 +40,9 @@ public abstract class ApathyHell {
 	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
 	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
 	
-	private final ConfigSchema generalConfigSchema = new ConfigSchema();
-	private final ConfigSchema mobConfigSchema = new ConfigSchema();
-	private final ConfigSchema bossConfigSchema = new ConfigSchema();
-	
 	public CookedConfig generalConfigCooked; //TODO remove -cooked suffix after migrating over, it name-clashes rn
 	public CookedConfig mobConfigCooked;
 	public CookedConfig bossConfigCooked;
-	
-	//werid spot for this, idk
 	public @Nullable Rule jsonRule;
 	
 	public ApathyHell(Path configPath, LogFacade log) {
@@ -73,8 +67,8 @@ public abstract class ApathyHell {
 		addRules();
 		
 		//Config
-		CoreOptions.General.visit(generalConfigSchema);
-		addPlatformSpecificGeneralConfig(generalConfigSchema);
+		ConfigSchema generalConfigSchema = new ConfigSchema();
+		addGeneralConfig(generalConfigSchema);
 		generalConfigCooked = generalConfigBakery().cook(generalConfigSchema);
 		
 		//Misc
@@ -83,14 +77,61 @@ public abstract class ApathyHell {
 		installPlayerSetManagerTicker();
 	}
 	
-	public void loadConfig_toplevel() { //TODO rename after onboarding everything to new system
-		generalConfigCooked.refresh();
+	public boolean loadConfig() {
+		boolean ok = true;
+		
+		ok &= generalConfigCooked.refresh();
+		
+		Rule newJsonRule = jsonRule;
+		try {
+			newJsonRule = JsonRule.loadJson(configPath.resolve("mobs.json"));
+		} catch (Exception e) {
+			log.error("Problem reading mobs.json: ", e);
+			ok = false;
+		} finally {
+			jsonRule = newJsonRule;
+		}
+		
+		return ok;
 	}
+	
+	public void addRules() {
+		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
+		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
+		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
+		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
+	}
+	
+	public void addGeneralConfig(ConfigSchema schema) {
+		CoreOptions.General.visit(schema);
+	}
+	
+	public void addMobConfig(ConfigSchema schema) {
+		
+	}
+	
+	public void addBossConfig(ConfigSchema schema) {
+		
+	}
+	
+	public abstract ConfigSchema.Bakery generalConfigBakery();
+	
+	public abstract void installConfigFileReloader();
+	public abstract void installCommandRegistrationCallback();
+	public abstract void installPlayerSetManagerTicker();
 	
 	//TODO maybe find a better home for these 4 methods?
 	public RuleSpec<?> readRule(JsonElement jsonElem) {
 		if(!(jsonElem instanceof JsonObject)) throw new IllegalArgumentException("Not json object");
-		JsonObject json = (JsonObject) jsonElem; 
+		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
 		RuleSerializer<?> ruleSerializer = ruleSerializers.get(type);
@@ -143,29 +184,4 @@ public abstract class ApathyHell {
 		Collections.addAll(set, enumClass.getEnumConstants());
 		return set;
 	}
-	
-	public void addPlatformSpecificGeneralConfig(ConfigSchema generalConfigSchema) { }
-	public void addPlatformSpecificMobConfig(ConfigSchema mobConfig) { }
-	public void addPlatformSpecificBossConfig(ConfigSchema bossConfig) { }
-	
-	public abstract ConfigSchema.Bakery generalConfigBakery();
-	
-	public void addRules() {
-		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
-		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
-		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
-		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
-		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
-	}
-	
-	public abstract void installConfigFileReloader();
-	public abstract void installCommandRegistrationCallback();
-	public abstract void installPlayerSetManagerTicker();
 }

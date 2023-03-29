@@ -98,7 +98,23 @@ public class CrummyConfig implements CookedConfig {
 			
 			@Override
 			public <T> void visitOption(ConfigProperty<T> option) {
-				option.comment().forEach(commentLine -> out.add("# " + commentLine));
+				for(String s : option.comment()) {
+					out.add("# " + s);
+				}
+				
+				List<String> note = option.note();
+				boolean first = true;
+				for(String noteLine : note) {
+					out.add((first ? "# Note: " : "#       ") + noteLine);
+					first = false;
+				}
+				
+				List<String> example = option.example();
+				first = true;
+				for(String exampleLine : example) {
+					out.add((first ? "# Example: " : "#          ") + exampleLine);
+					first = false;
+				}
 				
 				//silly special-case
 				if(!option.name().equals("configVersion")) {

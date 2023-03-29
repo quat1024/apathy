@@ -12,6 +12,15 @@ import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.core.wrapper.MobExt;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerTaggedWith;
+import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
+import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
+import agency.highlysuspect.apathy.rule.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.rule.PartialSpecLocation;
+import agency.highlysuspect.apathy.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.rule.PartialSpecScore;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
@@ -133,6 +142,22 @@ public abstract class Apathy118 extends ApathyHell {
 	}
 	
 	/// Cross platform stuff
+	
+	@Override
+	public void addRules() {
+		super.addRules();
+		
+		//TODO: add private constructors to all of these LOL, lost time debugging because i used to have "new xxx.serializer()" here
+		partialSerializers.register("apathy:attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
+		partialSerializers.register("apathy:attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
+		partialSerializers.register("apathy:attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
+		partialSerializers.register("apathy:advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
+		partialSerializers.register("apathy:in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
+		partialSerializers.register("apathy:difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
+		partialSerializers.register("apathy:location", PartialSpecLocation.Serializer.INSTANCE);
+		partialSerializers.register("apathy:revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
+		partialSerializers.register("apathy:score", PartialSpecScore.Serializer.INSTANCE);
+	}
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();

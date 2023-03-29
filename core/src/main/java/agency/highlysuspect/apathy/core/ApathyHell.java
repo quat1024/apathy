@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.core;
 
-import agency.highlysuspect.apathy.core.newconfig.ConfigProperty;
 import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
 import agency.highlysuspect.apathy.core.newconfig.CookedConfig;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -18,7 +17,8 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecDebug;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDifficultyCase;
 import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
-import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
+import agency.highlysuspect.apathy.core.rule.SerializablePartialSpec;
+import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -70,20 +70,7 @@ public abstract class ApathyHell {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory at " + configPath, e);
 		}
 		
-		//Rules
-		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
-		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
-		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
-		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
-		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
-		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
-		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
-		addPlatformSpecificRules();
+		addRules();
 		
 		//Config
 		CoreOptions.General.visit(generalConfigSchema);
@@ -106,14 +93,23 @@ public abstract class ApathyHell {
 		JsonObject json = (JsonObject) jsonElem; 
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
-		RuleSerializer<?> pee = ruleSerializers.get(type);
-		return (RuleSpec<?>) pee.read(json); //TODO actually unchecked, it's SerializableRule stuff
+		RuleSerializer<?> ruleSerializer = ruleSerializers.get(type);
+		
+		//TODO way better error message (list the valid options?)
+		if(ruleSerializer == null) throw new IllegalArgumentException("No rule serializer with name " + type);
+		else return (RuleSpec<?>) ruleSerializer.read(json);
 	}
 	
-	public JsonObject writeRule(RuleSpec<?> rule) {
+	public <T extends SerializableRuleSpec<T>> JsonObject writeRule(RuleSpec<T> rule) {
 		JsonObject ok = new JsonObject();
-		ok.addProperty("type", ruleSerializers.getName(rule.getSerializer()));
-		rule.getSerializer().writeErased(rule, ok);
+		RuleSerializer<T> serializer = rule.getSerializer();
+		
+		String name = ruleSerializers.getName(serializer);
+		//TODO way better error message (list the valid options?)
+		if(name == null) throw new IllegalArgumentException("Unregistered rule serializer: " + serializer.getClass().getName());
+		
+		ok.addProperty("type", name);
+		serializer.writeErased(rule, ok);
 		return ok;
 	}
 	
@@ -122,14 +118,23 @@ public abstract class ApathyHell {
 		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
-		PartialSerializer<?> pee = partialSerializers.get(type);
-		return (PartialSpec<?>) pee.read(json); //TODO actually unchecked
+		PartialSerializer<?> partialSerializer = partialSerializers.get(type);
+		
+		//TODO way better error message (list the valid options?)
+		if(partialSerializer == null) throw new IllegalArgumentException("No partial serializer with name " + type);
+		else return (PartialSpec<?>) partialSerializer.read(json);
 	}
 	
-	public JsonObject writePartial(PartialSpec<?> part) {
+	public <T extends SerializablePartialSpec<T>> JsonObject writePartial(PartialSpec<T> part) {
 		JsonObject ok = new JsonObject();
-		ok.addProperty("type", partialSerializers.getName(part.getSerializer()));
-		part.getSerializer().writeErased(part, ok);
+		PartialSerializer<T> serializer = part.getSerializer();
+		
+		String name = partialSerializers.getName(serializer);
+		//TODO way better error message (list the valid options?)
+		if(name == null) throw new IllegalArgumentException("Unregistered partial serializer: " + serializer.getClass().getName());
+		
+		ok.addProperty("type", name);
+		serializer.writeErased(part, ok);
 		return ok;
 	}
 	
@@ -145,7 +150,20 @@ public abstract class ApathyHell {
 	
 	public abstract ConfigSchema.Bakery generalConfigBakery();
 	
-	public void addPlatformSpecificRules() { }
+	public void addRules() {
+		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:debug", RuleSpecDebug.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
+		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
+		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
+		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
+		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
+		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
+	}
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();

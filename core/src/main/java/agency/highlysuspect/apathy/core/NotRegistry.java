@@ -1,15 +1,15 @@
 package agency.highlysuspect.apathy.core;
 
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Really really basic registry type.
  */
 public class NotRegistry<T> {
 	protected final Map<String, T> byName = new LinkedHashMap<>();
-	protected final Map<T, String> byThing = new LinkedHashMap<>();
+	protected final Map<T, String> byThing = new IdentityHashMap<>();
 	
 	public T register(String name, T thing) {
 		byName.put(name, thing);
@@ -19,10 +19,6 @@ public class NotRegistry<T> {
 	
 	public T get(String name) {
 		return byName.get(name);
-	}
-	
-	public Optional<T> getOrEmpty(String name) {
-		return Optional.ofNullable(get(name));
 	}
 	
 	public String getName(T thing) {

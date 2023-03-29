@@ -7,7 +7,7 @@ public interface RuleSerializer<RULE> {
 	RULE read(JsonObject json);
 	
 	@SuppressWarnings("unchecked")
-	default void writeErased(Object shit, JsonObject json) {
-		write((RULE) shit, json);
+	default void writeErased(Object rule, JsonObject json) {
+		write((RULE) rule, json);
 	}
 }

@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.rule.Rule;
 import com.google.gson.JsonElement;
@@ -25,14 +25,14 @@ public interface RuleSpec {
 			
 			Files.createDirectories(dumpDir);
 			Path outPath = dumpDir.resolve(filename + ".json");
-			Apathy.LOG.info("Dumping rule to " + outPath);
+			Apathy119.LOG.info("Dumping rule to " + outPath);
 			
 			DataResult<JsonElement> jsonResult = Specs.RULE_SPEC_CODEC.encodeStart(JsonOps.INSTANCE, this);
-			JsonElement json = jsonResult.getOrThrow(false, Apathy.LOG::error);
+			JsonElement json = jsonResult.getOrThrow(false, Apathy119.LOG::error);
 			
 			Files.writeString(outPath, JsonRule.GSON.toJson(json));
 		} catch (Exception e) {
-			Apathy.LOG.error("Problem dumping rule to " + filename, e);
+			Apathy119.LOG.error("Problem dumping rule to " + filename, e);
 		}
 	}
 }

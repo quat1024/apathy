@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.aggroedgecase;
 
-import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.mixin.TargetGoalAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;

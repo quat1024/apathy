@@ -40,12 +40,14 @@ dependencies {
 	
 	//xplat
 	implementation project(":common-1.18.2")
+	implementation project(":core")
 }
 
 //fold in xplat resources and sources
 
 processResources {
 	from project(":common-1.18.2").sourceSets.main.resources
+	from project(":core").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/fabric.mod.json") {
@@ -55,6 +57,7 @@ processResources {
 
 tasks.withType(JavaCompile) {
 	source(project(":common-1.18.2").sourceSets.main.allSource)
+	source(project(":core").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects

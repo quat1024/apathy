@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -22,6 +22,6 @@ public abstract class ZombieMixin extends Mob {
 	@Intrinsic(displace = true) //mixin wizards feel free to correct me on this
 	public boolean canAttack(LivingEntity other) {
 		return super.canAttack(other) &&
-			(other instanceof Villager ? Apathy.INSTANCE.generalConfig.zombieAttackVillagerDifficulties.contains(level.getDifficulty()) : true);
+			(other instanceof Villager ? Apathy118.instance118.generalConfig.zombieAttackVillagerDifficulties.contains(level.getDifficulty()) : true);
 	}
 }

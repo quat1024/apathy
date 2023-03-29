@@ -1,8 +1,9 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.AtMost;
+import agency.highlysuspect.apathy.core.ApathyHell;
 
 import java.lang.reflect.Field;
 
@@ -18,13 +19,13 @@ public class LongSerde implements FieldSerde.ToString<Long> {
 		
 		AtLeast atLeast = sourceField.getDeclaredAnnotation(AtLeast.class);
 		if(atLeast != null && x < atLeast.minLong()) {
-			Apathy.LOG.warn("Value " + sourceField.getName() + " not at least " + atLeast.minLong());
+			ApathyHell.instance.log.warn("Value " + sourceField.getName() + " not at least " + atLeast.minLong());
 			x = atLeast.minLong();
 		}
 		
 		AtMost atMost = sourceField.getDeclaredAnnotation(AtMost.class);
 		if(atMost != null && x > atMost.maxLong()) {
-			Apathy.LOG.warn("Value " + sourceField.getName() + " not at most " + atMost.maxLong());
+			ApathyHell.instance.log.warn("Value " + sourceField.getName() + " not at most " + atMost.maxLong());
 			x = atMost.maxLong();
 		}
 		

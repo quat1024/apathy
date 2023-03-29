@@ -1,9 +1,11 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.MobExt;
-import agency.highlysuspect.apathy.TriState;
-import agency.highlysuspect.apathy.rule.CodecUtil;
+import agency.highlysuspect.apathy.Apathy118;
+import agency.highlysuspect.apathy.CoolNbtUtil;
+import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.core.wrapper.MobExt;
+import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +32,7 @@ public class MobMixin implements MobExt {
 		if(thi$.level.isClientSide) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayer && !Apathy.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
+		if(newTarget instanceof ServerPlayer && !Apathy118.instance118.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
 			
 			//Btw this is the reason i don't use the forge attack target event and use this mixin even on Forge too.
@@ -51,9 +53,9 @@ public class MobMixin implements MobExt {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.INSTANCE.generalConfig.recheckInterval == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % Apathy118.instance118.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayer
-			&& !Apathy.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+			&& !Apathy118.instance118.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}
@@ -79,8 +81,13 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Override
-	public @Nullable Vec3 apathy$getSpawnPosition() {
-		return spawnPosition;
+	public long apathy$getGameTime() {
+		return ((Mob) (Object) this).level.getGameTime();
+	}
+	
+	@Override
+	public @Nullable VecThree apathy$getSpawnPosition() {
+		return CoreConv.toVecThree(spawnPosition);
 	}
 	
 	@Override
@@ -96,7 +103,7 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(spawnPosition != null) {
-			tag.put(SPAWN_POSITION_KEY, CodecUtil.writeVec3(spawnPosition));
+			tag.put(SPAWN_POSITION_KEY, CoolNbtUtil.writeVec3(spawnPosition));
 		}
 		
 		if(locationPredicateCache != null) {
@@ -115,7 +122,7 @@ public class MobMixin implements MobExt {
 		}
 		
 		if(tag.contains(SPAWN_POSITION_KEY)) {
-			spawnPosition = CodecUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CodecUtil.VEC3_LIST_ID));
+			spawnPosition = CoolNbtUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CoolNbtUtil.VEC3_LIST_ID));
 		} else {
 			spawnPosition = null;
 		}

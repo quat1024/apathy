@@ -1,14 +1,15 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.RuleSpec;
-import agency.highlysuspect.apathy.rule.spec.Specs;
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.rule.Rule;
+import agency.highlysuspect.apathy.core.rule.RuleSpec;
+import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,11 +19,12 @@ import java.util.stream.Collectors;
 public class JsonRule {
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
-	public static Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
+	public static @Nullable Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
 		if(!Files.exists(mobsJson)) {
 			return null;
 		}
 		
+		//read it into string
 		String stuff;
 		try {
 			stuff = Files.lines(mobsJson).collect(Collectors.joining("\n"));
@@ -31,6 +33,7 @@ public class JsonRule {
 			throw e;
 		}
 		
+		//parse the string as unstructured json
 		JsonElement json;
 		try {
 			json = GSON.fromJson(stuff, JsonElement.class);
@@ -39,25 +42,46 @@ public class JsonRule {
 			throw e;
 		}
 		
-		DataResult<RuleSpec> ruleSpecResult = Specs.RULE_SPEC_CODEC.parse(JsonOps.INSTANCE, json);
-		if(ruleSpecResult.error().isPresent()) {
-			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
+		//parse the json into a java object
+		RuleSpec<?> spec;
+		try {
+			spec = ApathyHell.instance.readRule(json);
+		} catch (Exception e) {
+			e.addSuppressed(new RuntimeException("Problem decoding json rule"));
+			throw e;
 		}
 		
-		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy.LOG::error);
-		
+		//realize the rulespec into a rule
 		try {
-			if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule");
+			if(Apathy118.instance118.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule");
 			
-			if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
+			if(Apathy118.instance118.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule-opt");
+				if(Apathy118.instance118.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule-opt");
 			}
 			
 			return spec.build();
 		} catch (Exception e) {
 			e.addSuppressed(new RuntimeException("Problem finalizing rule"));
 			throw e;
+		}
+	}
+	
+	/**
+	 * Write a rule as json and poop it out.
+	 */
+	public static <RULE extends SerializableRuleSpec<RULE>> void dump(RuleSpec<RULE> ruleSpec, Path configFolder, String filename) {
+		try {
+			Path dumpDir = configFolder.resolve("dumps");
+			
+			Files.createDirectories(dumpDir);
+			
+			Path outPath = dumpDir.resolve(filename + ".json");
+			ApathyHell.instance.log.info("Dumping rule to " + outPath);
+			JsonObject json = ApathyHell.instance.writeRule(ruleSpec);
+			Files.writeString(outPath, GSON.toJson(json));
+		} catch (Exception e) {
+			ApathyHell.instance.log.error("Problem dumping rule to " + filename, e);
 		}
 	}
 }

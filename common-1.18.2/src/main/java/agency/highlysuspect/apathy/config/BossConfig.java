@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.AtMost;
 import agency.highlysuspect.apathy.config.annotation.Comment;
@@ -94,7 +94,7 @@ public class BossConfig extends Config {
 		"item, and give you the advancement for killing the Wither."
 	})
 	@Use("difficultySet")
-	public Set<Difficulty> witherDifficulties = Apathy.allDifficultiesNotPeaceful();
+	public Set<Difficulty> witherDifficulties = Apathy118.allDifficultiesNotPeaceful();
 	
 	@Comment("Is the Wither allowed to intentionally target players?")
 	public boolean witherTargetsPlayers = true;

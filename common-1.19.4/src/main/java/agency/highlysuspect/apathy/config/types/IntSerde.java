@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.AtMost;
 
@@ -18,13 +18,13 @@ public class IntSerde implements FieldSerde.ToString<Integer> {
 		
 		AtLeast atLeast = sourceField.getDeclaredAnnotation(AtLeast.class);
 		if(atLeast != null && x < atLeast.minInt()) {
-			Apathy.LOG.warn("Value " + sourceField.getName() + " not at least " + atLeast.minInt());
+			Apathy119.LOG.warn("Value " + sourceField.getName() + " not at least " + atLeast.minInt());
 			x = atLeast.minInt();
 		}
 		
 		AtMost atMost = sourceField.getDeclaredAnnotation(AtMost.class);
 		if(atMost != null && x > atMost.maxInt()) {
-			Apathy.LOG.warn("Value " + sourceField.getName() + " not at most " + atMost.maxInt());
+			Apathy119.LOG.warn("Value " + sourceField.getName() + " not at most " + atMost.maxInt());
 			x = atMost.maxInt();
 		}
 		

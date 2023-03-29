@@ -40,6 +40,12 @@ repositories {
 dependencies {
 	compileOnly "org.spongepowered:mixin:0.8.5"
 	compileOnly "org.jetbrains:annotations:24.0.1"
+	
+	implementation project(":core")
+}
+
+processResources {
+	from project(":core").sourceSets.main.resources
 }
 
 tasks.withType(GenerateModuleMetadata) {

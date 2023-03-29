@@ -1,9 +1,8 @@
 package agency.highlysuspect.apathy.platform.forge;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
-import net.minecraft.commands.Commands;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -18,13 +17,15 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Mod("apathy")
-public class ForgeInit extends Apathy {
+public class ForgeInit extends Apathy118 {
 	public ForgeInit() {
+		//TODO should really use a real forge config
+		super(FMLPaths.CONFIGDIR.get().resolve(MODID));
+		
 		//borrowed from IExtensionPoint javadoc in fmlcore
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
 			() -> new IExtensionPoint.DisplayTest(
@@ -69,11 +70,5 @@ public class ForgeInit extends Apathy {
 				PlayerSetManager.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
 			}
 		});
-	}
-	
-	@Override
-	public Path getConfigPath() {
-		//TODO should really use an actual forge config
-		return FMLPaths.CONFIGDIR.get().resolve(MODID);
 	}
 }

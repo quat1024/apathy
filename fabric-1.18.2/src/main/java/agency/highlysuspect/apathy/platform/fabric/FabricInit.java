@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import net.fabricmc.api.ModInitializer;
@@ -13,9 +13,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import java.nio.file.Path;
-
-public class FabricInit extends Apathy implements ModInitializer {
+public class FabricInit extends Apathy118 implements ModInitializer {
+	public FabricInit() {
+		super(FabricLoader.getInstance().getConfigDir().resolve(MODID));
+	}
+	
 	@Override
 	public void onInitialize() {
 		init();
@@ -44,10 +46,5 @@ public class FabricInit extends Apathy implements ModInitializer {
 	@Override
 	public void installPlayerSetManagerTicker() {
 		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
-	}
-	
-	@Override
-	public Path getConfigPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(MODID);
 	}
 }

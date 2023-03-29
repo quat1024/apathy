@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import net.fabricmc.api.ModInitializer;
@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.nio.file.Path;
 
-public class FabricInit extends Apathy implements ModInitializer {
+public class FabricInit extends Apathy119 implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		init();
@@ -26,12 +26,12 @@ public class FabricInit extends Apathy implements ModInitializer {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
-				return Apathy.id("reload-config");
+				return Apathy119.id("reload-config");
 			}
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				Apathy.INSTANCE.loadConfig();
+				Apathy119.INSTANCE.loadConfig();
 			}
 		});
 	}
@@ -48,6 +48,6 @@ public class FabricInit extends Apathy implements ModInitializer {
 	
 	@Override
 	public Path getConfigPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(Apathy.MODID);
+		return FabricLoader.getInstance().getConfigDir().resolve(Apathy119.MODID);
 	}
 }

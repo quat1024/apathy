@@ -1,6 +1,5 @@
 package agency.highlysuspect.apathy.rule.spec;
 
-import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.rule.NotRegistry;
 import agency.highlysuspect.apathy.rule.spec.predicate.AllPredicateSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.AlwaysPredicateSpec;

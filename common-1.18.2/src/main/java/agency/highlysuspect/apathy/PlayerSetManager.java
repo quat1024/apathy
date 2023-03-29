@@ -74,7 +74,7 @@ public class PlayerSetManager extends SavedData {
 	}
 	
 	public void syncWithConfig() {
-		Optional<String> configSetName = Apathy.INSTANCE.mobConfig.playerSetName;
+		Optional<String> configSetName = Apathy118.instance118.mobConfig.playerSetName;
 		if(configSetName.isPresent()) {
 			String name = configSetName.get();
 			
@@ -82,14 +82,14 @@ public class PlayerSetManager extends SavedData {
 			
 			//Create the playerset, if it does not exist
 			if(set == null) {
-				set = Entry.newEmpty(Apathy.INSTANCE.mobConfig.playerSetSelfSelect);
+				set = Entry.newEmpty(Apathy118.instance118.mobConfig.playerSetSelfSelect);
 				playerSets.put(name, set);
 				setDirty();
 			}
 			
 			//Set its selfselectness, if it's different
-			if(set.selfSelect != Apathy.INSTANCE.mobConfig.playerSetSelfSelect) {
-				playerSets.put(name, set.withSelfSelect(Apathy.INSTANCE.mobConfig.playerSetSelfSelect));
+			if(set.selfSelect != Apathy118.instance118.mobConfig.playerSetSelfSelect) {
+				playerSets.put(name, set.withSelfSelect(Apathy118.instance118.mobConfig.playerSetSelfSelect));
 				setDirty();
 			}
 		}

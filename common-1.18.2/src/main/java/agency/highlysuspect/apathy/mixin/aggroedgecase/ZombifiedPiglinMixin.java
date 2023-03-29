@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.aggroedgecase;
 
-import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.MobExt;
+import agency.highlysuspect.apathy.Apathy118;
+import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
@@ -25,7 +25,7 @@ public class ZombifiedPiglinMixin {
 		MobExt thisExt = (MobExt) this;
 		
 		Level level = thiss.level;
-		if(!Apathy.INSTANCE.generalConfig.angryPiggies.contains(level.getDifficulty())) {
+		if(!Apathy118.instance118.generalConfig.angryPiggies.contains(level.getDifficulty())) {
 			//Oh wow, an overwrite-head-cancel! Even better than an inject-head-cancel
 			return;
 		}

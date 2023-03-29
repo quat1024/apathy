@@ -28,7 +28,7 @@ public class ApathyCommands {
 		//I've been burned before
 		//Be careful
 		
-		dispatcher.register(literal(Apathy.MODID)
+		dispatcher.register(literal(Apathy119.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
@@ -209,7 +209,7 @@ public class ApathyCommands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		boolean ok = Apathy.INSTANCE.loadConfig();
+		boolean ok = Apathy119.INSTANCE.loadConfig();
 		
 		if(ok) msg(cmd, "Reloaded Apathy config files.");
 		else err(cmd, "Error reloading Apathy config files. Check the server log.");

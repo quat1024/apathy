@@ -44,14 +44,14 @@ public class JsonRule {
 			throw new RuntimeException("Problem decoding json rule: " + ruleSpecResult.error().get().message());
 		}
 		
-		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy.LOG::error);
+		RuleSpec spec = ruleSpecResult.getOrThrow(false, Apathy119.LOG::error);
 		
 		try {
-			if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule");
+			if(Apathy119.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy119.INSTANCE.configFolder, "json-rule");
 			
-			if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
+			if(Apathy119.INSTANCE.generalConfig.runRuleOptimizer) {
 				spec = spec.optimize();
-				if(Apathy.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy.INSTANCE.configFolder, "json-rule-opt");
+				if(Apathy119.INSTANCE.generalConfig.debugJsonRule) spec.dump(Apathy119.INSTANCE.configFolder, "json-rule-opt");
 			}
 			
 			return spec.build();

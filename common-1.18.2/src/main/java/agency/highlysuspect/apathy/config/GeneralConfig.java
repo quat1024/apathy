@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.NoDefault;
@@ -41,7 +41,7 @@ public class GeneralConfig extends Config {
 		"Comma-separated list of difficulties where zombies are allowed to attack villagers."
 	})
 	@Use("difficultySet")
-	public Set<Difficulty> zombieAttackVillagerDifficulties = Apathy.allDifficultiesNotPeaceful();
+	public Set<Difficulty> zombieAttackVillagerDifficulties = Apathy118.allDifficultiesNotPeaceful();
 	
 	//////////////////////////
 	@Section("Revenge Spread")
@@ -53,7 +53,7 @@ public class GeneralConfig extends Config {
 		"when a player provokes one. This will also spread Apathy's revengeTimer to them."
 	})
 	@Use("difficultySet")
-	public Set<Difficulty> angryPiggies = Apathy.allDifficultiesNotPeaceful();
+	public Set<Difficulty> angryPiggies = Apathy118.allDifficultiesNotPeaceful();
 	
 	@Comment({
 		"Let's say this option is set to 10, and you attack a zombie. Other zombies within 10 blocks will have their revengeTimer set, too.",

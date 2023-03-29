@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.platform.fabric.mixin;
 
-import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Apathy118;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -24,7 +24,7 @@ public interface EntityGetterMixin {
 		//Normally this is a bit redundant, the main purpose of Apathy is to hook MobEntity#setTarget, which catches most cases.
 		//This mixin catches some cases where an entity is attacked without formally being targeted, like the Wither firing black skulls.
 		if(targetingEntity instanceof Mob mob) {
-			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy.INSTANCE.allowedToTargetPlayer(mob, (ServerPlayer) target));
+			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy118.instance118.allowedToTargetPlayer(mob, (ServerPlayer) target));
 		}
 		
 		return targets;

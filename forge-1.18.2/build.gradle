@@ -19,6 +19,8 @@ buildscript {
 	}
 }
 
+evaluationDependsOn(":core")
+
 apply plugin: "java"
 apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
@@ -48,6 +50,7 @@ dependencies {
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
 	compileOnly project(":common-1.18.2")
+	compileOnly project(":core")
 }
 
 //fold in xplat resources and sources
@@ -55,6 +58,7 @@ dependencies {
 processResources {
 	//include common resources
 	from project(":common-1.18.2").sourceSets.main.resources
+	from project(":core").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/mods.toml") {
@@ -64,6 +68,7 @@ processResources {
 
 tasks.withType(JavaCompile) {
 	source(project(":common-1.18.2").sourceSets.main.allSource)
+	source(project(":core").sourceSets.main.allSource)
 }
 
 minecraft {

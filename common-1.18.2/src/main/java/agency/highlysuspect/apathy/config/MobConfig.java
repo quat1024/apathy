@@ -1,7 +1,8 @@
 package agency.highlysuspect.apathy.config;
 
-import agency.highlysuspect.apathy.Apathy;
-import agency.highlysuspect.apathy.TriState;
+import agency.highlysuspect.apathy.Apathy118;
+import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.JsonRule;
 import agency.highlysuspect.apathy.config.annotation.AtLeast;
 import agency.highlysuspect.apathy.config.annotation.Comment;
 import agency.highlysuspect.apathy.config.annotation.Example;
@@ -9,18 +10,20 @@ import agency.highlysuspect.apathy.config.annotation.NoDefault;
 import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.annotation.Use;
-import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.AlwaysRuleSpec;
-import agency.highlysuspect.apathy.rule.spec.ChainRuleSpec;
-import agency.highlysuspect.apathy.rule.spec.JsonRuleSpec;
-import agency.highlysuspect.apathy.rule.spec.PredicatedRuleSpec;
-import agency.highlysuspect.apathy.rule.spec.RuleSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsBossPredicateSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.AttackerIsPredicateSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.AttackerTaggedWithPredicateSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.DefenderInPlayerSetPredicateSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.DifficultyIsPredicateSpec;
-import agency.highlysuspect.apathy.rule.spec.predicate.RevengeTimerPredicateSpec;
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.rule.Rule;
+import agency.highlysuspect.apathy.core.rule.RuleSpec;
+import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
+import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
+import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
+import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.rule.PartialSpecAttackerTaggedWith;
+import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
+import agency.highlysuspect.apathy.rule.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.rule.PartialSpecRevengeTimer;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
@@ -248,7 +251,7 @@ public class MobConfig extends Config {
 		
 		if(unknownKeys != null) {
 			//There haven't been any breaking changes to the config yet, so all unknown keys are probably a mistake.
-			unknownKeys.forEach((key, value) -> Apathy.LOG.warn("Unknown config field: " + key));
+			unknownKeys.forEach((key, value) -> ApathyHell.instance.log.warn("Unknown config field: " + key));
 			//We don't need to keep track of them anymore.
 			unknownKeys = null;
 		}
@@ -262,30 +265,30 @@ public class MobConfig extends Config {
 		super.finish();
 		
 		if(nuclearOption) {
-			Apathy.LOG.info("Nuclear option enabled - Ignoring ALL rules in the config file");
-			ruleSpec = AlwaysRuleSpec.ALWAYS_DENY;
+			ApathyHell.instance.log.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			ruleSpec = RuleSpecAlways.ALWAYS_DENY;
 		} else {
-			ArrayList<RuleSpec> ruleSpecList = new ArrayList<>();
+			ArrayList<RuleSpec<?>> ruleSpecList = new ArrayList<>();
 			for(String ruleName : ruleOrder) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
-					case "json"       -> ruleSpecList.add(new JsonRuleSpec());
-					case "difficulty" -> ruleSpecList.add(new PredicatedRuleSpec(difficultySetIncluded, difficultySetExcluded, new DifficultyIsPredicateSpec(difficultySet)));
-					case "boss"       -> ruleSpecList.add(new PredicatedRuleSpec(boss, TriState.DEFAULT, new AttackerIsBossPredicateSpec()));
-					case "mobset"     -> ruleSpecList.add(new PredicatedRuleSpec(mobSetIncluded, mobSetExcluded, new AttackerIsPredicateSpec(mobSet)));
-					case "tagset"     -> ruleSpecList.add(new PredicatedRuleSpec(tagSetIncluded, tagSetExcluded, new AttackerTaggedWithPredicateSpec(tagSet)));
-					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new PredicatedRuleSpec(playerSetIncluded, playerSetExcluded, new DefenderInPlayerSetPredicateSpec(Collections.singleton(s)))));
-					case "revenge"    -> ruleSpecList.add(PredicatedRuleSpec.allowIf(new RevengeTimerPredicateSpec(revengeTimer)));
-					default -> Apathy.LOG.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+					case "json"       -> ruleSpecList.add(new RuleSpecJson());
+					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(difficultySetIncluded, difficultySetExcluded, new PartialSpecDifficultyIs(CoreConv.toApathyDifficulty(difficultySet))));
+					case "boss"       -> ruleSpecList.add(new RuleSpecPredicated(boss, TriState.DEFAULT, new PartialSpecAttackerIsBoss()));
+					case "mobset"     -> ruleSpecList.add(new RuleSpecPredicated(mobSetIncluded, mobSetExcluded, new PartialSpecAttackerIs(mobSet)));
+					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(tagSetIncluded, tagSetExcluded, new PartialSpecAttackerTaggedWith(tagSet)));
+					case "playerset"  -> playerSetName.ifPresent(s -> ruleSpecList.add(new RuleSpecPredicated(playerSetIncluded, playerSetExcluded, new PartialSpecDefenderInPlayerSet(Collections.singleton(s)))));
+					case "revenge"    -> ruleSpecList.add(RuleSpecPredicated.allowIf(new PartialSpecRevengeTimer(revengeTimer)));
+					default -> ApathyHell.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 				}
 			}
 			
-			ruleSpec = new ChainRuleSpec(ruleSpecList);
+			ruleSpec = new RuleSpecChain(ruleSpecList);
 		}
 		
-		if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule");
-		if(Apathy.INSTANCE.generalConfig.runRuleOptimizer) {
+		if(Apathy118.instance118.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule");
+		if(Apathy118.instance118.generalConfig.runRuleOptimizer) {
 			ruleSpec = ruleSpec.optimize();
-			if(Apathy.INSTANCE.generalConfig.debugBuiltinRule) ruleSpec.dump(Apathy.INSTANCE.configFolder, "builtin-rule-opt");
+			if(Apathy118.instance118.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule-opt");
 		}
 		
 		rule = ruleSpec.build();

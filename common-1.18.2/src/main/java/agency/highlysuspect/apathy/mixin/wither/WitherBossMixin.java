@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Portage;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
@@ -51,7 +52,7 @@ public class WitherBossMixin {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
 		if(!Apathy.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) {
-			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(DamageSource.ANVIL);
+			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(me));
 			me.discard();
 			ci.cancel();
 		}

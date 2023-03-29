@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.Portage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +39,7 @@ public class NotRegistry<T> {
 		T result = get(name);
 		if(result == null) {
 			String validItems = byName.keySet().stream().map(ResourceLocation::toString).collect(Collectors.joining(", "));
-			return DataResult.error(() -> "Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems);
+			return Portage.dataResultError("Unknown item " + name + " in NotRegistry " + this.name + ". Valid items: " + validItems);
 		}
 		else return DataResult.success(result);
 	}

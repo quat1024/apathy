@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.Portage;
 import agency.highlysuspect.apathy.TriState;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -24,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CodecUtil {
@@ -47,7 +47,7 @@ public class CodecUtil {
 			Codec.STRING.comap(e -> names[e.ordinal()]),
 			Codec.STRING.flatMap(s -> { 
 				for(int i = 0; i < values.length; i++) if(s.equals(names[i])) return DataResult.success(values[i]);
-				return DataResult.error(() -> errorA + s + errorB);
+				return Portage.dataResultError(errorA + s + errorB);
 			}),
 			"[renamedEnum " + errorName + "]" 
 		);
@@ -86,7 +86,7 @@ public class CodecUtil {
 				pred = LocationPredicate.fromJson(asJson);
 			} catch (JsonSyntaxException e) {
 				e.printStackTrace();
-				return DataResult.error(e::getMessage);
+				return Portage.dataResultError(e.getMessage());
 			}
 			
 			return DataResult.success(Pair.of(pred, input));

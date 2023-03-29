@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
 import agency.highlysuspect.apathy.Apathy;
+import agency.highlysuspect.apathy.Portage;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.level.Level;
@@ -23,7 +24,7 @@ public class WitherSkullBlockMixin {
 		if(Apathy.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) return level.addFreshEntity(entity);
 		
 		//Else, simulate a kill and don't spawn the entity. I have no idea why this grants the advancement btw.
-		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(entity.damageSources().wither());
+		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(entity));
 		return false;
 	}
 }

@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy;
 import agency.highlysuspect.apathy.DragonDuck;
+import agency.highlysuspect.apathy.Portage;
 import agency.highlysuspect.apathy.config.BossConfig;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -16,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -132,7 +132,7 @@ public abstract class EndDragonFightMixin {
 			//this grants the "Free the End" advancement, in a kind of clunky way
 			EnderDragon rarrrh = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
-				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, rarrrh, rarrrh.damageSources().dragonBreath());
+				CriteriaTriggers.PLAYER_KILLED_ENTITY.trigger(player, rarrrh, Portage.comicalAnvilSound(rarrrh));
 			}
 		}
 	}
@@ -214,7 +214,7 @@ public abstract class EndDragonFightMixin {
 		for(Direction d : Direction.Plane.HORIZONTAL) {
 			for(EndCrystal crystal : this.level.getEntitiesOfClass(EndCrystal.class, new AABB(oneAboveThat.relative(d, 2)))) {
 				crystal.setBeamTarget(null);
-				level.explode(crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6.0F, Level.ExplosionInteraction.NONE);
+				Portage.explodeNoBlockInteraction(level, crystal, crystal.getX(), crystal.getY(), crystal.getZ(), 6f);
 				crystal.discard();
 			}
 		}

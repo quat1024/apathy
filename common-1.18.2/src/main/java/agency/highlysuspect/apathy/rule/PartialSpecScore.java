@@ -1,12 +1,13 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.CoreConv;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.ThresholdMode;
 import agency.highlysuspect.apathy.core.rule.Who;
 import com.google.gson.JsonObject;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
@@ -19,9 +20,8 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 			Objective objective = scoreboard.getObjective(scoreboardObjective);
 			if(objective == null) return false;
 			
-			String scoreboardName;
-			if(who == Who.ATTACKER) scoreboardName = ((Mob) attacker.apathy$getMob()).getScoreboardName();
-			else scoreboardName = ((ServerPlayer) defender.apathy$getServerPlayer()).getScoreboardName();
+			Entity which = who.choose(CoreConv.mob(attacker), CoreConv.player(defender));
+			String scoreboardName = which.getScoreboardName();
 			
 			int score = scoreboard.hasPlayerScore(scoreboardName, objective) ? scoreboard.getOrCreatePlayerScore(scoreboardName, objective).getScore() : 0;
 			

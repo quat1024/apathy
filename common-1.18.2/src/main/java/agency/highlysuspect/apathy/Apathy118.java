@@ -35,7 +35,7 @@ public abstract class Apathy118 extends ApathyHell {
 	public @Nullable Rule jsonRule;
 	
 	public Apathy118(Path configPath) {
-		super(configPath, new Log4jLoggingFacade(LogManager.getLogger(MODID)));
+		super(configPath, CoreConv.toLogFacade(LogManager.getLogger(MODID)));
 		
 		Apathy118.instance118 = this;
 	}

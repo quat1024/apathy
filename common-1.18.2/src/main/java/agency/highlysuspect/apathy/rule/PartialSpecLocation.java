@@ -30,12 +30,12 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Level level = ((ServerPlayer) defender.apathy$getServerPlayer()).level;
+			Level level = CoreConv.level(defender);
 			if(!(level instanceof ServerLevel slevel)) return false;
 			
 			//too hard to port im lazy
-			Vec3 attackerPos = ((Mob) attacker.apathy$getMob()).position();
-			Vec3 defenderPos = ((ServerPlayer) defender.apathy$getServerPlayer()).position();
+			Vec3 attackerPos = CoreConv.mob(attacker).position();
+			Vec3 defenderPos = CoreConv.player(defender).position();
 			
 			return switch(who) {
 				//Easy cases (that can't be cached anyways because the entities wander around the world)

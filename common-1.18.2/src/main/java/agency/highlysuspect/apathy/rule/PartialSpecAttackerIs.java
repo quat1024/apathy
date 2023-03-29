@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
+import agency.highlysuspect.apathy.CoreConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -25,7 +26,7 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> mobSet.contains((EntityType<?>) attacker.apathy$getEntityType());
+		return (attacker, defender) -> mobSet.contains(CoreConv.type(attacker));
 	}
 	
 	@Override

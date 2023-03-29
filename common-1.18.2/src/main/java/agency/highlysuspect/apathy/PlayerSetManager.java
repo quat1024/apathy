@@ -1,5 +1,7 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -74,22 +76,23 @@ public class PlayerSetManager extends SavedData {
 	}
 	
 	public void syncWithConfig() {
-		Optional<String> configSetName = Apathy118.instance118.mobConfig.playerSetName;
+		Optional<String> configSetName = ApathyHell.instance.mobsConfigCooked.get(CoreOptions.Mobs.playerSetName);
 		if(configSetName.isPresent()) {
 			String name = configSetName.get();
+			boolean selfselectiness = ApathyHell.instance.mobsConfigCooked.get(CoreOptions.Mobs.playerSetSelfSelect);
 			
 			Entry set = playerSets.get(name);
 			
 			//Create the playerset, if it does not exist
 			if(set == null) {
-				set = Entry.newEmpty(Apathy118.instance118.mobConfig.playerSetSelfSelect);
+				set = Entry.newEmpty(selfselectiness);
 				playerSets.put(name, set);
 				setDirty();
 			}
 			
 			//Set its selfselectness, if it's different
-			if(set.selfSelect != Apathy118.instance118.mobConfig.playerSetSelfSelect) {
-				playerSets.put(name, set.withSelfSelect(Apathy118.instance118.mobConfig.playerSetSelfSelect));
+			if(set.selfSelect != selfselectiness) {
+				playerSets.put(name, set.withSelfSelect(selfselectiness));
 				setDirty();
 			}
 		}

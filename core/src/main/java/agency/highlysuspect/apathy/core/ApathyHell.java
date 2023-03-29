@@ -19,6 +19,8 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.core.rule.SerializablePartialSpec;
 import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
+import agency.highlysuspect.apathy.core.wrapper.Defender;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +45,8 @@ public abstract class ApathyHell {
 	public CookedConfig generalConfigCooked; //TODO remove -cooked suffix after migrating over, it name-clashes rn
 	public CookedConfig mobsConfigCooked;
 	public CookedConfig bossConfigCooked;
+	
+	public Rule configuredRule = RuleSpecAlways.ALWAYS_ALLOW.build();
 	public @Nullable Rule jsonRule;
 	
 	public ApathyHell(Path configPath, LogFacade log) {
@@ -64,9 +68,10 @@ public abstract class ApathyHell {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory at " + configPath, e);
 		}
 		
+		//rule setup
 		addRules();
 		
-		//Config
+		//config
 		ConfigSchema generalConfigSchema = new ConfigSchema();
 		addGeneralConfig(generalConfigSchema);
 		generalConfigCooked = generalConfigBakery().cook(generalConfigSchema);
@@ -79,10 +84,16 @@ public abstract class ApathyHell {
 		addBossConfig(bossConfigSchema);
 		bossConfigCooked = bossConfigBakery().cook(bossConfigSchema);
 		
-		//Misc
+		//misc
 		installConfigFileReloader();
 		installCommandRegistrationCallback();
 		installPlayerSetManagerTicker();
+	}
+	
+	public boolean allowedToTargetPlayer(Attacker attacker, Defender defender) {
+		TriState result = configuredRule.apply(attacker, defender);
+		if(result != TriState.DEFAULT) return result.get();
+		else return mobsConfigCooked.get(CoreOptions.Mobs.fallthrough);
 	}
 	
 	public boolean loadConfig() {
@@ -91,6 +102,18 @@ public abstract class ApathyHell {
 		ok &= generalConfigCooked.refresh();
 		ok &= mobsConfigCooked.refresh();
 		ok &= bossConfigCooked.refresh();
+		
+		configuredRule = bakeRule();
+		
+		Rule newConfiguredRule = configuredRule;
+		try {
+			newConfiguredRule = bakeRule();
+		} catch (Exception e) {
+			log.error("Problem baking rule: ", e);
+			ok = false;
+		} finally {
+			configuredRule = newConfiguredRule;
+		}
 		
 		Rule newJsonRule = jsonRule;
 		try {
@@ -135,6 +158,8 @@ public abstract class ApathyHell {
 	public abstract ConfigSchema.Bakery generalConfigBakery();
 	public abstract ConfigSchema.Bakery mobsConfigBakery();
 	public abstract ConfigSchema.Bakery bossConfigBakery();
+	
+	public abstract Rule bakeRule();
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();

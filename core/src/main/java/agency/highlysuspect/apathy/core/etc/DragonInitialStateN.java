@@ -5,4 +5,12 @@ public enum DragonInitialStateN {
 	PASSIVE_DRAGON,
 	CALM,
 	;
+	
+	public boolean isPassive() {
+		return this == PASSIVE_DRAGON;
+	}
+	
+	public boolean isCalm() {
+		return this == CALM;
+	}
 }

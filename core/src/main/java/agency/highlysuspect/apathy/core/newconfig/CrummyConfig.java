@@ -119,12 +119,12 @@ public class CrummyConfig implements CookedConfig {
 				if(!option.name().equals("configVersion")) { //silly special-case
 					T defaultValue = option.defaultValue();
 					String writtenDefaultValue = option.write(defaultValue);
+					if(writtenDefaultValue.isEmpty()) writtenDefaultValue = "<empty>";
 					out.add("# Default: " + writtenDefaultValue);
 				}
 				
 				T currentValue = get(option);
 				String writtenCurrentValue = option.write(currentValue);
-				if(writtenCurrentValue.isEmpty()) writtenCurrentValue = "<empty>";
 				out.add(option.name() + ": " + writtenCurrentValue);
 				
 				out.add("");

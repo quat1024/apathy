@@ -1,6 +1,8 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
 import agency.highlysuspect.apathy.Apathy118;
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +26,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 public class EnderDragonMixin implements DragonDuck {
 	@ModifyVariable(method = "knockBack", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> filterKnockBack(List<Entity> entities) {
-		if(!Apathy118.instance118.bossConfig.dragonKnockback) {
+		if(!ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonKnockback)) {
 			return Collections.emptyList();
 		}
 		
@@ -36,7 +38,7 @@ public class EnderDragonMixin implements DragonDuck {
 	
 	@ModifyVariable(method = "hurt(Ljava/util/List;)V", at = @At("HEAD"), argsOnly = true)
 	private List<Entity> filterHurt(List<Entity> entities) {
-		if(!Apathy118.instance118.bossConfig.dragonDamage) {
+		if(!ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonDamage)) {
 			return Collections.emptyList();
 		}
 		

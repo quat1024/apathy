@@ -1,8 +1,9 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
-import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.Portage;
-import agency.highlysuspect.apathy.config.BossConfig;
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
+import agency.highlysuspect.apathy.core.etc.PortalInitialStateN;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -97,20 +98,23 @@ public abstract class EndDragonFightMixin {
 		
 		//First-run tasks.
 		if(!createdApathyPortal) {
+			PortalInitialStateN portalInitialState = ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.portalInitialState);
+			
 			//1. If the End Portal was requested to be open by default, honor that.
-			if(Apathy118.instance118.bossConfig.portalInitialState.isOpenByDefault()) {
+			if(portalInitialState.isOpenByDefault()) {
 				//boolean prop is "whether it's open or not".
 				//this has computeIfAbsent semantics regarding the position of the portal - if the portal position is not already known,
 				//it is computed from the heightmap (which is totally busted if !isArenaLoaded(), btw)
 				spawnExitPortal(true);
 				
-				if(Apathy118.instance118.bossConfig.portalInitialState.hasEgg()) {
+				if(portalInitialState.hasEgg()) {
 					this.level.setBlockAndUpdate(this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.defaultBlockState());
 				}
 			}
 			
-			//2. If any End Gateways were requested to be open by default, generate those too. 
-			for(int i = 0; i < Apathy118.instance118.bossConfig.initialEndGatewayCount; i++) {
+			//2. If any End Gateways were requested to be open by default, generate those too.
+			int initialEndGatewayCount = ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.initialEndGatewayCount);
+			for(int i = 0; i < initialEndGatewayCount; i++) {
 				spawnNewGateway();
 			}
 			
@@ -128,7 +132,9 @@ public abstract class EndDragonFightMixin {
 		}
 		
 		//4. Handle simulacra advancements.
-		if(Apathy118.instance118.bossConfig.simulacraDragonAdvancements && Apathy118.instance118.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+		boolean simulacra = ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.simulacraDragonAdvancements);
+		boolean startCalm = ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonInitialState).isCalm();
+		if(simulacra && startCalm) {
 			//this grants the "Free the End" advancement, in a kind of clunky way
 			EnderDragon rarrrh = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
@@ -140,7 +146,7 @@ public abstract class EndDragonFightMixin {
 	//wait wait gimme a sec, i can explain
 	@Inject(method = "scanState", at = @At("HEAD"))
 	void startScanningState(CallbackInfo ci) {
-		apathyIsManagingTheInitialPortalVanillaDontLookPlease = Apathy118.instance118.bossConfig.portalInitialState != BossConfig.PortalInitialState.CLOSED;
+		apathyIsManagingTheInitialPortalVanillaDontLookPlease = ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.portalInitialState) != PortalInitialStateN.CLOSED;
 	}
 	
 	@Inject(method = "scanState", at = @At("RETURN"))
@@ -151,7 +157,7 @@ public abstract class EndDragonFightMixin {
 		//It is also called before vanilla code spawns the initial Ender Dragon.
 		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
 		//player has requested for the initial dragon to be removed.
-		if(Apathy118.instance118.bossConfig.dragonInitialState == BossConfig.DragonInitialState.CALM) {
+		if(ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonInitialState).isCalm()) {
 			dragonKilled = true; //This is the magic variable.
 			previouslyKilled = true;
 		}
@@ -169,7 +175,7 @@ public abstract class EndDragonFightMixin {
 	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))
 	void whenCreatingDragon(CallbackInfoReturnable<EnderDragon> cir) {
-		if(!previouslyKilled && Apathy118.instance118.bossConfig.dragonInitialState == BossConfig.DragonInitialState.PASSIVE_DRAGON) {
+		if(!previouslyKilled && ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.dragonInitialState).isPassive()) {
 			((DragonDuck) cir.getReturnValue()).apathy$disallowAttackingPlayers();
 		}
 	}
@@ -178,7 +184,7 @@ public abstract class EndDragonFightMixin {
 	//respawnDragon gets called with the list of end crystals if there are four, and actually summons the boss.
 	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
 	void whenBeginningRespawnSequence(List<EndCrystal> crystals, CallbackInfo ci) {
-		switch(Apathy118.instance118.bossConfig.resummonSequence) {
+		switch(ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.resummonSequence)) {
 			case DEFAULT -> {} //Nothing to do.
 			case DISABLED -> ci.cancel();
 			case SPAWN_GATEWAY -> {
@@ -220,7 +226,7 @@ public abstract class EndDragonFightMixin {
 		}
 		
 		//Grant the advancement for resummoning the Ender Dragon (close enough)
-		if(Apathy118.instance118.bossConfig.simulacraDragonAdvancements) {
+		if(ApathyHell.instance.bossConfigCooked.get(CoreOptions.Boss.simulacraDragonAdvancements)) {
 			EnderDragon dummy = EntityType.ENDER_DRAGON.create(level);
 			for(ServerPlayer player : level.getPlayers(VALID_PLAYER)) {
 				CriteriaTriggers.SUMMONED_ENTITY.trigger(player, dummy);

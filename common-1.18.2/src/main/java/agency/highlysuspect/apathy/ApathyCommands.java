@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.core.ApathyHell;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,7 +29,7 @@ public class ApathyCommands {
 		//I've been burned before
 		//Be careful
 		
-		dispatcher.register(literal(Apathy118.MODID)
+		dispatcher.register(literal(ApathyHell.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)

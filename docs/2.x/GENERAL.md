@@ -10,9 +10,9 @@ By default, mobs that are currently attacking a player do not check *every* tick
 
 ## Run rule optimizer
 
-If `true`, Apathy will try to compile rules to a smaller and more compact form before loading them into the game. No-op rules will be removed, "and"/"or" rules with only one entry will be unwrapped, and some other things that should keep the *behavior* of the rule the same.
+If `true`, Apathy will perform some basic logical simplifications on the provided set of rules. "And"/"or" rules with only one entry will be unwrapped, double negatives will be unwrapped, rules that result in the same outcome whether they succeed or fail will be removed, and some other things that should keep the *behavior* of the rule the same.
 
-You can turn this off if it's overzealous (although report any bugs with it to me, please)
+If rules are behaving unexpectedly, you can turn this off, but report any bugs with it to me, please.
 
 # Wow even more misc options **(since 2.4)**
 

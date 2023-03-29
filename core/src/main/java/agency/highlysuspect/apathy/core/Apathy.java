@@ -127,14 +127,15 @@ public abstract class Apathy {
 	}
 	
 	public void addRules() {
-		ruleSerializers.register("allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
 		ruleSerializers.register("always", RuleSpecAlways.Serializer.INSTANCE);
 		ruleSerializers.register("chain", RuleSpecChain.Serializer.INSTANCE);
 		ruleSerializers.register("debug", RuleSpecDebug.Serializer.INSTANCE);
-		ruleSerializers.register("deny_if", RuleSpecPredicated.DenyIfSerializer.INSTANCE);
 		ruleSerializers.register("difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
-		ruleSerializers.register("predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
+		ruleSerializers.register("predicated", RuleSpecPredicated.Serializer.INSTANCE);
+		
+		ruleSerializers.register("allow_if", RuleSpecPredicated.LegacyAllowIfSerializer.INSTANCE);
+		ruleSerializers.register("deny_if", RuleSpecPredicated.LegacyDenyIfSerializer.INSTANCE);
 		
 		partialSerializers.register("all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);

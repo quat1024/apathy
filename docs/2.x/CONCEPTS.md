@@ -13,11 +13,13 @@ These are documented in the files `GENERAL.md`, `BOSS.md`, `MOBS.md`, and `JSON.
 
 ### When are config files loaded and parsed?
 
-* Once at startup
+* ~~Once at startup~~
 * Whenever datapacks are loaded, which happens:
-	* whenever you join a world in singleplayer
-	* whenever you run `/reload`
+    * whenever you join a world in singleplayer
+    * whenever you run `/reload`
 * When an admin runs the command `/apathy reload`
+
+**most late 2.x versions:** Config files are not parsed on startup anymore. This was due to a silly bug; if you had anything modded in your config file and the other mod hadn't loaded yet, the config file would break. I hope to fix this in 2.5 or 3.
 
 ## Rules
 

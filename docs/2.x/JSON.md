@@ -6,9 +6,11 @@ If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered befo
 
 ## Dumping
 
-`general.cfg` has options for dumping the built-in rule as a JSON file (in `/config/apathy/dumps/builtin-rule.json` and `builtin-rule-opt.json`), if you would like to see an example.  Note that the auto-dumper puts the values in kind of a weird order - like it puts `type` at the bottom and stuff - sorry about that! I don't know why that happens.
+`general.cfg` has options for dumping the built-in rule as a JSON file (in `/config/apathy/dumps/builtin-rule.json` and `builtin-rule-opt.json`), if you would like to see an example.
 
-(If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `apathy:evaluate_json_file` rule!)
+Previous versions used some DataFixerUpper `Codec` stuff that outputted the json with a strange format (`type` at the bottom). **In versions >=2.5**, the JSON handling code has been completely rewritten and does not use `Codec`, so the JSON is nice looking.
+
+(If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `evaluate_json_file` rule!)
 
 # Json Format
 
@@ -43,6 +45,8 @@ Let's start things off with an illustrative example:
 
 A *rule* is a JSON object consisting of at least one property: `type`. The rest of the properties in the object are different, depending on the `type`.
 
+**In versions >=2.5**, the `apathy:` prefixes are optional.
+
 Here are the possible rule `type`s.
 
 ## `apathy:always`
@@ -71,11 +75,15 @@ Arguments:
 
 Synonym for `predicated`, with `if_true` set to `"allow"`, and `if_false` set to `"pass"`.
 
+**Deprecated in version 2.5**. I recommend just using `predicated`, and I regret adding two ways to accomplish the same task.
+
 ## `apathy:deny_if`
 Arguments:
 * `predicate`.
 
 Synonym for `predicated`, with `if_true` set to `"deny"`, and `if_false` set to `"pass"`.
+
+**Deprecated in version 2.5**. I recommend just using `predicated`, and I regret adding two ways to accomplish the same task.
 
 ## `apathy:debug`
 Arguments:
@@ -240,4 +248,6 @@ You have to do it like this:
 }
 ```
 
-Note that rules and predicates are both specified with the parameter `type` and they cannot be interchanged. A rule can be lifted into a predicate with `allow_if`, `deny_if`, or `predicated`.
+Note that rules and predicates are both specified with the parameter `type` and they cannot be interchanged. A rule can be lifted into a predicate with `predicated`.
+
+(This is the other reason `allow_if` and `deny_if` are considered **deprecated in version 2.5**. It's harder to make this "conversational"-sounding mistake with `predicated`.)

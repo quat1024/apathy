@@ -90,7 +90,8 @@ public abstract class Apathy118 extends Apathy {
 							mobCfg.get(CoreMobOptions.playerSetExcluded),
 							new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
 						)));
-					case "revenge"    -> ruleSpecList.add(RuleSpecPredicated.allowIf(
+					case "revenge"    -> ruleSpecList.add(new RuleSpecPredicated(
+						TriState.TRUE, TriState.DEFAULT,
 						new PartialSpecRevengeTimer(mobCfg.get(CoreMobOptions.revengeTimer))
 					));
 					default -> Apathy.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");

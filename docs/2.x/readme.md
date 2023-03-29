@@ -54,11 +54,17 @@ I have a "player sets" option, which is like a generalized version of that mod's
 * Set `playerSetIncluded` to `deny`.
 * Set `playerSetExcluded` to `allow`.
 
-Now, mobs are allowed to attack anyone not in the player set.
+Now, mobs are allowed to attack anyone *not* in the player set.
 
 Players can add themselves to the player set using `/apathy set join no-mobs`. If you don't want that, and only want operators to manage the player set, set `playerSetSelfSelect` to `false`.
 
 (Rule priority note: Put this before "boss" if you want players in `no-mobs` to opt-out of boss attacks, too.)
+
+## ...create aggressive sheep and cows?
+
+Out of scope for this mod. Preventing mob aggression from occuring is a fundamentally different problem from adding mob aggression where there wasn't any before - this mod does not add or remove AI tasks at all, it only prevents calling `setTarget` in a fairly low-level way.
+
+You'll have to use another mod for that. (If you do, it's likely that you'll be able to use Apathy to further refine that behavior.)
 
 # I still don't get it
 

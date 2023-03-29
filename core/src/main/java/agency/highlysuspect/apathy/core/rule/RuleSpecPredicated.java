@@ -6,28 +6,14 @@ import com.google.gson.JsonObject;
 
 public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec) {
-		this(ifTrue, ifFalse, predSpec, PredicatedSerializer.INSTANCE);
-	}
-	
-	public static RuleSpecPredicated allowIf(PartialSpec<?> spec) {
-		return new RuleSpecPredicated(TriState.TRUE, TriState.DEFAULT, spec, AllowIfSerializer.INSTANCE);
-	}
-	
-	public static RuleSpecPredicated denyIf(PartialSpec<?> spec) {
-		return new RuleSpecPredicated(TriState.FALSE, TriState.DEFAULT, spec, DenyIfSerializer.INSTANCE);
+		this.ifTrue = ifTrue;
+		this.ifFalse = ifFalse;
+		this.predSpec = predSpec;
 	}
 	
 	private final TriState ifTrue;
 	private final TriState ifFalse;
 	private final PartialSpec<?> predSpec;
-	private final RuleSerializer<RuleSpecPredicated> theSerializer;
-	
-	public RuleSpecPredicated(TriState ifTrue, TriState ifFalse, PartialSpec<?> predSpec, RuleSerializer<RuleSpecPredicated> theSerializer) {
-		this.ifTrue = ifTrue;
-		this.ifFalse = ifFalse;
-		this.predSpec = predSpec;
-		this.theSerializer = theSerializer;
-	}
 	
 	@Override
 	public RuleSpec<?> optimize() {
@@ -38,14 +24,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		if(predSpec == PartialSpecAlways.TRUE) return RuleSpecAlways.always(ifTrue);
 		if(predSpec == PartialSpecAlways.FALSE) return RuleSpecAlways.always(ifFalse);
 		
-		//Try to use an ifTrue/ifFalse serializer if at all possible
-		RuleSerializer<RuleSpecPredicated> newSer = PredicatedSerializer.INSTANCE;
-		if(ifFalse == TriState.DEFAULT) {
-			if(ifTrue == TriState.TRUE) newSer = AllowIfSerializer.INSTANCE;
-			if(ifTrue == TriState.FALSE) newSer = DenyIfSerializer.INSTANCE;
-		}
-		
-		return new RuleSpecPredicated(ifTrue, ifFalse, predSpecOpt, newSer);
+		return new RuleSpecPredicated(ifTrue, ifFalse, predSpecOpt);
 	}
 	
 	@Override
@@ -56,12 +35,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	
 	@Override
 	public RuleSerializer<RuleSpecPredicated> getSerializer() {
-		return theSerializer;
+		return Serializer.INSTANCE;
 	}
 	
-	public static class PredicatedSerializer implements RuleSerializer<RuleSpecPredicated> {
-		private PredicatedSerializer() {}
-		public static final PredicatedSerializer INSTANCE = new PredicatedSerializer();
+	public static class Serializer implements RuleSerializer<RuleSpecPredicated> {
+		private Serializer() {}
+		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
@@ -75,13 +54,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 			TriState ifTrue = CoolGsonHelper.getAllowDenyPassTriState(json, "if_true", TriState.DEFAULT);
 			TriState ifFalse = CoolGsonHelper.getAllowDenyPassTriState(json, "if_false", TriState.DEFAULT);
 			PartialSpec<?> part = Apathy.instance.readPartial(json.get("predicate"));
-			return new RuleSpecPredicated(ifTrue, ifFalse, part, this);
+			return new RuleSpecPredicated(ifTrue, ifFalse, part);
 		}
 	}
 	
-	public static class AllowIfSerializer implements RuleSerializer<RuleSpecPredicated> {
-		private AllowIfSerializer() {}
-		public static final AllowIfSerializer INSTANCE = new AllowIfSerializer();
+	@Deprecated //allow_if is a confusing, secondary way to do the same thing. It is kept for backwards compatibility only.
+	public static class LegacyAllowIfSerializer implements RuleSerializer<RuleSpecPredicated> {
+		private LegacyAllowIfSerializer() {}
+		public static final LegacyAllowIfSerializer INSTANCE = new LegacyAllowIfSerializer();
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
@@ -90,13 +70,14 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.allowIf(Apathy.instance.readPartial(json.get("predicate")));
+			return new RuleSpecPredicated(TriState.TRUE, TriState.DEFAULT, Apathy.instance.readPartial(json.get("predicate")));
 		}
 	}
 	
-	public static class DenyIfSerializer implements RuleSerializer<RuleSpecPredicated> {
-		private DenyIfSerializer() {}
-		public static final DenyIfSerializer INSTANCE = new DenyIfSerializer();
+	@Deprecated //deny_if is a confusing, secondary way to do the same thing. It is kept for backwards compatibility only.
+	public static class LegacyDenyIfSerializer implements RuleSerializer<RuleSpecPredicated> {
+		private LegacyDenyIfSerializer() {}
+		public static final LegacyDenyIfSerializer INSTANCE = new LegacyDenyIfSerializer();
 		
 		@Override
 		public void write(RuleSpecPredicated rule, JsonObject json) {
@@ -105,7 +86,7 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 		
 		@Override
 		public RuleSpecPredicated read(JsonObject json) {
-			return RuleSpecPredicated.denyIf(Apathy.instance.readPartial(json.get("predicate")));
+			return new RuleSpecPredicated(TriState.FALSE, TriState.DEFAULT, Apathy.instance.readPartial(json.get("predicate")));
 		}
 	}
 }

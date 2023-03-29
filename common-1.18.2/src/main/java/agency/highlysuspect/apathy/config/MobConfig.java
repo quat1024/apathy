@@ -22,11 +22,9 @@ import agency.highlysuspect.apathy.rule.spec.predicate.DefenderInPlayerSetPredic
 import agency.highlysuspect.apathy.rule.spec.predicate.DifficultyIsPredicateSpec;
 import agency.highlysuspect.apathy.rule.spec.predicate.RevengeTimerPredicateSpec;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,17 +37,8 @@ import java.util.Set;
 public class MobConfig extends Config {
 	protected static final int CURRENT_CONFIG_VERSION = 0;
 	
-	protected transient RuleSpec ruleSpec;
-	protected transient Rule rule;
-	
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
-	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
-		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
-		
-		TriState result = rule.apply(attacker, player);
-		if(result != TriState.DEFAULT) return result.get();
-		else return fallthrough;
-	}
+	public transient RuleSpec ruleSpec;
+	public transient Rule rule;
 	
 	// values below //
 	

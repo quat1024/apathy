@@ -16,7 +16,7 @@ public class LivingEntityMixin {
 	@SuppressWarnings("ConstantConditions") //Cast funny
 	@Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void apathy$onCanAttack(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
-		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, player)) {
+		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy.INSTANCE.allowedToTargetPlayer(mob, player)) {
 			cir.setReturnValue(false);
 		}
 	}

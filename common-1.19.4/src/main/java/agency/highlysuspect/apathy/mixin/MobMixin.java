@@ -31,7 +31,7 @@ public class MobMixin implements MobExt {
 		if(thi$.level.isClientSide) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayer && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
+		if(newTarget instanceof ServerPlayer && !Apathy.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
 			
 			//Btw this is the reason i don't use the forge attack target event and use this mixin even on Forge too.
@@ -54,7 +54,7 @@ public class MobMixin implements MobExt {
 		//If currently targeting a player, check to make sure it's still okay to do so.
 		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.INSTANCE.generalConfig.recheckInterval == 0
 			&& target instanceof ServerPlayer
-			&& !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+			&& !Apathy.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}

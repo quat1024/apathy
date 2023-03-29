@@ -26,7 +26,7 @@ public class DragonSittingScanningPhaseMixin {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(in instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
+		if(in instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.allowedToTargetPlayer(dergon, serverPlayer))) {
 			return null;
 		} else return in;
 	}

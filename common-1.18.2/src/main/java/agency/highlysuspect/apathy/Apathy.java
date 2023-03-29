@@ -7,8 +7,10 @@ import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.rule.Rule;
 import agency.highlysuspect.apathy.rule.spec.Specs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
@@ -105,6 +107,15 @@ public abstract class Apathy {
 		}
 		
 		return ok;
+	}
+	
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
+	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
+		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
+		
+		TriState result = mobConfig.rule.apply(attacker, player);
+		if(result != TriState.DEFAULT) return result.get();
+		else return mobConfig.fallthrough;
 	}
 	
 	public void noticePlayerAttack(Player player, Entity provoked) {

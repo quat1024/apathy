@@ -22,7 +22,7 @@ public class DragonStrafePlayerPhaseMixin {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(attackTarget instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, serverPlayer))) {
+		if(attackTarget instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy.INSTANCE.allowedToTargetPlayer(dergon, serverPlayer))) {
 			//Will cause her to transition away from this phase
 			attackTarget = null;
 		}

@@ -30,7 +30,7 @@ public class EnderDragonMixin implements DragonDuck {
 		
 		EnderDragon dergon = (EnderDragon) (Object) this;
 		List<Entity> copy = new ArrayList<>(entities); //unneeded copies, reh reh, it's fine
-		copy.removeIf(e -> e instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, player));
+		copy.removeIf(e -> e instanceof ServerPlayer player && !Apathy.INSTANCE.allowedToTargetPlayer(dergon, player));
 		return copy;
 	}
 	
@@ -42,14 +42,14 @@ public class EnderDragonMixin implements DragonDuck {
 		
 		EnderDragon dergon = (EnderDragon) (Object) this;
 		List<Entity> copy = new ArrayList<>(entities);
-		copy.removeIf(e -> e instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(dergon, player)));
+		copy.removeIf(e -> e instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.allowedToTargetPlayer(dergon, player)));
 		return copy;
 	}
 	
 	@Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
 	private void apathy$copypasteFromLivingEntityMixin(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
 		//EnderDragonEntity overrides canTarget and doesn't call super()
-		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, player))) {
+		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy.INSTANCE.allowedToTargetPlayer(mob, player))) {
 			cir.setReturnValue(false);
 		}
 	}

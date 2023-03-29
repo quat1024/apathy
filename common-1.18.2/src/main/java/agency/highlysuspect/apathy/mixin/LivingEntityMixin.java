@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LivingEntityMixin {
 	@Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void patchCanAttack(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
-		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy.INSTANCE.mobConfig.allowedToTargetPlayer(mob, player)) {
+		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy.INSTANCE.allowedToTargetPlayer(mob, player)) {
 			cir.setReturnValue(false);
 		}
 	}

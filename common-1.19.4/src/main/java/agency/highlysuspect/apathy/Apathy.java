@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -111,6 +112,15 @@ public abstract class Apathy {
 		return ok;
 	}
 	
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
+	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
+		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
+		
+		TriState result = mobConfig.rule.apply(attacker, player);
+		if(result != TriState.DEFAULT) return result.get();
+		else return mobConfig.fallthrough;
+	}
+	
 	public void noticePlayerAttack(Player player, Entity provoked) {
 		Level level = player.level;
 		if(level.isClientSide) return;
@@ -140,7 +150,7 @@ public abstract class Apathy {
 	public void filterMobEffectUtilCall(ServerLevel level, @Nullable Entity provoker, List<ServerPlayer> original) {
 		if(provoker instanceof Warden warden) {
 			if(!bossConfig.wardenDarknessDifficulties.contains(level.getDifficulty())) original.clear();
-			if(bossConfig.wardenDarknessOnlyToPlayersItCanTarget) original.removeIf(player -> !mobConfig.allowedToTargetPlayer(warden, player));
+			if(bossConfig.wardenDarknessOnlyToPlayersItCanTarget) original.removeIf(player -> !allowedToTargetPlayer(warden, player));
 		}
 	}
 	

@@ -35,27 +35,27 @@ public class Specs {
 	public static final Codec<PredicateSpec> PREDICATE_SPEC_CODEC = PREDICATE_SPEC_CODEC_REGISTRY.byNameCodec().dispatch(PredicateSpec::codec, Function.identity());
 	
 	public static void onInitialize() {
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("always"), AlwaysRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("chain"), ChainRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("predicated"), PredicatedRuleSpec.PREDICATED_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("allow_if"), PredicatedRuleSpec.ALLOW_IF_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("deny_if"), PredicatedRuleSpec.DENY_IF_CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("debug"), DebugRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("difficulty_case"), DifficultyCaseRuleSpec.CODEC);
-		RULE_SPEC_CODEC_REGISTRY.register(Apathy.id("evaluate_json_file"), JsonRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:always", AlwaysRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:chain", ChainRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:predicated", PredicatedRuleSpec.PREDICATED_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:allow_if", PredicatedRuleSpec.ALLOW_IF_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:deny_if", PredicatedRuleSpec.DENY_IF_CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:debug", DebugRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:difficulty_case", DifficultyCaseRuleSpec.CODEC);
+		RULE_SPEC_CODEC_REGISTRY.register("apathy:evaluate_json_file", JsonRuleSpec.CODEC);
 		
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("always"), AlwaysPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_tagged_with"), AttackerTaggedWithPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_is_boss"), AttackerIsBossPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("attacker_is"), AttackerIsPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("in_player_set"), DefenderInPlayerSetPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("revenge_timer"), RevengeTimerPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("difficulty_is"), DifficultyIsPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("score"), ScorePredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("advancements"), DefenderHasAdvancementPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("location"), LocationPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("all"), AllPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("any"), AnyPredicateSpec.CODEC);
-		PREDICATE_SPEC_CODEC_REGISTRY.register(Apathy.id("not"), NotPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:always", AlwaysPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_tagged_with", AttackerTaggedWithPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is_boss", AttackerIsBossPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:attacker_is", AttackerIsPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:in_player_set", DefenderInPlayerSetPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:revenge_timer", RevengeTimerPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:difficulty_is", DifficultyIsPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:score", ScorePredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:advancements", DefenderHasAdvancementPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:location", LocationPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:all", AllPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:any", AnyPredicateSpec.CODEC);
+		PREDICATE_SPEC_CODEC_REGISTRY.register("apathy:not", NotPredicateSpec.CODEC);
 	}
 }

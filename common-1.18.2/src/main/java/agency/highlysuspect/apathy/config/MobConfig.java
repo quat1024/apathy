@@ -11,6 +11,7 @@ import agency.highlysuspect.apathy.config.annotation.Note;
 import agency.highlysuspect.apathy.config.annotation.Section;
 import agency.highlysuspect.apathy.config.annotation.Use;
 import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpec;
@@ -285,10 +286,13 @@ public class MobConfig extends Config {
 			ruleSpec = new RuleSpecChain(ruleSpecList);
 		}
 		
-		if(Apathy118.instance118.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule");
-		if(Apathy118.instance118.generalConfig.runRuleOptimizer) {
+		boolean debug = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.debugBuiltinRule);
+		boolean opt = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.runRuleOptimizer);
+		
+		if(debug) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule");
+		if(opt) {
 			ruleSpec = ruleSpec.optimize();
-			if(Apathy118.instance118.generalConfig.debugBuiltinRule) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule-opt");
+			if(debug) JsonRule.dump(ruleSpec, ApathyHell.instance.configPath, "builtin-rule-opt");
 		}
 		
 		rule = ruleSpec.build();

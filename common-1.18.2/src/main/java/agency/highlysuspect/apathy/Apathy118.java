@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.config.Config;
 import agency.highlysuspect.apathy.config.GeneralConfig;
 import agency.highlysuspect.apathy.config.MobConfig;
 import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
@@ -29,7 +30,6 @@ import java.util.Set;
 public abstract class Apathy118 extends ApathyHell {
 	public static Apathy118 instance118;
 	
-	public GeneralConfig generalConfig = new GeneralConfig();
 	public MobConfig mobConfig = new MobConfig();
 	public BossConfig bossConfig = new BossConfig();
 	public @Nullable Rule jsonRule;
@@ -41,17 +41,9 @@ public abstract class Apathy118 extends ApathyHell {
 	}
 	
 	public boolean loadConfig() {
-		boolean ok = true;
+		loadConfig_toplevel();
 		
-		GeneralConfig newGeneralConfig = generalConfig;
-		try {
-			newGeneralConfig = Config.read(new GeneralConfig(), configPath.resolve("general.cfg"));
-		} catch (Exception e) {
-			log.error("Problem reading general.cfg:", e);
-			ok = false;
-		} finally {
-			generalConfig = newGeneralConfig;
-		}
+		boolean ok = true;
 		
 		MobConfig newMobConfig = mobConfig;
 		try {
@@ -103,15 +95,17 @@ public abstract class Apathy118 extends ApathyHell {
 			//Set the revengetimer on the hit entity
 			ext.apathy$provokeNow();
 			
-			if(generalConfig.sameTypeRevengeSpread > 0) {
-				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(generalConfig.sameTypeRevengeSpread))) {
+			int sameTypeRevengeSpread = generalConfigCooked.get(CoreOptions.General.sameTypeRevengeSpread);
+			if(sameTypeRevengeSpread > 0) {
+				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(sameTypeRevengeSpread))) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}
 			
-			if(generalConfig.differentTypeRevengeSpread > 0) {
+			int differentTypeRevengeSpread = generalConfigCooked.get(CoreOptions.General.differentTypeRevengeSpread);
+			if(differentTypeRevengeSpread > 0) {
 				//kinda grody sorry
-				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
+				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
 					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
 				}
 			}

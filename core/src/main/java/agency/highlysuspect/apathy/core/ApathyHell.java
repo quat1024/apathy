@@ -1,5 +1,8 @@
 package agency.highlysuspect.apathy.core;
 
+import agency.highlysuspect.apathy.core.newconfig.ConfigProperty;
+import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
+import agency.highlysuspect.apathy.core.newconfig.CookedConfig;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAll;
@@ -15,6 +18,7 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecDebug;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDifficultyCase;
 import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
+import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +39,14 @@ public abstract class ApathyHell {
 	
 	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
 	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
+	
+	private final ConfigSchema generalConfigSchema = new ConfigSchema();
+	private final ConfigSchema mobConfigSchema = new ConfigSchema();
+	private final ConfigSchema bossConfigSchema = new ConfigSchema();
+	
+	public CookedConfig generalConfigCooked; //TODO remove -cooked suffix after migrating over, it name-clashes rn
+	public CookedConfig mobConfigCooked;
+	public CookedConfig bossConfigCooked;
 	
 	//werid spot for this, idk
 	public @Nullable Rule jsonRule;
@@ -58,6 +70,7 @@ public abstract class ApathyHell {
 			throw new RuntimeException("Problem creating config/apathy/ subdirectory at " + configPath, e);
 		}
 		
+		//Rules
 		ruleSerializers.register("apathy:allow_if", RuleSpecPredicated.AllowIfSerializer.INSTANCE);
 		ruleSerializers.register("apathy:always", RuleSpecAlways.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:chain", RuleSpecChain.Serializer.INSTANCE);
@@ -66,17 +79,25 @@ public abstract class ApathyHell {
 		ruleSerializers.register("apathy:difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
 		ruleSerializers.register("apathy:predicated", RuleSpecPredicated.PredicatedSerializer.INSTANCE);
-		
 		partialSerializers.register("apathy:all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("apathy:always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("apathy:any", PartialSpecAny.Serializer.INSTANCE);
 		partialSerializers.register("apathy:not", PartialSpecNot.Serializer.INSTANCE);
-		
 		addPlatformSpecificRules();
 		
+		//Config
+		CoreOptions.General.visit(generalConfigSchema);
+		addPlatformSpecificGeneralConfig(generalConfigSchema);
+		generalConfigCooked = generalConfigBakery().cook(generalConfigSchema);
+		
+		//Misc
 		installConfigFileReloader();
 		installCommandRegistrationCallback();
 		installPlayerSetManagerTicker();
+	}
+	
+	public void loadConfig_toplevel() { //TODO rename after onboarding everything to new system
+		generalConfigCooked.refresh();
 	}
 	
 	//TODO maybe find a better home for these 4 methods?
@@ -118,9 +139,13 @@ public abstract class ApathyHell {
 		return set;
 	}
 	
-	public void addPlatformSpecificRules() {
-		
-	}
+	public void addPlatformSpecificGeneralConfig(ConfigSchema generalConfigSchema) { }
+	public void addPlatformSpecificMobConfig(ConfigSchema mobConfig) { }
+	public void addPlatformSpecificBossConfig(ConfigSchema bossConfig) { }
+	
+	public abstract ConfigSchema.Bakery generalConfigBakery();
+	
+	public void addPlatformSpecificRules() { }
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();

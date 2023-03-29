@@ -3,6 +3,8 @@ package agency.highlysuspect.apathy.platform.forge;
 import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
+import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
+import agency.highlysuspect.apathy.core.newconfig.CrummyConfig;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -70,5 +72,10 @@ public class ForgeInit extends Apathy118 {
 				PlayerSetManager.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
 			}
 		});
+	}
+	
+	@Override
+	public ConfigSchema.Bakery generalConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("general.cfg")); //TODO, write a forge config bakery
 	}
 }

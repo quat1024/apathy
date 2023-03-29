@@ -3,6 +3,8 @@ package agency.highlysuspect.apathy.mixin;
 import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.CoolNbtUtil;
 import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
@@ -53,7 +55,7 @@ public class MobMixin implements MobExt {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Apathy118.instance118.generalConfig.recheckInterval == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.recheckInterval) == 0
 			&& target instanceof ServerPlayer
 			&& !Apathy118.instance118.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;

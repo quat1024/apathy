@@ -3,6 +3,8 @@ package agency.highlysuspect.apathy.platform.fabric;
 import agency.highlysuspect.apathy.Apathy118;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
+import agency.highlysuspect.apathy.core.newconfig.ConfigSchema;
+import agency.highlysuspect.apathy.core.newconfig.CrummyConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -46,5 +48,10 @@ public class FabricInit extends Apathy118 implements ModInitializer {
 	@Override
 	public void installPlayerSetManagerTicker() {
 		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
+	}
+	
+	@Override
+	public ConfigSchema.Bakery generalConfigBakery() {
+		return new CrummyConfig.Bakery(configPath.resolve("general.cfg"));
 	}
 }

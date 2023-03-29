@@ -1,6 +1,7 @@
 package agency.highlysuspect.apathy;
 
 import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.CoreOptions;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpec;
 import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
@@ -54,11 +55,14 @@ public class JsonRule {
 		
 		//realize the rulespec into a rule
 		try {
-			if(Apathy118.instance118.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule");
+			boolean debug = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.debugJsonRule);
+			boolean opt = ApathyHell.instance.generalConfigCooked.get(CoreOptions.General.runRuleOptimizer);
 			
-			if(Apathy118.instance118.generalConfig.runRuleOptimizer) {
+			if(debug) dump(spec, ApathyHell.instance.configPath, "json-rule");
+			
+			if(opt) {
 				spec = spec.optimize();
-				if(Apathy118.instance118.generalConfig.debugJsonRule) dump(spec, ApathyHell.instance.configPath, "json-rule-opt");
+				if(debug) dump(spec, ApathyHell.instance.configPath, "json-rule-opt");
 			}
 			
 			return spec.build();

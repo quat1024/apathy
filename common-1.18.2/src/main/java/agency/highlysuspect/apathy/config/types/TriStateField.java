@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.config.types;
 
-import agency.highlysuspect.apathy.Apathy118;
-import agency.highlysuspect.apathy.TriState;
 import agency.highlysuspect.apathy.core.ApathyHell;
+import agency.highlysuspect.apathy.core.TriState;
 
 import java.lang.reflect.Field;
 

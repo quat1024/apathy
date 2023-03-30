@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -18,7 +18,7 @@ public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAtta
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> CoreConv.type(attacker).is(BOSS_TAG);
+		return (attacker, defender) -> VerConv.type(attacker).is(BOSS_TAG);
 	}
 	
 	@Override

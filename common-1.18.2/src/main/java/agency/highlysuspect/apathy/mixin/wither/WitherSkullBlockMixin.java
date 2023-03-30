@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.Portage;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreBossOptions;
@@ -23,7 +23,7 @@ public class WitherSkullBlockMixin {
 	)
 	private static boolean yeet(Level level, Entity entity) {
 		//If the difficulty is contained within the set, call the normal spawn method
-		if(Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(CoreConv.toApathyDifficulty(level.getDifficulty()))) return level.addFreshEntity(entity);
+		if(Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) return level.addFreshEntity(entity);
 		
 		//Else, simulate a kill and don't spawn the entity. I have no idea why this grants the advancement btw.
 		if(entity instanceof WitherBoss) ((LivingEntityInvoker) entity).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(entity));

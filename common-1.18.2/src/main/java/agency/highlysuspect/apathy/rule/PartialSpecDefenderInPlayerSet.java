@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.Partial;
@@ -27,7 +27,7 @@ public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) impleme
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			ServerPlayer defenderSp = CoreConv.player(defender);
+			ServerPlayer defenderSp = VerConv.player(defender);
 			MinecraftServer server = defenderSp.getServer();
 			assert server != null;
 			

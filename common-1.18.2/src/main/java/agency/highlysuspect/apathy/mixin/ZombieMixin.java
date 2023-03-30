@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreGenOptions;
 import net.minecraft.world.entity.EntityType;
@@ -26,7 +26,7 @@ public abstract class ZombieMixin extends Mob {
 		
 		if(result && other instanceof Villager) {
 			result = Apathy.instance.generalCfg.get(CoreGenOptions.zombieAttackVillagerDifficulties)
-				.contains(CoreConv.toApathyDifficulty(level.getDifficulty()));	
+				.contains(VerConv.toApathyDifficulty(level.getDifficulty()));	
 		}
 		
 		return result;

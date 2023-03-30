@@ -30,10 +30,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * how much of Apathy is it possible to port while not touching minecraft at all? Surprisingly, a lot, i guess
+ */
 public abstract class Apathy {
 	public static final String MODID = "apathy";
+	
+	/** constructor sets this as a side effect */
 	public static Apathy instance;
 	
+	/** Ideally this should be a subdirectory of the platform-specific config directory */
+	//TODO: move dump directory somewhere else?
 	public final Path configPath;
 	public final LogFacade log;
 	
@@ -64,7 +71,7 @@ public abstract class Apathy {
 		try {
 			Files.createDirectories(configPath);
 		} catch (IOException e) {
-			throw new RuntimeException("Problem creating config/apathy/ subdirectory at " + configPath, e);
+			throw new RuntimeException("Problem creating Apathy config directory at " + configPath, e);
 		}
 		
 		//rule setup
@@ -134,13 +141,14 @@ public abstract class Apathy {
 		ruleSerializers.register("evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
 		ruleSerializers.register("predicated", RuleSpecPredicated.Serializer.INSTANCE);
 		
-		ruleSerializers.register("allow_if", RuleSpecPredicated.LegacyAllowIfSerializer.INSTANCE);
-		ruleSerializers.register("deny_if", RuleSpecPredicated.LegacyDenyIfSerializer.INSTANCE);
-		
 		partialSerializers.register("all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("any", PartialSpecAny.Serializer.INSTANCE);
 		partialSerializers.register("not", PartialSpecNot.Serializer.INSTANCE);
+		
+		//backwards compatibilty/deprecated stuff (allow_if is a subset of predicated's functionality)
+		ruleSerializers.register("allow_if", RuleSpecPredicated.LegacyAllowIfSerializer.INSTANCE);
+		ruleSerializers.register("deny_if", RuleSpecPredicated.LegacyDenyIfSerializer.INSTANCE);
 	}
 	
 	public void addGeneralConfig(ConfigSchema schema) {

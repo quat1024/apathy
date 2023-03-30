@@ -41,7 +41,7 @@ public abstract class Apathy118 extends Apathy {
 	public static Apathy118 instance118;
 	
 	public Apathy118(Path configPath) {
-		super(configPath, CoreConv.toLogFacade(LogManager.getLogger(MODID)));
+		super(configPath, VerConv.toLogFacade(LogManager.getLogger(MODID)));
 		
 		if(instance118 == null) {
 			instance118 = this;

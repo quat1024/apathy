@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -28,12 +28,12 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Level level = CoreConv.level(defender);
+			Level level = VerConv.level(defender);
 			if(!(level instanceof ServerLevel slevel)) return false;
 			
 			//too hard to port im lazy
-			Vec3 attackerPos = CoreConv.mob(attacker).position();
-			Vec3 defenderPos = CoreConv.player(defender).position();
+			Vec3 attackerPos = VerConv.mob(attacker).position();
+			Vec3 defenderPos = VerConv.player(defender).position();
 			
 			return switch(who) {
 				//Easy cases (that can't be cached anyways because the entities wander around the world)
@@ -59,7 +59,7 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 						//The spawn position is unknown for this entity
 						yield false;
 					}
-					Vec3 vec = CoreConv.fromVecThree(vecThree);
+					Vec3 vec = VerConv.fromVecThree(vecThree);
 					
 					//Compute and store the cached result, if the position is loaded
 					if(slevel.isLoaded(new BlockPos(vec))) {

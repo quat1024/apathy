@@ -16,6 +16,7 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 	}
 	
 	public final Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs;
+	private static final Rule alwaysPasses = RuleSpecAlways.ALWAYS_PASS.build();
 	
 	@Override
 	public RuleSpec<?> optimize() {
@@ -30,8 +31,6 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 		
 		return (attacker, defender) -> built.getOrDefault(attacker.apathy$getDifficulty(), alwaysPasses).apply(attacker, defender);
 	}
-	
-	private static final Rule alwaysPasses = (attacker, defender) -> TriState.DEFAULT;
 	
 	@Override
 	public RuleSerializer<RuleSpecDifficultyCase> getSerializer() {

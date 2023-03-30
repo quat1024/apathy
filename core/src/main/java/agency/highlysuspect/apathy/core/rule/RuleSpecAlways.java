@@ -4,7 +4,7 @@ import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
 public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
-	public RuleSpecAlways(TriState value) {
+	private RuleSpecAlways(TriState value) { //use get() instead of this constructor
 		this.value = value;
 	}
 	
@@ -14,16 +14,12 @@ public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
 	public static final RuleSpecAlways ALWAYS_DENY = new RuleSpecAlways(TriState.FALSE);
 	public static final RuleSpecAlways ALWAYS_PASS = new RuleSpecAlways(TriState.DEFAULT);
 	
-	public static RuleSpecAlways always(TriState which) {
+	public static RuleSpecAlways get(TriState which) {
 		switch(which) {
-			case FALSE:
-				return ALWAYS_DENY;
-			case DEFAULT:
-				return ALWAYS_PASS;
-			case TRUE:
-				return ALWAYS_ALLOW;
-			default:
-				throw new IllegalArgumentException();
+			case FALSE: return ALWAYS_DENY;
+			case DEFAULT: return ALWAYS_PASS;
+			case TRUE: return ALWAYS_ALLOW;
+			default: throw new IllegalArgumentException();
 		}
 	}
 	
@@ -48,7 +44,7 @@ public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
 		
 		@Override
 		public RuleSpecAlways read(JsonObject json) {
-			return new RuleSpecAlways(CoolGsonHelper.getAllowDenyPassTriState(json, "value"));
+			return RuleSpecAlways.get(CoolGsonHelper.getAllowDenyPassTriState(json, "value"));
 		}
 	}
 }

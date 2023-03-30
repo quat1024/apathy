@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy118;
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreGenOptions;
 import agency.highlysuspect.apathy.core.TriState;
@@ -90,7 +90,7 @@ public class MobMixin implements MobExt {
 	
 	@Override
 	public @Nullable VecThree apathy$getSpawnPosition() {
-		return CoreConv.toVecThree(spawnPosition);
+		return VerConv.toVecThree(spawnPosition);
 	}
 	
 	@Override

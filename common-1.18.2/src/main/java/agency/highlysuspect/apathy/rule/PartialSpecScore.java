@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
@@ -20,7 +20,7 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 			Objective objective = scoreboard.getObjective(scoreboardObjective);
 			if(objective == null) return false;
 			
-			Entity which = who.choose(CoreConv.mob(attacker), CoreConv.player(defender));
+			Entity which = who.choose(VerConv.mob(attacker), VerConv.player(defender));
 			String scoreboardName = which.getScoreboardName();
 			
 			int score = scoreboard.hasPlayerScore(scoreboardName, objective) ? scoreboard.getOrCreatePlayerScore(scoreboardName, objective).getScore() : 0;

@@ -3,7 +3,7 @@ package agency.highlysuspect.apathy.core.rule;
 import com.google.gson.JsonObject;
 
 public class PartialSpecAlways implements PartialSpec<PartialSpecAlways> {
-	public PartialSpecAlways(boolean always) {
+	private PartialSpecAlways(boolean always) { //use get() instead of this constructor
 		this.always = always;
 	}
 	

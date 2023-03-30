@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -31,7 +31,7 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 	public Partial build() {
 		return (attacker, defender) -> {
 			//todo xplat port more maybe
-			ServerPlayer defenderSp = CoreConv.player(defender); 
+			ServerPlayer defenderSp = VerConv.player(defender); 
 			
 			MinecraftServer server = defenderSp.server;
 			ServerAdvancementManager serverAdvancementManager = server.getAdvancements();

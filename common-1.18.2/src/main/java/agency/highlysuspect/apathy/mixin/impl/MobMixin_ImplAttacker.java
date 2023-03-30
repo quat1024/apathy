@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.impl;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import net.minecraft.world.entity.Mob;
@@ -20,6 +20,6 @@ public class MobMixin_ImplAttacker implements Attacker {
 	
 	@Override
 	public ApathyDifficulty apathy$getDifficulty() {
-		return CoreConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
+		return VerConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
 	}
 }

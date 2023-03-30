@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
@@ -28,7 +28,7 @@ public record PartialSpecAttackerTaggedWith(Set<TagKey<EntityType<?>>> tags) imp
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			EntityType<?> type = CoreConv.type(attacker);
+			EntityType<?> type = VerConv.type(attacker);
 			
 			for(TagKey<EntityType<?>> tag : tags) if(type.is(tag)) return true;
 			return false;

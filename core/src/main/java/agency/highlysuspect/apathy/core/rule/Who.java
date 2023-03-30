@@ -13,12 +13,9 @@ public enum Who {
 	
 	public static Who fromString(String name) {
 		switch(name) {
-			case "attacker":
-				return ATTACKER;
-			case "defender":
-				return DEFENDER;
-			default:
-				throw new IllegalArgumentException("expected 'attacker' or 'defender'");
+			case "attacker": return ATTACKER;
+			case "defender": return DEFENDER;
+			default: throw new IllegalArgumentException("expected 'attacker' or 'defender'");
 		}
 	}
 	

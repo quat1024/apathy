@@ -17,12 +17,12 @@ public final class RuleSpecPredicated implements RuleSpec<RuleSpecPredicated> {
 	
 	@Override
 	public RuleSpec<?> optimize() {
-		if(ifTrue == ifFalse) return RuleSpecAlways.always(ifTrue);
+		if(ifTrue == ifFalse) return RuleSpecAlways.get(ifTrue);
 		
 		PartialSpec<?> predSpecOpt = predSpec.optimize();
 		
-		if(predSpec == PartialSpecAlways.TRUE) return RuleSpecAlways.always(ifTrue);
-		if(predSpec == PartialSpecAlways.FALSE) return RuleSpecAlways.always(ifFalse);
+		if(predSpec == PartialSpecAlways.TRUE) return RuleSpecAlways.get(ifTrue);
+		if(predSpec == PartialSpecAlways.FALSE) return RuleSpecAlways.get(ifFalse);
 		
 		return new RuleSpecPredicated(ifTrue, ifFalse, predSpecOpt);
 	}

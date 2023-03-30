@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.Portage;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreBossOptions;
@@ -52,7 +52,7 @@ public class WitherBossMixin {
 	private void maybeDelete(CallbackInfo ci) {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
-		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(CoreConv.toApathyDifficulty(level.getDifficulty()))) {
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {
 			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(me));
 			me.discard();
 			ci.cancel();

@@ -1,14 +1,17 @@
 package agency.highlysuspect.apathy.core;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Really really basic registry type.
+ * Really really basic registry type, string keys.
+ * 
+ * This also lets callers refer to things with or without a prefix of "apathy:".
+ * This prefix was formerly required in the mod's registries, but it's completely historical vestige, so it's optional now
  */
 public class NotRegistry<T> {
-	protected final Map<String, T> byName = new LinkedHashMap<>();
+	protected final Map<String, T> byName = new HashMap<>();
 	protected final Map<T, String> byThing = new IdentityHashMap<>();
 	
 	private static final String OPTIONAL_PREFIX = "apathy:";

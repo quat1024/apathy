@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class CrummyConfig implements CookedConfig {
 	private final ConfigSchema schema;
 	private final Path path;
 	
-	private final Map<ConfigProperty<?>, Object> parsedValues = new HashMap<>();
+	private final Map<ConfigProperty<?>, Object> parsedValues = new IdentityHashMap<>();
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -98,23 +98,7 @@ public class CrummyConfig implements CookedConfig {
 			
 			@Override
 			public <T> void visitOption(ConfigProperty<T> option) {
-				for(String s : option.comment()) {
-					out.add("# " + s);
-				}
-				
-				List<String> note = option.note();
-				boolean first = true;
-				for(String noteLine : note) {
-					out.add((first ? "# Note: " : "#       ") + noteLine);
-					first = false;
-				}
-				
-				List<String> example = option.example();
-				first = true;
-				for(String exampleLine : example) {
-					out.add((first ? "# Example: " : "#          ") + exampleLine);
-					first = false;
-				}
+				for(String s : option.comment()) out.add("# " + s);
 				
 				if(!option.name().equals("configVersion")) { //silly special-case
 					T defaultValue = option.defaultValue();
@@ -136,7 +120,7 @@ public class CrummyConfig implements CookedConfig {
 	
 	private <T> T parse(ConfigProperty<T> prop, String value) {
 		T parsed = prop.parse(value);
-		prop.validate(parsed);
+		prop.validate(prop, parsed);
 		return parsed;
 	}
 	

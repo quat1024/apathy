@@ -7,6 +7,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 
+/**
+ * this is just some stuff that i know is different across 1.18 and 1.19
+ */
 public class Portage {
 	public static String stringifyComponent(Component c) {
 		return c.getContents();

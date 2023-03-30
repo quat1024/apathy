@@ -12,9 +12,13 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * in comparison to CoreMobOptions, this file contains definitions for some options that refer to types
+ * from Minecraft, and/or rely on minecraft being present to serialize and deserialize them correctly
+ */
 public class VerMobOptions {
 	private static <B extends ConfigProperty.Builder<Set<EntityType<?>>, B>> B entityTypeSetOpt(String name, Set<EntityType<?>> defaultValue, String... comment) {
-		return new ConfigProperty.Builder<Set<EntityType<?>>, B>(name, Set.class, defaultValue)
+		return new ConfigProperty.Builder<Set<EntityType<?>>, B>(name, defaultValue)
 			.comment(comment)
 			.writer(set -> set.stream()
 				.map(Registry.ENTITY_TYPE::getKey)
@@ -28,7 +32,7 @@ public class VerMobOptions {
 	}
 	
 	private static <B extends ConfigProperty.Builder<Set<TagKey<EntityType<?>>>, B>> B entityTypeTagKeySetOpt(String name, Set<TagKey<EntityType<?>>> defaultValue, String... comment) {
-		return new ConfigProperty.Builder<Set<TagKey<EntityType<?>>>, B>(name, Set.class, defaultValue)
+		return new ConfigProperty.Builder<Set<TagKey<EntityType<?>>>, B>(name, defaultValue)
 			.comment(comment)
 			.writer(set -> set.stream()
 				.map(TagKey::location)

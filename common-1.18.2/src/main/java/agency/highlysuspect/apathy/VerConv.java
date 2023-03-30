@@ -15,10 +15,12 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-public class CoreConv {
+/**
+ * the bulk of the mod is implemented in the "core" module, which is version-independent and can't refer
+ * to anything from minecraft, so it contains wrappers for minecraft-specific concepts like "the game difficulty".
+ * this file contains conversions to and from those wrapper types, to glue minecraft together with the core
+ */
+public class VerConv {
 	public static LogFacade toLogFacade(Logger logger) {
 		return new LogFacade() {
 			@Override
@@ -45,10 +47,6 @@ public class CoreConv {
 			case NORMAL -> ApathyDifficulty.NORMAL;
 			case HARD -> ApathyDifficulty.HARD;
 		};
-	}
-	
-	public static Set<ApathyDifficulty> toApathyDifficulty(Set<Difficulty> diffSet) {
-		return diffSet.stream().map(CoreConv::toApathyDifficulty).collect(Collectors.toSet());
 	}
 	
 	public static Difficulty fromApathyDifficulty(ApathyDifficulty diff) {

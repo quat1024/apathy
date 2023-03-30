@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.rule;
 
-import agency.highlysuspect.apathy.CoreConv;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSerializer;
 import agency.highlysuspect.apathy.core.rule.PartialSpec;
@@ -16,7 +16,7 @@ public record PartialSpecRevengeTimer(long timer) implements PartialSpec<Partial
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> CoreConv.mobExt(attacker).apathy$lastAttackedWithin(timer);
+		return (attacker, defender) -> VerConv.mobExt(attacker).apathy$lastAttackedWithin(timer);
 	}
 	
 	@Override

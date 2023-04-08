@@ -2,16 +2,16 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
-public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAttackerIsBoss> {
+public record PartialSpecAttackerIsBoss() implements Spec<Partial, PartialSpecAttackerIsBoss> {
 	public static final PartialSpecAttackerIsBoss INSTANCE = new PartialSpecAttackerIsBoss();
 	
 	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Apathy.MODID, "bosses"));
@@ -22,16 +22,16 @@ public record PartialSpecAttackerIsBoss() implements PartialSpec<PartialSpecAtta
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecAttackerIsBoss> getSerializer() {
+	public JsonSerializer<PartialSpecAttackerIsBoss> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecAttackerIsBoss> {
+	public static class Serializer implements JsonSerializer<PartialSpecAttackerIsBoss> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecAttackerIsBoss asdkashd, JsonObject json) {
+		public void write(PartialSpecAttackerIsBoss thing, JsonObject json) {
 			//Nothing to write
 		}
 		

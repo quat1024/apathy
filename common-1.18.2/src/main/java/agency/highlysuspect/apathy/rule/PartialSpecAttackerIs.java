@@ -2,10 +2,10 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -17,9 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements PartialSpec<PartialSpecAttackerIs> {
+public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Spec<Partial, PartialSpecAttackerIs> {
 	@Override
-	public PartialSpec<?> optimize() {
+	public Spec<Partial, ?> optimize() {
 		if(mobSet.isEmpty()) return PartialSpecAlways.FALSE;
 		else return this;
 	}
@@ -30,17 +30,17 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Partia
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecAttackerIs> getSerializer() {
+	public JsonSerializer<PartialSpecAttackerIs> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecAttackerIs> {
+	public static class Serializer implements JsonSerializer<PartialSpecAttackerIs> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecAttackerIs part, JsonObject json) {
-			json.add("mobs", part.mobSet.stream()
+		public void write(PartialSpecAttackerIs thing, JsonObject json) {
+			json.add("mobs", thing.mobSet.stream()
 				.map(Registry.ENTITY_TYPE::getKey)
 				.map(rl -> new JsonPrimitive(rl.toString()))
 				.collect(CoolGsonHelper.toJsonArray()));

@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.core.wrapper.LogFacade;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
+import agency.highlysuspect.apathy.core.wrapper.LogFacade;
 import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import net.minecraft.server.level.ServerLevel;

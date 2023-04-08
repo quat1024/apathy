@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.VerConv;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.rule.ThresholdMode;
 import agency.highlysuspect.apathy.core.rule.Who;
 import com.google.gson.JsonObject;
@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
-public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements PartialSpec<PartialSpecScore> {
+public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements Spec<Partial, PartialSpecScore> {
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
@@ -30,20 +30,20 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecScore> getSerializer() {
+	public JsonSerializer<PartialSpecScore> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecScore> {
+	public static class Serializer implements JsonSerializer<PartialSpecScore> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecScore part, JsonObject json) {
-			json.addProperty("objective", part.scoreboardObjective);
-			json.addProperty("who", part.who.toString()); //optional but serialized unconditionally
-			json.addProperty("thresholdMode", part.thresholdMode.toString());
-			json.addProperty("threshold", part.threshold);
+		public void write(PartialSpecScore thing, JsonObject json) {
+			json.addProperty("objective", thing.scoreboardObjective);
+			json.addProperty("who", thing.who.toString()); //optional but serialized unconditionally
+			json.addProperty("thresholdMode", thing.thresholdMode.toString());
+			json.addProperty("threshold", thing.threshold);
 		}
 		
 		@Override

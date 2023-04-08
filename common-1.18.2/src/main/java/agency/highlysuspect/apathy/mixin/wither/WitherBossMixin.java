@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.Portage;
+import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreBossOptions;
 import net.minecraft.world.entity.LivingEntity;

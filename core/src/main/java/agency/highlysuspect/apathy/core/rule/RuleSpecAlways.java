@@ -3,7 +3,7 @@ package agency.highlysuspect.apathy.core.rule;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
-public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
+public class RuleSpecAlways implements Spec<Rule, RuleSpecAlways> {
 	private RuleSpecAlways(TriState value) { //use get() instead of this constructor
 		this.value = value;
 	}
@@ -29,17 +29,17 @@ public class RuleSpecAlways implements RuleSpec<RuleSpecAlways> {
 	}
 	
 	@Override
-	public RuleSerializer<RuleSpecAlways> getSerializer() {
+	public JsonSerializer<RuleSpecAlways> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements RuleSerializer<RuleSpecAlways> {
+	public static class Serializer implements JsonSerializer<RuleSpecAlways> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(RuleSpecAlways rule, JsonObject json) {
-			json.addProperty("value", rule.value.toAllowDenyPassString());
+		public void write(RuleSpecAlways thing, JsonObject json) {
+			json.addProperty("value", thing.value.toAllowDenyPassString());
 		}
 		
 		@Override

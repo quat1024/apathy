@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.core.rule;
 
 import agency.highlysuspect.apathy.core.Apathy;
-import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import com.google.gson.JsonObject;
 
@@ -10,16 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> {
-	public RuleSpecDifficultyCase(Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs) {
+public class RuleSpecDifficultyCase implements Spec<Rule, RuleSpecDifficultyCase> {
+	public RuleSpecDifficultyCase(Map<ApathyDifficulty, Spec<Rule, ?>> ruleSpecs) {
 		this.ruleSpecs = ruleSpecs;
 	}
 	
-	public final Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs;
+	public final Map<ApathyDifficulty, Spec<Rule, ?>> ruleSpecs;
 	private static final Rule alwaysPasses = RuleSpecAlways.ALWAYS_PASS.build();
 	
 	@Override
-	public RuleSpec<?> optimize() {
+	public Spec<Rule, ?> optimize() {
 		return new RuleSpecDifficultyCase(ruleSpecs.entrySet().stream()
 			.collect(Collectors.toMap(Map.Entry::getKey, p -> p.getValue().optimize())));
 	}
@@ -33,24 +32,24 @@ public class RuleSpecDifficultyCase implements RuleSpec<RuleSpecDifficultyCase> 
 	}
 	
 	@Override
-	public RuleSerializer<RuleSpecDifficultyCase> getSerializer() {
+	public JsonSerializer<RuleSpecDifficultyCase> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements RuleSerializer<RuleSpecDifficultyCase> {
+	public static class Serializer implements JsonSerializer<RuleSpecDifficultyCase> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(RuleSpecDifficultyCase rule, JsonObject json) {
+		public void write(RuleSpecDifficultyCase thing, JsonObject json) {
 			JsonObject cases = new JsonObject();
-			rule.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.toString(), Apathy.instance.writeRule(diffRule)));
+			thing.ruleSpecs.forEach((difficulty, diffRule) -> cases.add(difficulty.toString(), Apathy.instance.writeRule(diffRule)));
 			json.add("cases", cases);
 		}
 		
 		@Override
 		public RuleSpecDifficultyCase read(JsonObject json) {
-			Map<ApathyDifficulty, RuleSpec<?>> ruleSpecs = new HashMap<>();
+			Map<ApathyDifficulty, Spec<Rule, ?>> ruleSpecs = new HashMap<>();
 			
 			JsonObject cases = json.getAsJsonObject("cases");
 			for(String key : CoolGsonHelper.keySet(cases)) {

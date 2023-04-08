@@ -2,7 +2,7 @@ package agency.highlysuspect.apathy.core.rule;
 
 import com.google.gson.JsonObject;
 
-public class PartialSpecAlways implements PartialSpec<PartialSpecAlways> {
+public class PartialSpecAlways implements Spec<Partial, PartialSpecAlways> {
 	private PartialSpecAlways(boolean always) { //use get() instead of this constructor
 		this.always = always;
 	}
@@ -22,17 +22,17 @@ public class PartialSpecAlways implements PartialSpec<PartialSpecAlways> {
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecAlways> getSerializer() {
+	public JsonSerializer<PartialSpecAlways> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecAlways> {
+	public static class Serializer implements JsonSerializer<PartialSpecAlways> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecAlways part, JsonObject json) {
-			json.addProperty("value", part.always);
+		public void write(PartialSpecAlways thing, JsonObject json) {
+			json.addProperty("value", thing.always);
 		}
 		
 		@Override

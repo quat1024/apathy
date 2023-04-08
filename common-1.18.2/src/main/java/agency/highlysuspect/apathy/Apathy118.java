@@ -7,11 +7,11 @@ import agency.highlysuspect.apathy.core.JsonRule;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.rule.Rule;
-import agency.highlysuspect.apathy.core.rule.RuleSpec;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
 import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
@@ -53,14 +53,14 @@ public abstract class Apathy118 extends Apathy {
 	}
 	
 	@Override
-	public Rule bakeRule() {
-		RuleSpec<?> ruleSpec;
+	public Rule bakeMobsConfigRule() {
+		Spec<Rule, ?> ruleSpec;
 		
 		if(mobCfg.get(CoreMobOptions.nuclearOption)) {
 			Apathy.instance.log.info("Nuclear option enabled - Ignoring ALL rules in the config file");
 			ruleSpec = RuleSpecAlways.ALWAYS_DENY;
 		} else {
-			ArrayList<RuleSpec<?>> ruleSpecList = new ArrayList<>();
+			ArrayList<Spec<Rule, ?>> ruleSpecList = new ArrayList<>();
 			for(String ruleName : mobCfg.get(CoreMobOptions.ruleOrder)) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
 					case "json"       ->ruleSpecList.add(new RuleSpecJson());

@@ -1,8 +1,7 @@
 package agency.highlysuspect.apathy.core;
 
 import agency.highlysuspect.apathy.core.rule.Rule;
-import agency.highlysuspect.apathy.core.rule.RuleSpec;
-import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -41,7 +40,7 @@ public class JsonRule {
 		}
 		
 		//parse the json into a java object
-		RuleSpec<?> spec;
+		Spec<Rule, ?> spec;
 		try {
 			spec = Apathy.instance.readRule(json);
 		} catch (Exception e) {
@@ -71,7 +70,7 @@ public class JsonRule {
 	/**
 	 * Write a rule as json and poop it out.
 	 */
-	public static <RULE extends SerializableRuleSpec<RULE>> void dump(RuleSpec<RULE> ruleSpec, Path configFolder, String filename) {
+	public static <RULE extends Spec<Rule, RULE>> void dump(Spec<Rule, RULE> ruleSpec, Path configFolder, String filename) {
 		try {
 			Path dumpDir = configFolder.resolve("dumps");
 			

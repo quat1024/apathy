@@ -9,16 +9,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PartialSpecAny implements PartialSpec<PartialSpecAny> {
-	public PartialSpecAny(Set<PartialSpec<?>> others) {
+public class PartialSpecAny implements Spec<Partial, PartialSpecAny> {
+	public PartialSpecAny(Set<Spec<Partial, ?>> others) {
 		this.others = others;
 	}
 	
-	public final Set<PartialSpec<?>> others;
+	public final Set<Spec<Partial, ?>> others;
 	
 	@Override
-	public PartialSpec<?> optimize() {
-		Set<PartialSpec<?>> loweredSpecs = others.stream().map(PartialSpec::optimize).collect(Collectors.toSet());
+	public Spec<Partial, ?> optimize() {
+		Set<Spec<Partial, ?>> loweredSpecs = others.stream().map(Spec::optimize).collect(Collectors.toSet());
 		
 		//If an always-true partial is present, surely this partial is also always true.
 		if(loweredSpecs.stream().anyMatch(pred -> pred == PartialSpecAlways.TRUE)) return PartialSpecAlways.TRUE;
@@ -37,7 +37,7 @@ public class PartialSpecAny implements PartialSpec<PartialSpecAny> {
 	
 	@Override
 	public Partial build() {
-		Partial[] arrayParts = others.stream().map(PartialSpec::build).toArray(Partial[]::new);
+		Partial[] arrayParts = others.stream().map(Spec::build).toArray(Partial[]::new);
 		return (attacker, defender) -> {
 			for(Partial p : arrayParts) {
 				if(p.test(attacker, defender)) return true;
@@ -47,22 +47,22 @@ public class PartialSpecAny implements PartialSpec<PartialSpecAny> {
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecAny> getSerializer() {
+	public JsonSerializer<PartialSpecAny> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecAny> {
+	public static class Serializer implements JsonSerializer<PartialSpecAny> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecAny pred, JsonObject json) {
-			json.add("predicates", pred.others.stream().map(Apathy.instance::writePartial).collect(CoolGsonHelper.toJsonArray()));
+		public void write(PartialSpecAny thing, JsonObject json) {
+			json.add("predicates", thing.others.stream().map(Apathy.instance::writePartial).collect(CoolGsonHelper.toJsonArray()));
 		}
 		
 		@Override
 		public PartialSpecAny read(JsonObject json) {
-			Set<PartialSpec<?>> partials = new HashSet<>();
+			Set<Spec<Partial, ?>> partials = new HashSet<>();
 			JsonArray partialsArray = json.getAsJsonArray("predicates");
 			for(JsonElement e : partialsArray) partials.add(Apathy.instance.readPartial(e));
 			return new PartialSpecAny(partials);

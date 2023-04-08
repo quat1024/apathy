@@ -34,4 +34,10 @@ public class NotRegistry<T> {
 	public String getName(T thing) {
 		return byThing.get(thing);
 	}
+	
+	//weird time
+	
+	public void the() {
+		
+	}
 }

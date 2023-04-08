@@ -1,11 +1,11 @@
 package agency.highlysuspect.apathy.core;
 
+import agency.highlysuspect.apathy.core.config.ConfigProperty;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.etc.DragonInitialState;
 import agency.highlysuspect.apathy.core.etc.ElderGuardianEffect;
 import agency.highlysuspect.apathy.core.etc.PortalInitialState;
 import agency.highlysuspect.apathy.core.etc.ResummonSequence;
-import agency.highlysuspect.apathy.core.config.ConfigProperty;
-import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 
 import java.util.Set;

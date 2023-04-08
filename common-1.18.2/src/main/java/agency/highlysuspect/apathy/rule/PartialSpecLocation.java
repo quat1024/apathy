@@ -2,10 +2,10 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import com.google.gson.JsonObject;
@@ -18,9 +18,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Locale;
 import java.util.Map;
 
-public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) implements PartialSpec<PartialSpecLocation> {
+public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) implements Spec<Partial, PartialSpecLocation> {
 	@Override
-	public PartialSpec<?> optimize() {
+	public Spec<Partial, ?> optimize() {
 		if(pred == LocationPredicate.ANY) return PartialSpecAlways.TRUE;
 		else return this;
 	}
@@ -82,24 +82,24 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecLocation> getSerializer() {
+	public JsonSerializer<PartialSpecLocation> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecLocation> {
+	public static class Serializer implements JsonSerializer<PartialSpecLocation> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecLocation part, JsonObject json) {
-			json.add("predicate", part.pred.serializeToJson());
+		public void write(PartialSpecLocation thing, JsonObject json) {
+			json.add("predicate", thing.pred.serializeToJson());
 			
-			json.addProperty("who", part.who.toString()); //optional but unconditionally serialized
-			json.addProperty("uniqueId", part.uniqueId); //optional but unconditionally serialized
+			json.addProperty("who", thing.who.toString()); //optional but unconditionally serialized
+			json.addProperty("uniqueId", thing.uniqueId); //optional but unconditionally serialized
 			
-			if(part.offsetX != 0) json.addProperty("offsetX", part.offsetX);
-			if(part.offsetY != 0) json.addProperty("offsetY", part.offsetY);
-			if(part.offsetZ != 0) json.addProperty("offsetZ", part.offsetZ);
+			if(thing.offsetX != 0) json.addProperty("offsetX", thing.offsetX);
+			if(thing.offsetY != 0) json.addProperty("offsetY", thing.offsetY);
+			if(thing.offsetZ != 0) json.addProperty("offsetZ", thing.offsetZ);
 		}
 		
 		@Override

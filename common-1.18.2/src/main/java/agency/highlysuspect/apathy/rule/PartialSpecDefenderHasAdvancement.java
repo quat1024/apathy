@@ -2,10 +2,10 @@ package agency.highlysuspect.apathy.rule;
 
 import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -20,9 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancementIds) implements PartialSpec<PartialSpecDefenderHasAdvancement> {
+public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancementIds) implements Spec<Partial, PartialSpecDefenderHasAdvancement> {
 	@Override
-	public PartialSpec<?> optimize() {
+	public Spec<Partial, ?> optimize() {
 		if(advancementIds.isEmpty()) return PartialSpecAlways.FALSE;
 		else return this;
 	}
@@ -47,17 +47,17 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecDefenderHasAdvancement> getSerializer() {
+	public JsonSerializer<PartialSpecDefenderHasAdvancement> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecDefenderHasAdvancement> {
+	public static class Serializer implements JsonSerializer<PartialSpecDefenderHasAdvancement> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecDefenderHasAdvancement part, JsonObject json) {
-			json.add("advancements", part.advancementIds.stream()
+		public void write(PartialSpecDefenderHasAdvancement thing, JsonObject json) {
+			json.add("advancements", thing.advancementIds.stream()
 				.map(rl -> new JsonPrimitive(rl.toString()))
 				.collect(CoolGsonHelper.toJsonArray()));
 		}

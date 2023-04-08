@@ -3,15 +3,15 @@ package agency.highlysuspect.apathy.core.rule;
 import agency.highlysuspect.apathy.core.Apathy;
 import com.google.gson.JsonObject;
 
-public class PartialSpecNot implements PartialSpec<PartialSpecNot> {
-	public PartialSpecNot(PartialSpec<?> other) {
+public class PartialSpecNot implements Spec<Partial, PartialSpecNot> {
+	public PartialSpecNot(Spec<Partial, ?> other) {
 		this.other = other;
 	}
 	
-	public final PartialSpec<?> other;
+	public final Spec<Partial, ?> other;
 	
 	@Override
-	public PartialSpec<?> optimize() {
+	public Spec<Partial, ?> optimize() {
 		if(other == PartialSpecAlways.FALSE) return PartialSpecAlways.TRUE;
 		if(other == PartialSpecAlways.TRUE) return PartialSpecAlways.FALSE;
 		
@@ -30,22 +30,22 @@ public class PartialSpecNot implements PartialSpec<PartialSpecNot> {
 	}
 	
 	@Override
-	public PartialSerializer<PartialSpecNot> getSerializer() {
+	public JsonSerializer<PartialSpecNot> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements PartialSerializer<PartialSpecNot> {
+	public static class Serializer implements JsonSerializer<PartialSpecNot> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(PartialSpecNot part, JsonObject json) {
-			json.add("predicate", Apathy.instance.writePartial(part.other));
+		public void write(PartialSpecNot thing, JsonObject json) {
+			json.add("predicate", Apathy.instance.writePartial(thing.other));
 		}
 		
 		@Override
 		public PartialSpecNot read(JsonObject json) {
-			PartialSpec<?> other = Apathy.instance.readPartial(json.get("predicate"));
+			Spec<Partial, ?> other = Apathy.instance.readPartial(json.get("predicate"));
 			return new PartialSpecNot(other);
 		}
 	}

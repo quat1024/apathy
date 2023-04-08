@@ -2,23 +2,20 @@ package agency.highlysuspect.apathy.core;
 
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.config.CookedConfig;
-import agency.highlysuspect.apathy.core.rule.PartialSerializer;
-import agency.highlysuspect.apathy.core.rule.PartialSpec;
+import agency.highlysuspect.apathy.core.rule.JsonSerializer;
+import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAll;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAny;
 import agency.highlysuspect.apathy.core.rule.PartialSpecNot;
 import agency.highlysuspect.apathy.core.rule.Rule;
-import agency.highlysuspect.apathy.core.rule.RuleSerializer;
-import agency.highlysuspect.apathy.core.rule.RuleSpec;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDebug;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDifficultyCase;
 import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
-import agency.highlysuspect.apathy.core.rule.SerializablePartialSpec;
-import agency.highlysuspect.apathy.core.rule.SerializableRuleSpec;
+import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.LogFacade;
@@ -44,8 +41,8 @@ public abstract class Apathy {
 	public final Path configPath;
 	public final LogFacade log;
 	
-	public final NotRegistry<RuleSerializer<?>> ruleSerializers = new NotRegistry<>();
-	public final NotRegistry<PartialSerializer<?>> partialSerializers = new NotRegistry<>();
+	public final NotRegistry<JsonSerializer<? extends Spec<Rule, ?>>> ruleSerializers = new NotRegistry<>();
+	public final NotRegistry<JsonSerializer<? extends Spec<Partial, ?>>> partialSerializers = new NotRegistry<>();
 	
 	public CookedConfig generalCfg;
 	public CookedConfig mobCfg;
@@ -112,7 +109,7 @@ public abstract class Apathy {
 		
 		Rule newConfiguredRule = configuredRule;
 		try {
-			newConfiguredRule = bakeRule();
+			newConfiguredRule = bakeMobsConfigRule();
 		} catch (Exception e) {
 			log.error("Problem baking rule: ", e);
 			ok = false;
@@ -167,57 +164,55 @@ public abstract class Apathy {
 	public abstract ConfigSchema.Bakery mobsConfigBakery();
 	public abstract ConfigSchema.Bakery bossConfigBakery();
 	
-	public abstract Rule bakeRule();
+	public abstract Rule bakeMobsConfigRule();
 	
 	public abstract void installConfigFileReloader();
 	public abstract void installCommandRegistrationCallback();
 	public abstract void installPlayerSetManagerTicker();
 	
 	//TODO maybe find a better home for these 4 methods?
-	public RuleSpec<?> readRule(JsonElement jsonElem) {
+	public Spec<Rule, ?> readRule(JsonElement jsonElem) {
 		if(!(jsonElem instanceof JsonObject)) throw new IllegalArgumentException("Not json object");
 		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
-		RuleSerializer<?> ruleSerializer = ruleSerializers.get(type);
+		JsonSerializer<? extends Spec<Rule, ?>> jsonSerializer = ruleSerializers.get(type);
 		
 		//TODO way better error message (list the valid options?)
-		if(ruleSerializer == null) throw new IllegalArgumentException("No rule serializer with name " + type);
-		else return (RuleSpec<?>) ruleSerializer.read(json);
+		if(jsonSerializer == null) throw new IllegalArgumentException("No rule serializer with name " + type);
+		else return jsonSerializer.read(json);
 	}
 	
-	public <T extends SerializableRuleSpec<T>> JsonObject writeRule(RuleSpec<T> rule) {
+	public <T extends Spec<Rule, T>> JsonObject writeRule(Spec<Rule, T> rule) {
 		JsonObject ok = new JsonObject();
-		RuleSerializer<T> serializer = rule.getSerializer();
+		JsonSerializer<T> serializer = rule.getSerializer();
 		
 		String name = ruleSerializers.getName(serializer);
-		//TODO way better error message (list the valid options?)
-		if(name == null) throw new IllegalArgumentException("Unregistered rule serializer: " + serializer.getClass().getName());
+		if(name == null) throw new IllegalArgumentException("internal error, unregistered rule serializer: " + serializer.getClass().getName());
 		
 		ok.addProperty("type", name);
 		serializer.writeErased(rule, ok);
 		return ok;
 	}
 	
-	public PartialSpec<?> readPartial(JsonElement jsonElem) {
+	public Spec<Partial, ?> readPartial(JsonElement jsonElem) {
 		if(!(jsonElem instanceof JsonObject)) throw new IllegalArgumentException("Not json object");
 		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
-		PartialSerializer<?> partialSerializer = partialSerializers.get(type);
+		JsonSerializer<? extends Spec<Partial, ?>> jsonSerializer = partialSerializers.get(type);
 		
 		//TODO way better error message (list the valid options?)
-		if(partialSerializer == null) throw new IllegalArgumentException("No partial serializer with name " + type);
-		else return (PartialSpec<?>) partialSerializer.read(json);
+		if(jsonSerializer == null) throw new IllegalArgumentException("No partial serializer with name " + type);
+		else return jsonSerializer.read(json);
 	}
 	
-	public <T extends SerializablePartialSpec<T>> JsonObject writePartial(PartialSpec<T> part) {
+	public <T extends Spec<Partial, T>> JsonObject writePartial(Spec<Partial, T> part) {
 		JsonObject ok = new JsonObject();
-		PartialSerializer<T> serializer = part.getSerializer();
+		JsonSerializer<T> serializer = part.getSerializer();
 		
 		String name = partialSerializers.getName(serializer);
-		//TODO way better error message (list the valid options?)
-		if(name == null) throw new IllegalArgumentException("Unregistered partial serializer: " + serializer.getClass().getName());
+		if(name == null) throw new IllegalArgumentException("internal error, unregistered partial serializer: " + serializer.getClass().getName());
 		
 		ok.addProperty("type", name);
 		serializer.writeErased(part, ok);

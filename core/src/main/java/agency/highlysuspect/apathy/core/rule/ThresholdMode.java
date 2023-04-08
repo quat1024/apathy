@@ -2,6 +2,9 @@ package agency.highlysuspect.apathy.core.rule;
 
 import java.util.Locale;
 
+/**
+ * Enum used by PartialSpecScore
+ */
 public enum ThresholdMode {
 	AT_LEAST,
 	AT_MOST,

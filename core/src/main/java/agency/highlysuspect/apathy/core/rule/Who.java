@@ -2,6 +2,9 @@ package agency.highlysuspect.apathy.core.rule;
 
 import java.util.Locale;
 
+/**
+ * Enum used by PartialSpecScore
+ */
 public enum Who {
 	ATTACKER,
 	DEFENDER;

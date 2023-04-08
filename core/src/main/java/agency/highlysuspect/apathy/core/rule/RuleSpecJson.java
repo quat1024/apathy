@@ -4,7 +4,7 @@ import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
-public final class RuleSpecJson implements RuleSpec<RuleSpecJson> {
+public final class RuleSpecJson implements Spec<Rule, RuleSpecJson> {
 	public static final RuleSpecJson INSTANCE = new RuleSpecJson();
 	
 	@Override
@@ -13,16 +13,16 @@ public final class RuleSpecJson implements RuleSpec<RuleSpecJson> {
 	}
 	
 	@Override
-	public RuleSerializer<RuleSpecJson> getSerializer() {
+	public JsonSerializer<RuleSpecJson> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements RuleSerializer<RuleSpecJson> {
+	public static class Serializer implements JsonSerializer<RuleSpecJson> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(RuleSpecJson ruleSpecJson, JsonObject json) {
+		public void write(RuleSpecJson thing, JsonObject json) {
 			//Nothing to write
 		}
 		

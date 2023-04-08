@@ -4,17 +4,17 @@ import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import com.google.gson.JsonObject;
 
-public class RuleSpecDebug implements RuleSpec<RuleSpecDebug> {
-	public RuleSpecDebug(RuleSpec<?> rule, String message) {
+public class RuleSpecDebug implements Spec<Rule, RuleSpecDebug> {
+	public RuleSpecDebug(Spec<Rule, ?> rule, String message) {
 		this.rule = rule;
 		this.message = message;
 	}
 	
-	public final RuleSpec<?> rule;
+	public final Spec<Rule, ?> rule;
 	public final String message;
 	
 	@Override
-	public RuleSpec<?> optimize() {
+	public Spec<Rule, ?> optimize() {
 		return new RuleSpecDebug(rule.optimize(), message);
 	}
 	
@@ -31,18 +31,18 @@ public class RuleSpecDebug implements RuleSpec<RuleSpecDebug> {
 	}
 	
 	@Override
-	public RuleSerializer<RuleSpecDebug> getSerializer() {
+	public JsonSerializer<RuleSpecDebug> getSerializer() {
 		return Serializer.INSTANCE;
 	}
 	
-	public static class Serializer implements RuleSerializer<RuleSpecDebug> {
+	public static class Serializer implements JsonSerializer<RuleSpecDebug> {
 		private Serializer() {}
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override
-		public void write(RuleSpecDebug rule, JsonObject json) {
-			json.add("rule", Apathy.instance.writeRule(rule.rule));
-			json.addProperty("message", rule.message);
+		public void write(RuleSpecDebug thing, JsonObject json) {
+			json.add("rule", Apathy.instance.writeRule(thing.rule));
+			json.addProperty("message", thing.message);
 		}
 		
 		@Override

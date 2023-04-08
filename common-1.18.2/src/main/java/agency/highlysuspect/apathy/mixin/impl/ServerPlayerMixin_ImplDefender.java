@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin_ImplDefender implements Defender {
 	@Override
-	public Object apathy$getServerPlayer() {
+	public Object apathy$getUnderlyingObject() {
 		return this;
 	}
 }

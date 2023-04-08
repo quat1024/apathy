@@ -3,7 +3,7 @@ package agency.highlysuspect.apathy.mixin.aggroedgecase;
 import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreGenOptions;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
@@ -24,7 +24,7 @@ public class ZombifiedPiglinMixin {
 	@Overwrite
 	private void alertOthers() {
 		ZombifiedPiglin thiss = (ZombifiedPiglin) (Object) this;
-		MobExt thisExt = (MobExt) this;
+		Attacker thisExt = (Attacker) this;
 		
 		Level level = thiss.level;
 		if(!Apathy.instance.generalCfg.get(CoreGenOptions.angryPiggies).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {
@@ -43,7 +43,7 @@ public class ZombifiedPiglinMixin {
 		}).forEach(($$0x) -> {
 			//RIGHT HERE
 			//i need to spread my provocation time to the entity thats about to give chase 
-			MobExt otherExt = (MobExt) $$0x;
+			Attacker otherExt = (Attacker) $$0x;
 			otherExt.apathy$setProvocationTime(thisExt.apathy$getProvocationTime());
 			//back 2 normal
 			

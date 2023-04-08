@@ -4,13 +4,10 @@ import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.LogFacade;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.Logger;
@@ -81,24 +78,14 @@ public class VerConv {
 		return new Vec3(three.x(), three.y(), three.z());
 	}
 	
+	///
+	
 	public static Mob mob(Attacker attacker) {
 		return (Mob) attacker.apathy$underlyingObject();
 	}
 	
-	public static MobExt mobExt(Attacker attacker) {
-		return (MobExt) mob(attacker);
-	}
-	
-	public static EntityType<?> type(Attacker attacker) {
-		return mob(attacker).getType();
-	}
-	
 	public static ServerPlayer player(Defender defender) {
-		return (ServerPlayer) defender.apathy$getServerPlayer();
-	}
-	
-	public static ServerLevel level(Attacker attacker) {
-		return (ServerLevel) ((Entity) attacker.apathy$underlyingObject()).level;
+		return (ServerPlayer) defender.apathy$getUnderlyingObject();
 	}
 	
 	public static ServerLevel level(Defender defender) {

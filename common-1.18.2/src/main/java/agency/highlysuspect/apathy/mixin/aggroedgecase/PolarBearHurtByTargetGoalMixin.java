@@ -1,6 +1,6 @@
 package agency.highlysuspect.apathy.mixin.aggroedgecase;
 
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.mixin.TargetGoalAccessor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class PolarBearHurtByTargetGoalMixin {
 	@Inject(method = "alertOther", at = @At("HEAD"))
 	private void whenAlerting(Mob other, LivingEntity target, CallbackInfo ci) {
-		if(other instanceof PolarBear otherBear && !otherBear.isBaby() && other instanceof MobExt otherExt) {
-			MobExt selfExt = (MobExt) ((TargetGoalAccessor) this).apathy$getMob(); //i love Type safety tbh
+		if(other instanceof PolarBear otherBear && !otherBear.isBaby() && other instanceof Attacker otherExt) {
+			Attacker selfExt = (Attacker) ((TargetGoalAccessor) this).apathy$getMob(); //i love Type safety tbh
 			otherExt.apathy$setProvocationTime(selfExt.apathy$getProvocationTime());
 		}
 	}

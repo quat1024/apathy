@@ -20,7 +20,6 @@
 		"wither.WitherSkullBlockMixin",
 		"aggroedgecase.ZombifiedPiglinMixin",
 		"aggroedgecase.PolarBearHurtByTargetGoalMixin",
-		"impl.MobMixin_ImplAttacker",
 		"impl.ServerPlayerMixin_ImplDefender",
 		"impl.EntityTypeMixin_ImplAttackerType",
 		"impl.TagKeyMixin_ImplAttackerTag"

@@ -1,22 +1,27 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.VerConv;
-import agency.highlysuspect.apathy.core.rule.JsonSerializer;
-import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
-import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import com.google.gson.JsonObject;
 
-public record PartialSpecRevengeTimer(long timer) implements Spec<Partial, PartialSpecRevengeTimer> {
+public final class PartialSpecRevengeTimer implements Spec<Partial, PartialSpecRevengeTimer> {
+	public PartialSpecRevengeTimer(long timeout) {
+		this.timeout = timeout;
+	}
+	
+	private final long timeout;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
-		if(timer <= 0) return PartialSpecAlways.FALSE;
+		if(timeout <= 0) return PartialSpecAlways.FALSE;
 		else return this;
 	}
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> VerConv.mobExt(attacker).apathy$lastAttackedWithin(timer);
+		return (attacker, defender) -> {
+			long provocationTime = attacker.apathy$getProvocationTime();
+			return provocationTime != Attacker.NOT_PROVOKED && ((attacker.apathy$now() - provocationTime) <= timeout);
+		};
 	}
 	
 	@Override
@@ -30,7 +35,7 @@ public record PartialSpecRevengeTimer(long timer) implements Spec<Partial, Parti
 		
 		@Override
 		public void write(PartialSpecRevengeTimer thing, JsonObject json) {
-			json.addProperty("timeout", thing.timer);
+			json.addProperty("timeout", thing.timeout);
 		}
 		
 		@Override

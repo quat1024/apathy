@@ -17,7 +17,6 @@ import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
@@ -25,7 +24,7 @@ import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
 import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.rule.PartialSpecLocation;
-import agency.highlysuspect.apathy.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
 import agency.highlysuspect.apathy.rule.PartialSpecScore;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -70,7 +69,7 @@ public abstract class Apathy118 extends Apathy {
 			ArrayList<Spec<Rule, ?>> ruleSpecList = new ArrayList<>();
 			for(String ruleName : mobCfg.get(CoreMobOptions.ruleOrder)) {
 				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
-					case "json"       ->ruleSpecList.add(new RuleSpecJson());
+					case "json"       -> ruleSpecList.add(new RuleSpecJson());
 					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(
 						mobCfg.get(CoreMobOptions.difficultySetIncluded),
 						mobCfg.get(CoreMobOptions.difficultySetExcluded),
@@ -126,22 +125,25 @@ public abstract class Apathy118 extends Apathy {
 		Level level = player.level;
 		if(level.isClientSide) return;
 		
-		if(provoked instanceof MobExt ext) {
-			//Set the revengetimer on the hit entity
-			ext.apathy$provokeNow();
+		if(provoked instanceof Attacker ext) {
+			long now = ext.apathy$now();
 			
+			//revenge timer on the hit entity:
+			ext.apathy$setProvocationTime(now);
+			
+			//revenge timer with same-type spreading:
 			int sameTypeRevengeSpread = generalCfg.get(CoreGenOptions.sameTypeRevengeSpread);
 			if(sameTypeRevengeSpread > 0) {
 				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(sameTypeRevengeSpread))) {
-					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+					if(nearby instanceof Attacker extt) extt.apathy$setProvocationTime(now);
 				}
 			}
 			
+			//revenge timer with different-type spreading: (or really "regardless-of-type spreading" i guess)
 			int differentTypeRevengeSpread = generalCfg.get(CoreGenOptions.differentTypeRevengeSpread);
 			if(differentTypeRevengeSpread > 0) {
-				//kinda grody sorry
-				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
-					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(differentTypeRevengeSpread), ent -> ent instanceof Attacker)) {
+					if(nearby instanceof Attacker extt) extt.apathy$setProvocationTime(now);
 				}
 			}
 		}
@@ -157,7 +159,6 @@ public abstract class Apathy118 extends Apathy {
 		partialSerializers.register("advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
 		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
-		partialSerializers.register("revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
 	}
 	

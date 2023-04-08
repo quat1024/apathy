@@ -2,9 +2,6 @@ package agency.highlysuspect.apathy.core.rule;
 
 import java.util.Locale;
 
-/**
- * Enum used by PartialSpecScore
- */
 public enum Who {
 	ATTACKER,
 	DEFENDER;
@@ -22,7 +19,7 @@ public enum Who {
 		}
 	}
 	
-	//"spooky action at a distance" type punning; this should return a common superclass of its arguments
+	//"spooky action at a distance" type punning; returns a common superclass of its arguments
 	public <SUPER, SUB1 extends SUPER, SUB2 extends SUPER> SUPER choose(SUB1 attacker, SUB2 defender) {
 		if(this == ATTACKER) return attacker;
 		else return defender;

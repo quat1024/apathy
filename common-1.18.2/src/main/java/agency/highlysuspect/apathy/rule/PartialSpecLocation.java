@@ -6,7 +6,6 @@ import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
-import agency.highlysuspect.apathy.core.wrapper.MobExt;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.LocationPredicate;
@@ -47,14 +46,14 @@ public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, St
 					//changing just because it walked a long distance. So, here we are
 					
 					//Look up the cached result. If one exists, yield it
-					Map<String, TriState> cache = ((MobExt) attacker).apathy$getOrCreateLocationPredicateCache();
+					Map<String, TriState> cache = attacker.apathy$getOrCreateLocationPredicateCache();
 					TriState cachedResult = cache.getOrDefault(uniqueId, TriState.DEFAULT);
 					if(cachedResult == TriState.TRUE) yield true;
 					if(cachedResult == TriState.FALSE) yield false;
 					
 					//Begin computing the uncached result.
 					//Look up the spawn position of this entity
-					VecThree vecThree = ((MobExt) attacker).apathy$getSpawnPosition();
+					VecThree vecThree = attacker.apathy$getSpawnPosition();
 					if(vecThree == null) {
 						//The spawn position is unknown for this entity
 						yield false;

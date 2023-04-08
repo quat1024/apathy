@@ -171,6 +171,9 @@ public abstract class Apathy118 extends Apathy {
 	@Override
 	public @Nullable AttackerType parseAttackerType(String s) {
 		s = s.trim();
+		
+		if(s.isEmpty()) return null; //can sometimes happen due to shitty parsing code in my config library
+		
 		ResourceLocation rl = ResourceLocation.tryParse(s);
 		if(rl == null) {
 			log.error("Can't parse '{}' as a resourcelocation", s);
@@ -184,6 +187,8 @@ public abstract class Apathy118 extends Apathy {
 	public @Nullable AttackerTag parseAttackerTag(String s) {
 		s = s.trim();
 		if(s.startsWith("#")) s = s.substring(1); //vanilla syntax for "tag-as-opposed-to-resourcelocation" that i don't care about rn
+		
+		if(s.isEmpty()) return null; //can sometimes happen due to shitty parsing code in my config library
 		
 		ResourceLocation rl = ResourceLocation.tryParse(s);
 		if(rl == null) {

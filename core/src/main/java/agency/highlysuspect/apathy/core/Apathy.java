@@ -51,9 +51,9 @@ public abstract class Apathy {
 	public final NotRegistry<JsonSerializer<? extends Spec<Rule, ?>>> ruleSerializers = new NotRegistry<>();
 	public final NotRegistry<JsonSerializer<? extends Spec<Partial, ?>>> partialSerializers = new NotRegistry<>();
 	
-	public CookedConfig generalCfg;
-	public CookedConfig mobCfg;
-	public CookedConfig bossCfg;
+	public CookedConfig generalCfg = CookedConfig.Unset.INSTANCE;
+	public CookedConfig mobCfg = CookedConfig.Unset.INSTANCE;
+	public CookedConfig bossCfg = CookedConfig.Unset.INSTANCE;
 	
 	public Rule configuredRule = RuleSpecAlways.ALWAYS_ALLOW.build();
 	public @Nullable Rule jsonRule;

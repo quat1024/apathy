@@ -82,7 +82,7 @@ public class VerConv {
 	}
 	
 	public static Mob mob(Attacker attacker) {
-		return (Mob) attacker.apathy$getMob();
+		return (Mob) attacker.apathy$underlyingObject();
 	}
 	
 	public static MobExt mobExt(Attacker attacker) {
@@ -90,7 +90,7 @@ public class VerConv {
 	}
 	
 	public static EntityType<?> type(Attacker attacker) {
-		return (EntityType<?>) attacker.apathy$getEntityType();
+		return mob(attacker).getType();
 	}
 	
 	public static ServerPlayer player(Defender defender) {
@@ -98,7 +98,7 @@ public class VerConv {
 	}
 	
 	public static ServerLevel level(Attacker attacker) {
-		return (ServerLevel) ((Entity) attacker.apathy$getMob()).level;
+		return (ServerLevel) ((Entity) attacker.apathy$underlyingObject()).level;
 	}
 	
 	public static ServerLevel level(Defender defender) {

@@ -13,24 +13,29 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
+import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.core.wrapper.MobExt;
-import agency.highlysuspect.apathy.rule.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.rule.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
-import agency.highlysuspect.apathy.rule.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.rule.PartialSpecLocation;
 import agency.highlysuspect.apathy.rule.PartialSpecRevengeTimer;
 import agency.highlysuspect.apathy.rule.PartialSpecScore;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -77,7 +82,7 @@ public abstract class Apathy118 extends Apathy {
 					case "mobset"     -> ruleSpecList.add(new RuleSpecPredicated(
 						mobCfg.get(CoreMobOptions.mobSetIncluded),
 						mobCfg.get(CoreMobOptions.mobSetExcluded),
-						new PartialSpecAttackerIs(mobCfg.get(VerMobOptions.mobSet))
+						new PartialSpecAttackerIs(mobCfg.get(CoreMobOptions.mobSet))
 					));
 					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(
 						mobCfg.get(CoreMobOptions.tagSetIncluded),
@@ -147,12 +152,10 @@ public abstract class Apathy118 extends Apathy {
 	public void addRules() {
 		super.addRules();
 		
-		partialSerializers.register("attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
 		partialSerializers.register("attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
 		partialSerializers.register("attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
 		partialSerializers.register("advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
 		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
-		partialSerializers.register("difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
@@ -162,5 +165,14 @@ public abstract class Apathy118 extends Apathy {
 	public void addMobConfig(ConfigSchema schema) {
 		super.addMobConfig(schema);
 		VerMobOptions.visit(schema);
+	}
+	
+	@Override
+	public @Nullable AttackerType parseAttackerType(String s) {
+		ResourceLocation rl = ResourceLocation.tryParse(s);
+		if(rl == null) log.error("Can't parse '{}' as a resourcelocation", s);
+		
+		EntityType<?> type = Registry.ENTITY_TYPE.get(rl); //defaultedregistry, defaults to pig instead of null
+		return (AttackerType) type; //duck interface
 	}
 }

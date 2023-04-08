@@ -1,23 +1,23 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.VerConv;
-import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
-import agency.highlysuspect.apathy.core.rule.JsonSerializer;
-import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
-import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Spec<Partial, PartialSpecAttackerIs> {
+public class PartialSpecAttackerIs implements Spec<Partial, PartialSpecAttackerIs> {
+	public PartialSpecAttackerIs(Set<AttackerType> mobSet) {
+		this.mobSet = mobSet;
+	}
+	
+	public final Set<AttackerType> mobSet;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
 		if(mobSet.isEmpty()) return PartialSpecAlways.FALSE;
@@ -26,7 +26,7 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Spec<P
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> mobSet.contains(VerConv.type(attacker));
+		return (attacker, defender) -> mobSet.contains(attacker.apathy$getType());
 	}
 	
 	@Override
@@ -41,8 +41,8 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Spec<P
 		@Override
 		public void write(PartialSpecAttackerIs thing, JsonObject json) {
 			json.add("mobs", thing.mobSet.stream()
-				.map(Registry.ENTITY_TYPE::getKey)
-				.map(rl -> new JsonPrimitive(rl.toString()))
+				.map(AttackerType::apathy$id)
+				.map(JsonPrimitive::new)
 				.collect(CoolGsonHelper.toJsonArray()));
 		}
 		
@@ -50,8 +50,8 @@ public record PartialSpecAttackerIs(Set<EntityType<?>> mobSet) implements Spec<P
 		public PartialSpecAttackerIs read(JsonObject json) {
 			return new PartialSpecAttackerIs(StreamSupport.stream(json.getAsJsonArray("mobs").spliterator(), false)
 				.map(JsonElement::getAsString)
-				.map(ResourceLocation::new)
-				.map(Registry.ENTITY_TYPE::get)
+				.map(Apathy.instance::parseAttackerType)
+				.filter(Objects::nonNull)
 				.collect(Collectors.toSet()));
 		}
 	}

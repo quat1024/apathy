@@ -21,7 +21,8 @@
 		"aggroedgecase.ZombifiedPiglinMixin",
 		"aggroedgecase.PolarBearHurtByTargetGoalMixin",
 		"impl.MobMixin_ImplAttacker",
-		"impl.ServerPlayerMixin_ImplDefender"
+		"impl.ServerPlayerMixin_ImplDefender",
+		"impl.EntityTypeMixin_ImplAttackerType"
 	],
 	"client": [
 		"client.ClientPacketListenerMixin"

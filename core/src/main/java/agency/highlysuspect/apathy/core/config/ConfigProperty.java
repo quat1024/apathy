@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.core.config;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
+import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -248,5 +249,18 @@ public interface ConfigProperty<T> {
 				Apathy.instance.log.warn("Value " + s + " on field " + name + " is not one of " + possibleValues + ". Defaulting to " + defaultValue.name().toLowerCase(Locale.ROOT));
 				return defaultValue;
 			});
+	}
+	
+	static <B extends Builder<Set<AttackerType>, B>> B attackerTypeSetOpt(String name, Set<AttackerType> defaultValue, String... comment) {
+		return new ConfigProperty.Builder<Set<AttackerType>, B>(name, defaultValue)
+			.comment(comment)
+			.writer(set -> set.stream()
+				.map(AttackerType::apathy$id)
+				.collect(Collectors.joining(", ")))
+			.parser(s -> Arrays.stream(s.split(","))
+				.map(String::trim)
+				.map(Apathy.instance::parseAttackerType)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet()));
 	}
 }

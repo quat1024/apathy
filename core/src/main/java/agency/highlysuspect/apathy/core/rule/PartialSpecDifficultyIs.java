@@ -1,10 +1,5 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
-import agency.highlysuspect.apathy.core.rule.JsonSerializer;
-import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
-import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -14,7 +9,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecDifficultyIs(Set<ApathyDifficulty> difficulties) implements Spec<Partial, PartialSpecDifficultyIs> {
+public class PartialSpecDifficultyIs implements Spec<Partial, PartialSpecDifficultyIs> {
+	public PartialSpecDifficultyIs(Set<ApathyDifficulty> difficulties) {
+		this.difficulties = difficulties;
+	}
+	
+	public final Set<ApathyDifficulty> difficulties;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
 		if(difficulties.isEmpty()) return PartialSpecAlways.FALSE;
@@ -33,6 +34,7 @@ public record PartialSpecDifficultyIs(Set<ApathyDifficulty> difficulties) implem
 	
 	public static class Serializer implements JsonSerializer<PartialSpecDifficultyIs> {
 		private Serializer() {}
+		
 		public static final Serializer INSTANCE = new Serializer();
 		
 		@Override

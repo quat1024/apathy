@@ -5,9 +5,13 @@ public interface Attacker {
 	 * This sourceset doesn't refer to Minecraft directly wow i love layers of separation.
 	 * So this returns Object.
 	 */
-	Object apathy$getMob();
+	Object apathy$underlyingObject();
 	
-	Object apathy$getEntityType();
+	AttackerType apathy$getType();
+	
+	default boolean apathy$hasType(AttackerType type) {
+		return type.apathy$hasType(this);
+	} 
 	
 	ApathyDifficulty apathy$getDifficulty();
 }

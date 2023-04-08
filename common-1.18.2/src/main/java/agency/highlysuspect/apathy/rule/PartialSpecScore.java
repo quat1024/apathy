@@ -16,7 +16,7 @@ public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMod
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Scoreboard scoreboard = ((Mob) attacker.apathy$getMob()).level.getScoreboard();
+			Scoreboard scoreboard = ((Mob) attacker.apathy$underlyingObject()).level.getScoreboard();
 			Objective objective = scoreboard.getObjective(scoreboardObjective);
 			if(objective == null) return false;
 			

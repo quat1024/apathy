@@ -30,7 +30,6 @@ public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancemen
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			//todo xplat port more maybe
 			ServerPlayer defenderSp = VerConv.player(defender); 
 			
 			MinecraftServer server = defenderSp.server;

@@ -11,6 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
+/**
+ * TODO: consider deprecating for the same reason allow_if/deny_if were deprecated?
+ */
 public record PartialSpecAttackerIsBoss() implements Spec<Partial, PartialSpecAttackerIsBoss> {
 	public static final PartialSpecAttackerIsBoss INSTANCE = new PartialSpecAttackerIsBoss();
 	

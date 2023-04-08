@@ -13,6 +13,7 @@ public class TagKeyMixin_ImplAttackerTag implements AttackerTag {
 		return this;
 	}
 	
+	@SuppressWarnings("unchecked") //duck interface nonsense
 	@Override
 	public boolean apathy$is(Attacker attacker) {
 		EntityType<?> under = (EntityType<?>) attacker.apathy$getType().apathy$underlyingObject();

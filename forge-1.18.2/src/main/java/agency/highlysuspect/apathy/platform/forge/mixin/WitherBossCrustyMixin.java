@@ -20,7 +20,7 @@ public class WitherBossCrustyMixin {
 			target = "Lnet/minecraft/world/level/Level;getNearbyEntities(Ljava/lang/Class;Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"
 		)
 	)
-	private List<LivingEntity> filterGetNearbyEntitiesCrusty(List<LivingEntity> nearbyEntities) {
+	private List<LivingEntity> apathy$filterGetNearbyEntitiesCrusty(List<LivingEntity> nearbyEntities) {
 		@SuppressWarnings("ConstantConditions")
 		WitherBoss wither = (WitherBoss) (Object) this;
 		

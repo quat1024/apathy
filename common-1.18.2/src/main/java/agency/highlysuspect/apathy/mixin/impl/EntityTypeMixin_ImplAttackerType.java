@@ -3,7 +3,6 @@ package agency.highlysuspect.apathy.mixin.impl;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import org.spongepowered.asm.mixin.Mixin;

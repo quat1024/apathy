@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(targets = "net.minecraft.world.entity.animal.PolarBear$PolarBearHurtByTargetGoal") //Pkg private class
 public class PolarBearHurtByTargetGoalMixin {
 	@Inject(method = "alertOther", at = @At("HEAD"))
-	private void whenAlerting(Mob other, LivingEntity target, CallbackInfo ci) {
+	private void apathy$whenAlerting(Mob other, LivingEntity target, CallbackInfo ci) {
 		if(other instanceof PolarBear otherBear && !otherBear.isBaby() && other instanceof Attacker otherExt) {
 			Attacker selfExt = (Attacker) ((TargetGoalAccessor) this).apathy$getMob(); //i love Type safety tbh
 			otherExt.apathy$setProvocationTime(selfExt.apathy$getProvocationTime());

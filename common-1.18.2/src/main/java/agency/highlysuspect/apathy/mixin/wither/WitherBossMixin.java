@@ -34,14 +34,14 @@ public class WitherBossMixin {
 	}
 	
 	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)
-	private static void cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
+	private static void apathy$cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
 		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherBreaksBlocks)) {
 			cir.setReturnValue(false);
 		}
 	}
 	
 	@Inject(method = "performRangedAttack(IDDDZ)V", at = @At("HEAD"), cancellable = true)
-	private void noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
+	private void apathy$noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
 		if((!charged && !Apathy.instance.bossCfg.get(CoreBossOptions.blackWitherSkulls)) || (charged && !Apathy.instance.bossCfg.get(CoreBossOptions.blueWitherSkulls))) {
 			ci.cancel();
 		}
@@ -49,7 +49,7 @@ public class WitherBossMixin {
 	
 	//Erase any stray Withers if they are turned off in this difficulty 
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
-	private void maybeDelete(CallbackInfo ci) {
+	private void apathy$maybeDelete(CallbackInfo ci) {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
 		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {

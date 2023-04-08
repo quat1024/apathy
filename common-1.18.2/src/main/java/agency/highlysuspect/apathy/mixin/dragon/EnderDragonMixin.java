@@ -25,7 +25,7 @@ import java.util.List;
 @Mixin(EnderDragon.class)
 public class EnderDragonMixin implements DragonDuck {
 	@ModifyVariable(method = "knockBack", at = @At("HEAD"), argsOnly = true)
-	private List<Entity> filterKnockBack(List<Entity> entities) {
+	private List<Entity> apathy$filterKnockBack(List<Entity> entities) {
 		if(!Apathy.instance.bossCfg.get(CoreBossOptions.dragonKnockback)) {
 			return Collections.emptyList();
 		}
@@ -37,7 +37,7 @@ public class EnderDragonMixin implements DragonDuck {
 	}
 	
 	@ModifyVariable(method = "hurt(Ljava/util/List;)V", at = @At("HEAD"), argsOnly = true)
-	private List<Entity> filterHurt(List<Entity> entities) {
+	private List<Entity> apathy$filterHurt(List<Entity> entities) {
 		if(!Apathy.instance.bossCfg.get(CoreBossOptions.dragonDamage)) {
 			return Collections.emptyList();
 		}
@@ -49,7 +49,7 @@ public class EnderDragonMixin implements DragonDuck {
 	}
 	
 	@Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
-	private void copypasteFromLivingEntityMixin(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
+	private void apathy$copypasteFromLivingEntityMixin(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
 		//EnderDragonEntity overrides canTarget and doesn't call super()
 		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && (!allowedToTargetPlayers || !Apathy118.instance118.allowedToTargetPlayer(mob, player))) {
 			cir.setReturnValue(false);
@@ -76,12 +76,12 @@ public class EnderDragonMixin implements DragonDuck {
 	}
 	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-	private void saveMoreData(CompoundTag tag, CallbackInfo ci) {
+	private void apathy$saveMoreData(CompoundTag tag, CallbackInfo ci) {
 		tag.putBoolean(KEY, allowedToTargetPlayers);
 	}
 	
 	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-	private void loadMoreData(CompoundTag tag, CallbackInfo ci) {
+	private void apathy$loadMoreData(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(KEY)) allowedToTargetPlayers = tag.getBoolean(KEY);
 		else allowedToTargetPlayers = true; //Default to true as preexisting dagns won't have this tag
 	}

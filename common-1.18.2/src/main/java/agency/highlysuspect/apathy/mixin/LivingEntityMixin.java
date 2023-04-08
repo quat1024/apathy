@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
 	@Inject(method = "canAttack(Lnet/minecraft/world/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
-	private void patchCanAttack(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
+	private void apathy$patchCanAttack(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
 		if((LivingEntity) (Object) this instanceof Mob mob && target instanceof ServerPlayer player && !Apathy118.instance118.allowedToTargetPlayer(mob, player)) {
 			cir.setReturnValue(false);
 		}
@@ -29,7 +29,7 @@ public class LivingEntityMixin {
 			target = "Lnet/minecraft/world/entity/LivingEntity;gameEvent(Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/entity/Entity;)V"
 		)
 	)
-	private void whenActuallyHurt(DamageSource source, float amount, CallbackInfo ci) {
+	private void apathy$whenActuallyHurt(DamageSource source, float amount, CallbackInfo ci) {
 		if(((Object) this) instanceof Mob haplessMob && source.getEntity() instanceof ServerPlayer recklessPlayer) {
 			Apathy118.instance118.noticePlayerAttack(recklessPlayer, haplessMob);
 		}

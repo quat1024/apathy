@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(EnderDragonPhaseManager.class)
 public class EnderDragonPhaseManagerMixin {
 	@ModifyVariable(method = "setPhase", at = @At("HEAD"))
-	private EnderDragonPhase<?> whenSettingPhase(EnderDragonPhase<?> type) {
+	private EnderDragonPhase<?> apathy$whenSettingPhase(EnderDragonPhase<?> type) {
 		boolean noFlies = !Apathy.instance.bossCfg.get(CoreBossOptions.dragonFlies);
 		boolean noSits = !Apathy.instance.bossCfg.get(CoreBossOptions.dragonSits);
 		

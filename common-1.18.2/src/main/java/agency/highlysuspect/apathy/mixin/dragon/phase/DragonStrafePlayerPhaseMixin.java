@@ -18,7 +18,7 @@ public class DragonStrafePlayerPhaseMixin {
 	@Shadow private @Nullable LivingEntity attackTarget;
 	
 	@Inject(method = "doServerTick", at = @At("HEAD"))
-	private void onServerTick(CallbackInfo ci) {
+	private void apathy$onServerTick(CallbackInfo ci) {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		

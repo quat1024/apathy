@@ -50,7 +50,7 @@ public class MobMixin implements Attacker {
 	@Shadow private LivingEntity target;
 	
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
-	public void whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
+	public void apathy$whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
@@ -68,7 +68,7 @@ public class MobMixin implements Attacker {
 	}
 	
 	@Inject(method = "tick", at = @At("HEAD"))
-	public void whenTicking(CallbackInfo ci) {
+	public void apathy$whenTicking(CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
@@ -125,7 +125,7 @@ public class MobMixin implements Attacker {
 	/// persistence of the above ///
 	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-	public void whenSaving(CompoundTag tag, CallbackInfo ci) {
+	public void apathy$whenSaving(CompoundTag tag, CallbackInfo ci) {
 		if(apathy$getProvocationTime() != Attacker.NOT_PROVOKED) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
@@ -146,7 +146,7 @@ public class MobMixin implements Attacker {
 	}
 	
 	@Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-	public void whenLoading(CompoundTag tag, CallbackInfo ci) {
+	public void apathy$whenLoading(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);
 		} else provocationTime = NOT_PROVOKED;

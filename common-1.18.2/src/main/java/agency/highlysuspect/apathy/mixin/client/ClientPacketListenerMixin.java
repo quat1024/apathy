@@ -24,7 +24,7 @@ public class ClientPacketListenerMixin {
 			target = "Lnet/minecraft/client/multiplayer/ClientLevel;playSound(Lnet/minecraft/world/entity/player/Player;DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"
 		)
 	)
-	private void dontPlaySound(ClientLevel instance, Player player, double x, double y, double z, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+	private void apathy$dontPlaySound(ClientLevel instance, Player player, double x, double y, double z, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
 		if(SoundEvents.ELDER_GUARDIAN_CURSE.equals(soundEvent) && Apathy.instance.bossCfg.get(CoreBossOptions.elderGuardianEffect).removeSound()) {
 			return;
 		} else {
@@ -39,7 +39,7 @@ public class ClientPacketListenerMixin {
 			target = "Lnet/minecraft/client/multiplayer/ClientLevel;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"
 		)
 	)
-	private void dontAddParticle(ClientLevel instance, ParticleOptions options, double $$1, double $$2, double $$3, double $$4, double $$5, double $$6) {
+	private void apathy$dontAddParticle(ClientLevel instance, ParticleOptions options, double $$1, double $$2, double $$3, double $$4, double $$5, double $$6) {
 		if(options.getType() == ParticleTypes.ELDER_GUARDIAN && Apathy.instance.bossCfg.get(CoreBossOptions.elderGuardianEffect).removeParticle()) {
 			return;
 		} else {

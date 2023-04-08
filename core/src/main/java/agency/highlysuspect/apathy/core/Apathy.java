@@ -8,6 +8,8 @@ import agency.highlysuspect.apathy.core.rule.PartialSpecAll;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAny;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecNot;
 import agency.highlysuspect.apathy.core.rule.Rule;
@@ -19,6 +21,7 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
+import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.LogFacade;
@@ -145,6 +148,8 @@ public abstract class Apathy {
 		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);
 		partialSerializers.register("any", PartialSpecAny.Serializer.INSTANCE);
 		partialSerializers.register("attacker_is", PartialSpecAttackerIs.Serializer.INSTANCE);
+		partialSerializers.register("attacker_is_boss", PartialSpecAttackerIsBoss.Serializer.INSTANCE);
+		partialSerializers.register("attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
 		partialSerializers.register("difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
 		partialSerializers.register("not", PartialSpecNot.Serializer.INSTANCE);
 		
@@ -176,6 +181,7 @@ public abstract class Apathy {
 	public abstract void installPlayerSetManagerTicker();
 	
 	public abstract @Nullable AttackerType parseAttackerType(String s);
+	public abstract @Nullable AttackerTag parseAttackerTag(String s);
 	
 	//TODO maybe find a better home for these 4 methods?
 	public Spec<Rule, ?> readRule(JsonElement jsonElem) {

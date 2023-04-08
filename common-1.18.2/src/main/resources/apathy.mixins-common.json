@@ -22,7 +22,8 @@
 		"aggroedgecase.PolarBearHurtByTargetGoalMixin",
 		"impl.MobMixin_ImplAttacker",
 		"impl.ServerPlayerMixin_ImplDefender",
-		"impl.EntityTypeMixin_ImplAttackerType"
+		"impl.EntityTypeMixin_ImplAttackerType",
+		"impl.TagKeyMixin_ImplAttackerTag"
 	],
 	"client": [
 		"client.ClientPacketListenerMixin"

@@ -15,12 +15,12 @@ public class MobMixin_ImplAttacker implements Attacker {
 	}
 	
 	@Override
-	public AttackerType apathy$getType() {
-		return (AttackerType) ((Mob) (Object) this).getType();
+	public ApathyDifficulty apathy$getDifficulty() {
+		return VerConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
 	}
 	
 	@Override
-	public ApathyDifficulty apathy$getDifficulty() {
-		return VerConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
+	public AttackerType apathy$getType() {
+		return (AttackerType) ((Mob) (Object) this).getType();
 	}
 }

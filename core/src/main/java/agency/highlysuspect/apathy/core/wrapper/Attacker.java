@@ -6,12 +6,14 @@ public interface Attacker {
 	 * So this returns Object.
 	 */
 	Object apathy$underlyingObject();
-	
 	AttackerType apathy$getType();
+	ApathyDifficulty apathy$getDifficulty();
 	
 	default boolean apathy$hasType(AttackerType type) {
 		return type.apathy$hasType(this);
-	} 
+	}
 	
-	ApathyDifficulty apathy$getDifficulty();
+	default boolean apathy$is(AttackerTag tag) {
+		return tag.apathy$is(this);
+	}
 }

@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.core.config;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
+import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import org.jetbrains.annotations.Nullable;
 
@@ -260,6 +261,19 @@ public interface ConfigProperty<T> {
 			.parser(s -> Arrays.stream(s.split(","))
 				.map(String::trim)
 				.map(Apathy.instance::parseAttackerType)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet()));
+	}
+	
+	static <B extends Builder<Set<AttackerTag>, B>> B attackerTagSetOpt(String name, Set<AttackerTag> defaultValue, String... comment) {
+		return new ConfigProperty.Builder<Set<AttackerTag>, B>(name, defaultValue)
+			.comment(comment)
+			.writer(set -> set.stream()
+				.map(AttackerTag::apathy$id)
+				.collect(Collectors.joining(", ")))
+			.parser(s -> Arrays.stream(s.split(","))
+				.map(String::trim)
+				.map(Apathy.instance::parseAttackerTag)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet()));
 	}

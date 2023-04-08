@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.core;
 import agency.highlysuspect.apathy.core.config.ConfigProperty;
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
+import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 
 import java.util.Arrays;
@@ -79,7 +80,9 @@ public class CoreMobOptions {
 		"pass  - Defer to the next rule."
 	).build();
 	
-	//TODO: tagSet (needs TagKey<EntityType<?>>)
+	public static final ConfigProperty<Set<AttackerTag>> tagSet = ConfigProperty.attackerTagSetOpt("tagSet", Collections.emptySet(), "A comma-separated set of entity type tags.")
+		.example("minecraft:raiders, some_datapack:some_tag")
+		.build();
 	
 	public static final ConfigProperty<TriState> tagSetIncluded = ConfigProperty.allowDenyPassOpt("tagSetIncluded", TriState.DEFAULT,
 		"What happens when the attacker is tagged with one of the tags in mobTagSet?",
@@ -151,8 +154,8 @@ public class CoreMobOptions {
 		schema.section("Built In Rule Order", ruleOrder);
 		schema.section("Difficulty Rule", difficultySet, difficultySetIncluded, difficultySetExcluded);
 		schema.section("Boss Rule", boss);
-		schema.section("Mob Set Rule", mobSet, mobSetIncluded, mobSetExcluded); //TODO
-		schema.section("Tag Set Rule", tagSetIncluded, tagSetExcluded); //TODO
+		schema.section("Mob Set Rule", mobSet, mobSetIncluded, mobSetExcluded);
+		schema.section("Tag Set Rule", tagSet, tagSetIncluded, tagSetExcluded);
 		schema.section("Player Set Rule", playerSetName, playerSetSelfSelect, playerSetIncluded, playerSetExcluded);
 		schema.section("Revenge Rule", revengeTimer);
 		schema.section("Last Resort Rule", fallthrough);

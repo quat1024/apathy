@@ -1,10 +1,10 @@
 package agency.highlysuspect.apathy.core.wrapper;
 
 /**
- * wraps EntityType<?>
+ * wrapper around TagKey<EntityType<?>> and assorted infrastructure
  */
-public interface AttackerType {
+public interface AttackerTag {
 	Object apathy$underlyingObject();
-	boolean apathy$hasType(Attacker mob);
+	boolean apathy$is(Attacker attacker);
 	String apathy$id(); //resourcelocation-ish
 }

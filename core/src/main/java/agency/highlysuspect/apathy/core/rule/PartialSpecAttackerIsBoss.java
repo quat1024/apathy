@@ -1,27 +1,21 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.core.rule;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
-import agency.highlysuspect.apathy.core.rule.JsonSerializer;
-import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import com.google.gson.JsonObject;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
 
 /**
  * TODO: consider deprecating for the same reason allow_if/deny_if were deprecated?
  */
-public record PartialSpecAttackerIsBoss() implements Spec<Partial, PartialSpecAttackerIsBoss> {
+public class PartialSpecAttackerIsBoss implements Spec<Partial, PartialSpecAttackerIsBoss> {
+	private PartialSpecAttackerIsBoss() {}
 	public static final PartialSpecAttackerIsBoss INSTANCE = new PartialSpecAttackerIsBoss();
 	
-	public static final TagKey<EntityType<?>> BOSS_TAG = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(Apathy.MODID, "bosses"));
+	public static final AttackerTag BOSS_TAG = Apathy.instance.parseAttackerTag(Apathy.MODID + ":bosses");
 	
 	@Override
 	public Partial build() {
-		return (attacker, defender) -> VerConv.type(attacker).is(BOSS_TAG);
+		return (attacker, defender) -> BOSS_TAG.apathy$is(attacker);
 	}
 	
 	@Override

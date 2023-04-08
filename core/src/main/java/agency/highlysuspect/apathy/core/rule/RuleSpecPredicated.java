@@ -21,8 +21,8 @@ public final class RuleSpecPredicated implements Spec<Rule, RuleSpecPredicated> 
 		
 		Spec<Partial, ?> predSpecOpt = predSpec.optimize();
 		
-		if(predSpec == PartialSpecAlways.TRUE) return RuleSpecAlways.get(ifTrue);
-		if(predSpec == PartialSpecAlways.FALSE) return RuleSpecAlways.get(ifFalse);
+		if(predSpecOpt == PartialSpecAlways.TRUE) return RuleSpecAlways.get(ifTrue);
+		if(predSpecOpt == PartialSpecAlways.FALSE) return RuleSpecAlways.get(ifFalse);
 		
 		return new RuleSpecPredicated(ifTrue, ifFalse, predSpecOpt);
 	}

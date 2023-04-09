@@ -23,11 +23,17 @@ public class LegacyToTomlUpgrader {
 		Path dir = FMLPaths.CONFIGDIR.get();
 		if(Files.exists(dir.resolve("apathy-boss.toml"))) return; //already done
 		
-		//Port over each config file individually
 		try {
 			reallyDoIt(dir.resolve(Apathy.MODID).resolve("general.cfg"), dir.resolve("apathy-general.toml"));
 			reallyDoIt(dir.resolve(Apathy.MODID).resolve("mobs.cfg"), dir.resolve("apathy-mobs.toml"));
 			reallyDoIt(dir.resolve(Apathy.MODID).resolve("boss.cfg"), dir.resolve("apathy-boss.toml"));
+			
+			Path oldMobsJson = dir.resolve(Apathy.MODID).resolve("mobs.json");
+			if(Files.exists(oldMobsJson)) {
+				Apathy.instance.log.warn("MOVING MOBS.JSON FROM {} TO {}", oldMobsJson, Apathy.instance.mobsJsonPath());
+				Files.copy(oldMobsJson, Apathy.instance.mobsJsonPath());
+				Files.delete(oldMobsJson);
+			}
 		} catch (Exception e) {
 			Apathy.instance.log.error("Problem upgrading old config: " + e.getMessage(), e);
 		}
@@ -61,6 +67,7 @@ public class LegacyToTomlUpgrader {
 			}
 		}
 		
+		if(newPath.getParent() != null) Files.createDirectories(newPath.getParent());
 		Files.write(newPath, newFile, StandardCharsets.UTF_8);
 		Files.delete(oldPath);
 	}

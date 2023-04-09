@@ -31,6 +31,8 @@ public class ForgeInit extends Apathy118 {
 		//TODO should really use a real forge config
 		super(FMLPaths.CONFIGDIR.get().resolve(MODID));
 		
+		LegacyToTomlUpgrader.doIt();
+		
 		//borrowed from IExtensionPoint javadoc in fmlcore
 		ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class,
 			() -> new IExtensionPoint.DisplayTest(

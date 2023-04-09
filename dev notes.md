@@ -1,3 +1,17 @@
+# I'm really good at forgetting how Forge configs work
+
+it's weird but not that complicated
+
+* Make a `ForgeConfigSpec.Builder`, add properties to it, then call `.build()` (or use the `configure` convenience method)
+* Keep the config spec around. As soon as possible, call `ModLoadingContext.get().registerConfig()`, passing it as an argument
+* The `ForgeConfigSpec.Builder` will return `ConfigValue`/`IntValue`/etc objects. Hold on to them too, at runtime they are to be queried for the live config values, and will update without any user intervention.
+* If you want a notification that the config was refreshed, subscribe to `ModConfigEvent.Loading` and `ModConfigEvent.Reloading` on the fml java mod loading context mod event bus. The event fires with a reference to the config in question (and I think it's correct to check it's actually one of yours before taking action)
+
+Builder stuff:
+
+* Use `push` to define a new section and `pop` to end one. Use `comment` before calling other methods to define a config comment. You can put comments on sections.
+* For properties, the general case is `ConfigValue<T>`, but you will sometimes get stuff like `BooleanValue` and `DoubleValue` etc. They're not actually unboxed. it's weird
+
 # zombles chasing players in creative
 
 getting called from `NearestAttackableTargetGoal` which seems to be used by lots and lots entities (slime, creeper, enderman, polarbear, vex, evoker, ghast; to name a few), even though only zombies seem to target players in creative :thinking:

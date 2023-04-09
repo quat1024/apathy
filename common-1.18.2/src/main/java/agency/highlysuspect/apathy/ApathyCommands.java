@@ -210,7 +210,7 @@ public class ApathyCommands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		boolean ok = Apathy118.instance118.loadConfig();
+		boolean ok = Apathy118.instance118.refreshConfig();
 		
 		if(ok) msg(cmd, "Reloaded Apathy config files.");
 		else err(cmd, "Error reloading Apathy config files. Check the server log.");

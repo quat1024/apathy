@@ -35,7 +35,7 @@ public class FabricInit extends Apathy118 implements ModInitializer {
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				loadConfig();
+				refreshConfig();
 			}
 		});
 	}

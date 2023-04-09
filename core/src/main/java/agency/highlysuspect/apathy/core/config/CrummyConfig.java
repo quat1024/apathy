@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+//TODO: exclude on Forge builds? (it's not needed)
 public class CrummyConfig implements CookedConfig {
 	public CrummyConfig(ConfigSchema schema, Path path) {
 		this.schema = schema;

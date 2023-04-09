@@ -1,12 +1,8 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ 1.19.4.
+Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ 1.18.2 again?
 
 For documentation, view the `docs/2.x/` folder.
-
-# todo
-
-for some reason the 1.18.2 forge workspace is broken (apparently classpath resources are just Fucked, including the mixin json) even though there's no non-version-numbery difference between it and the 1.19 build gradle. no idea why, forge bug mayb
 
 ## wow there's not any code-sharing across versions
 

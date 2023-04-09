@@ -132,7 +132,7 @@ public interface ConfigProperty<T> {
 		public IntBuilder(String name, Integer defaultValue) {
 			super(name, defaultValue);
 			writer(x -> Integer.toString(x));
-			parser(Integer::parseInt);
+			parser(s -> Integer.parseInt(s.trim()));
 		}
 		
 		public IntBuilder atLeast(int min) {
@@ -152,7 +152,7 @@ public interface ConfigProperty<T> {
 		public LongBuilder(String name, Long defaultValue) {
 			super(name, defaultValue);
 			writer(l -> Long.toString(l));
-			parser(Long::parseLong);
+			parser(s -> Long.parseLong(s.trim()));
 		}
 		
 		public LongBuilder atLeast(long min) {
@@ -180,7 +180,7 @@ public interface ConfigProperty<T> {
 		return new Builder<Boolean, B>(name, defaultValue)
 			.comment(comment)
 			.writer(x -> Boolean.toString(x))
-			.parser(Boolean::parseBoolean);
+			.parser(s -> Boolean.parseBoolean(s.trim()));
 	}
 	
 	static <B extends Builder<String, B>> B stringOpt(String name, String defaultValue, String... comment) {
@@ -224,14 +224,14 @@ public interface ConfigProperty<T> {
 		return new Builder<TriState, B>(name, defaultValue)
 			.comment(comment)
 			.writer(TriState::toAllowDenyPassString)
-			.parser(TriState::fromAllowDenyPassString);
+			.parser(s -> TriState.fromAllowDenyPassString(s.trim()));
 	}
 	
 	static <B extends Builder<Boolean, B>> B boolAllowDenyOpt(String name, boolean defaultValue, String... comment) {
 		return new Builder<Boolean, B>(name, defaultValue)
 			.comment(comment)
 			.writer(b -> b ? "allow" : "deny")
-			.parser(s -> s.equalsIgnoreCase("allow"));
+			.parser(s -> s.trim().equalsIgnoreCase("allow"));
 	}
 	
 	static <E extends Enum<?>, B extends Builder<E, B>> B enumOpt(String name, E defaultValue, String... comment) {
@@ -240,6 +240,7 @@ public interface ConfigProperty<T> {
 			.comment(comment)
 			.writer(e -> e.name().toLowerCase(Locale.ROOT))
 			.parser(s -> {
+				s = s.trim();
 				for(E e : enumClass.getEnumConstants()) {
 					if(e.name().equalsIgnoreCase(s)) return e;
 				}

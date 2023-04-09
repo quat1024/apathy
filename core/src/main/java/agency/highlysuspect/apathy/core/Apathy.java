@@ -106,7 +106,7 @@ public abstract class Apathy {
 		else return mobCfg.get(CoreMobOptions.fallthrough);
 	}
 	
-	public boolean loadConfig() {
+	public boolean refreshConfig() {
 		boolean ok = true;
 		
 		//TODO: rethink error handling here (keep the old config around)

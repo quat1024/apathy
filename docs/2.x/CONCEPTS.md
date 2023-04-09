@@ -4,12 +4,14 @@
 
 Apathy contains 4 config files:
 
-* `config/apathy/general.cfg`: General options.
-* `config/apathy/boss.cfg`: Options for controlling the behavior of the Ender Dragon and Wither.
-* `config/apathy/mobs.cfg`: Describes the main rule of the mod - whether mob X is allowed to attack player Y.
-* `config/apathy/mobs.json`: An auxillary rule. It's more powerful than the `mobs.cfg` system, but more complicated to use.
+* `config/apathy-general.toml` or `config/apathy/general.cfg`: General options.
+* `config/apathy-boss.toml` or `config/apathy/boss.cfg`: Options for controlling the behavior of the Ender Dragon and Wither.
+* `config/apathy-mobs.toml` or `config/apathy/mobs.cfg`: Describes the main rule of the mod - whether mob X is allowed to attack player Y.
+* `config/apathy/mobs.json`: An auxillary rule. It's more powerful than the `mobs` system, but more complicated to use.
 
 These are documented in the files `GENERAL.md`, `BOSS.md`, `MOBS.md`, and `JSON.md` respectively.
+
+**TOML files are used on Forge as of Apathy version 2.5 only**, everything else uses the `cfg` files (in their own subdirectory).
 
 ### When are config files loaded and parsed?
 

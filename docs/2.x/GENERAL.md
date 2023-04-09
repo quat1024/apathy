@@ -1,4 +1,4 @@
-# `general.cfg`
+# `apathy-general.toml` / `apathy/general.cfg`
 
 This file contains miscellaneous config options.
 

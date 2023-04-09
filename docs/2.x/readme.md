@@ -4,15 +4,15 @@ Details how the mod works. Reading this is helpful if you want to write a detail
 
 ## `MOBS.md`
 
-Documents the config options in `config/apathy/mobs.cfg`. This file configures the main "is X allowed to attack Y" rule.
+Documents the config options in `config/apathy-mobs.toml` or `config/apathy/mobs.cfg`. This file configures the main "is X allowed to attack Y" rule.
 
 ## `GENERAL.md`
 
-Documents the config options in `config/apathy/general.cfg`, which control details of how the mod works and debugging options.
+Documents the config options in `config/apathy-general.toml` or `config/apathy/general.cfg`, which control details of how the mod works and debugging options.
 
 ## `BOSS.md`
 
-Documents the config options in `config/apathy/boss.cfg`, which control parameters of the Ender Dragon and Wither boss sequences.
+Documents the config options in `config/apathy-boss.toml` or `config/apathy/boss.cfg`, which control parameters of the Ender Dragon and Wither boss sequences.
 
 ## `JSON.md` (✨ contains new content in 1.18 ✨)
 

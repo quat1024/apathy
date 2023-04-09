@@ -1,8 +1,6 @@
-# `mobs.cfg`
+# `apathy-mobs.toml` / `apathy/mobs.cfg`
 
-The mob config file lives at `/config/apathy/mobs.cfg`.
-
-It allows you to place these predefined rules in any order and configure their properties.
+This file allows you to place these predefined rules in any order and configure their properties.
 
 * *JSON rule*: If `mobs.json` exists, its rule is evaluated.
 * *difficulty rule*: The attacker can target depending on the world difficulty.

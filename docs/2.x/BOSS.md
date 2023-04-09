@@ -1,4 +1,4 @@
-# `boss.cfg`
+# `apathy-boss.toml` / `boss.cfg`
 
 This file contains controls for various boss-fight sequences in Minecraft. You can disable or modify them.
 

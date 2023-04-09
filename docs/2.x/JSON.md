@@ -48,7 +48,7 @@ Let's start things off with an illustrative example:
 
 A *rule* is a JSON object consisting of at least one property: `type`. The rest of the properties in the object are different, depending on the `type`.
 
-**In versions >=2.5**, the `apathy:` prefixes are optional.
+**In versions >=2.5, the `apathy:` prefixes are optional.**
 
 Here are the possible rule `type`s.
 

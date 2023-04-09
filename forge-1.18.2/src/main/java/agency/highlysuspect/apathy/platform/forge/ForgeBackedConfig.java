@@ -39,7 +39,7 @@ public class ForgeBackedConfig implements CookedConfig {
 			try {
 				return s.get();
 			} catch (Exception e) {
-				Apathy.instance.log.error("Failed to parse option '" + key.name() + "': " + e.getMessage(), e);
+				Apathy.instance.log.error("Failed to parse option '" + key.name() + "': " + e.getMessage() + ". Using default value.", e);
 				return key.defaultValue();
 			}
 		}
@@ -86,26 +86,7 @@ public class ForgeBackedConfig implements CookedConfig {
 					
 					//annoying part:
 					T hmm = option.defaultValue();
-					if(hmm instanceof Integer || hmm instanceof String) {
-						//Forge config weirdstuff is able to handle these types without any processing, and
-						//the value Forge holds in the ForgeConfigSpec.ConfigValue is the same as the requested type.
-						//For numbers, we don't use Forge's "defineInRange" function, because integer range information
-						//is encoded in my config library's validation function instead
-						ForgeConfigSpec.ConfigValue<?> forge = spec.define(
-							Collections.singletonList(option.name()),
-							option::defaultValue,
-							(Object thing) -> {
-								try {
-									option.validate(option, (T) thing);
-									return true;
-								} catch (Exception e) {
-									return false;
-								}
-							},
-							hmm.getClass()
-						);
-						configGetters.put(option, forge::get);
-					} else if(hmm instanceof Boolean) {
+					if(hmm instanceof Boolean && !option.name().equals("fallthrough") /* dumb hack for apathy-boss.toml */) {
 						//Forge has weirdshit around booleans and its bad lmao, nightconfig can't do bools so forge has a wrapper function
 						ForgeConfigSpec.BooleanValue forge = spec.define(option.name(), (boolean) hmm);
 						configGetters.put(option, () -> {
@@ -128,9 +109,30 @@ public class ForgeBackedConfig implements CookedConfig {
 							option.validate(option, (T) (Object) real);
 							return real;
 						});
+					} else if(hmm instanceof Integer) {
+						//I just dont trust forge configs anymore honestly.
+						//I hate this defineInRange function, it's such a shit kludge and it seems to always add a comment to the config file
+						ForgeConfigSpec.IntValue forge = spec.defineInRange(option.name(), (int) hmm, Integer.MIN_VALUE, Integer.MAX_VALUE);
+						configGetters.put(option, () -> {
+							Object what = forge.get();
+							String stringified = what.toString();
+							int real = Integer.parseInt(stringified);
+							option.validate(option, (T) (Object) real);
+							return real;
+						});
+					} else if(hmm instanceof String) {
+						ForgeConfigSpec.ConfigValue<String> forge = spec.define(option.name(), (String) hmm);
+						configGetters.put(option, () -> {
+							String s = forge.get();
+							option.validate(option, (T) s);
+							return s;
+						});
 					} else {
 						//Forge config weirdstuff is definitely not able to handle this type by default.
-						//Fall back to a string option.
+						//Fall back to a string option, and do the stringifying/parsing ourselves.
+						//This is not the best fallback for most options because the TOML format will quote strings
+						//but users don't expect to have to quote options that are e.g. numbers.
+						//so thats what all the crap above is about :sweat_smile:
 						ForgeConfigSpec.ConfigValue<String> forge = spec.define(
 							Collections.singletonList(option.name()),
 							() -> option.write(option.defaultValue()), //<- stringify on the way in

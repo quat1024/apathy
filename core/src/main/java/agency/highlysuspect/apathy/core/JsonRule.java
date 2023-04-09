@@ -53,11 +53,11 @@ public class JsonRule {
 			boolean debug = Apathy.instance.generalCfg.get(CoreGenOptions.debugJsonRule);
 			boolean opt = Apathy.instance.generalCfg.get(CoreGenOptions.runRuleOptimizer);
 			
-			if(debug) dump(spec, Apathy.instance.configPath, "json-rule");
+			if(debug) dump(spec, "json-rule");
 			
 			if(opt) {
 				spec = spec.optimize();
-				if(debug) dump(spec, Apathy.instance.configPath, "json-rule-opt");
+				if(debug) dump(spec, "json-rule-opt");
 			}
 			
 			return spec.build();
@@ -70,9 +70,9 @@ public class JsonRule {
 	/**
 	 * Write a rule as json and poop it out.
 	 */
-	public static <RULE extends Spec<Rule, RULE>> void dump(Spec<Rule, RULE> ruleSpec, Path configFolder, String filename) {
+	public static <RULE extends Spec<Rule, RULE>> void dump(Spec<Rule, RULE> ruleSpec, String filename) {
 		try {
-			Path dumpDir = configFolder.resolve("dumps");
+			Path dumpDir = Apathy.instance.dumpsDirPath();
 			
 			Files.createDirectories(dumpDir);
 			

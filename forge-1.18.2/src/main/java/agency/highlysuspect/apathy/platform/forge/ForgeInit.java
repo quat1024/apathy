@@ -22,15 +22,13 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 @Mod("apathy")
 public class ForgeInit extends Apathy118 {
 	public ForgeInit() {
-		//TODO should really use a real forge config
-		super(FMLPaths.CONFIGDIR.get().resolve(MODID));
-		
 		LegacyToTomlUpgrader.doIt();
 		
 		//borrowed from IExtensionPoint javadoc in fmlcore
@@ -117,5 +115,15 @@ public class ForgeInit extends Apathy118 {
 	@Override
 	public ConfigSchema.Bakery bossConfigBakery() {
 		return new ForgeBackedConfig.Bakery(bossForgeSpec);
+	}
+	
+	@Override
+	public Path mobsJsonPath() {
+		return FMLPaths.CONFIGDIR.get().resolve("apathy-mobs.json");
+	}
+	
+	@Override
+	public Path dumpsDirPath() {
+		return FMLPaths.GAMEDIR.get().resolve("apathy-dumps");
 	}
 }

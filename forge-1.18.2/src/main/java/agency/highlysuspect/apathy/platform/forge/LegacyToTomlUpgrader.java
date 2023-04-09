@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.platform.forge;
 import agency.highlysuspect.apathy.core.Apathy;
 import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -29,13 +30,7 @@ public class LegacyToTomlUpgrader {
 			reallyDoIt(dir.resolve(Apathy.MODID).resolve("boss.cfg"), dir.resolve("apathy-boss.toml"));
 		} catch (Exception e) {
 			Apathy.instance.log.error("Problem upgrading old config: " + e.getMessage(), e);
-			return;
 		}
-		
-		//clean up the apathy/ subdir if it's empty
-		try {
-			Files.delete(dir.resolve(Apathy.MODID));
-		} catch (Exception ignored) {}
 	}
 	
 	private static final Pattern headerPattern = Pattern.compile("^## (.*) ##$");

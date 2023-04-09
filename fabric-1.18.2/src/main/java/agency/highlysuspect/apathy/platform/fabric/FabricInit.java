@@ -15,11 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import java.nio.file.Path;
+
 public class FabricInit extends Apathy118 implements ModInitializer {
-	public FabricInit() {
-		super(FabricLoader.getInstance().getConfigDir().resolve(MODID));
-	}
-	
 	@Override
 	public void onInitialize() {
 		init();
@@ -50,18 +48,32 @@ public class FabricInit extends Apathy118 implements ModInitializer {
 		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
 	}
 	
+	private Path cfgPath() {
+		return FabricLoader.getInstance().getConfigDir().resolve(MODID); //inside a subfolder of main config directory
+	}
+	
 	@Override
 	public ConfigSchema.Bakery generalConfigBakery() {
-		return new CrummyConfig.Bakery(configPath.resolve("general.cfg"));
+		return new CrummyConfig.Bakery(cfgPath().resolve("general.cfg"));
 	}
 	
 	@Override
 	public ConfigSchema.Bakery mobsConfigBakery() {
-		return new CrummyConfig.Bakery(configPath.resolve("mobs.cfg"));
+		return new CrummyConfig.Bakery(cfgPath().resolve("mobs.cfg"));
 	}
 	
 	@Override
 	public ConfigSchema.Bakery bossConfigBakery() {
-		return new CrummyConfig.Bakery(configPath.resolve("boss.cfg"));
+		return new CrummyConfig.Bakery(cfgPath().resolve("boss.cfg"));
+	}
+	
+	@Override
+	public Path mobsJsonPath() {
+		return cfgPath().resolve("mobs.json");
+	}
+	
+	@Override
+	public Path dumpsDirPath() {
+		return FabricLoader.getInstance().getGameDir().resolve("apathy-dumps");
 	}
 }

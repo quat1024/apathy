@@ -116,6 +116,7 @@ public class CrummyConfig implements CookedConfig {
 			}
 		});
 		
+		if(path.getParent() != null) Files.createDirectories(path.getParent()); //can be null if it's at the fs root lol
 		Files.write(path, out, StandardCharsets.UTF_8);
 	}
 	

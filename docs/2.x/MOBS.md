@@ -45,7 +45,7 @@ Quick note: There's a fairly aggressive rule optimizer included in the mod. The 
 
 ## JSON
 
-This rule does not have any options in the config file, but its ordering relative to other rules may be specified in `ruleOrder`.
+This rule does not have anything to configure in this config file, but its ordering relative to other rules may be specified in `ruleOrder`.
 
 ## Difficulty
 

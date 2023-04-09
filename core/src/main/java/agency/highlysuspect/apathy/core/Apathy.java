@@ -30,8 +30,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -42,10 +40,6 @@ public abstract class Apathy {
 	
 	/** constructor sets this as a side effect */
 	public static Apathy instance;
-	
-	/** Ideally this should be a subdirectory of the platform-specific config directory */
-	//TODO: move dump directory somewhere else?
-	public final Path configPath;
 	public final LogFacade log;
 	
 	public final NotRegistry<JsonSerializer<? extends Spec<Rule, ?>>> ruleSerializers = new NotRegistry<>();
@@ -58,7 +52,7 @@ public abstract class Apathy {
 	public Rule configuredRule = RuleSpecAlways.ALWAYS_ALLOW.build();
 	public @Nullable Rule jsonRule;
 	
-	public Apathy(Path configPath, LogFacade log) {
+	public Apathy(LogFacade log) {
 		if(instance == null) {
 			instance = this;
 		} else {
@@ -67,17 +61,10 @@ public abstract class Apathy {
 			throw e;
 		}
 		
-		this.configPath = configPath;
 		this.log = log;
 	}
 	
 	public void init() {
-		try {
-			Files.createDirectories(configPath);
-		} catch (IOException e) {
-			throw new RuntimeException("Problem creating Apathy config directory at " + configPath, e);
-		}
-		
 		//rule setup
 		addRules();
 		
@@ -126,7 +113,7 @@ public abstract class Apathy {
 		
 		Rule newJsonRule = jsonRule;
 		try {
-			newJsonRule = JsonRule.loadJson(configPath.resolve("mobs.json"));
+			newJsonRule = JsonRule.loadJson(mobsJsonPath());
 		} catch (Exception e) {
 			log.error("Problem reading mobs.json: ", e);
 			ok = false;
@@ -175,6 +162,8 @@ public abstract class Apathy {
 	public abstract ConfigSchema.Bakery generalConfigBakery();
 	public abstract ConfigSchema.Bakery mobsConfigBakery();
 	public abstract ConfigSchema.Bakery bossConfigBakery();
+	public abstract Path mobsJsonPath();
+	public abstract Path dumpsDirPath();
 	
 	public abstract Rule bakeMobsConfigRule();
 	

@@ -6,11 +6,14 @@ If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered befo
 
 ## Dumping
 
-`general.cfg` has options for dumping the built-in rule as a JSON file (in `/config/apathy/dumps/builtin-rule.json` and `builtin-rule-opt.json`), if you would like to see an example.
+`general.cfg` has options for dumping the built-in rule as a JSON file if you would like to see an example. If you turn that on, the file will be dumped to:
 
-Previous versions used some DataFixerUpper `Codec` stuff that outputted the json with a strange format (`type` at the bottom). **In versions >=2.5**, the JSON handling code has been completely rewritten and does not use `Codec`, so the JSON is nice looking.
+* old versions: `config/apathy/dumps/builtin-rule.json`
+* 2.5: `apathy-dumps/builtin-rule.json`
 
-(If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `evaluate_json_file` rule!)
+Previous versions used some DataFixerUpper `Codec` stuff that outputted the json with a strange format (`type` at the bottom). **In versions >=2.5** the JSON handling code has been completely rewritten and does not use `Codec`, so the JSON is nice looking.
+
+(If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `evaluate_json_file` rule!!!)
 
 # Json Format
 

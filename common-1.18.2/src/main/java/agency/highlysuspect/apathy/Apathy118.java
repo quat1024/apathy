@@ -38,7 +38,6 @@ import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
@@ -46,8 +45,8 @@ import java.util.Locale;
 public abstract class Apathy118 extends Apathy {
 	public static Apathy118 instance118;
 	
-	public Apathy118(Path configPath) {
-		super(configPath, VerConv.toLogFacade(LogManager.getLogger(MODID)));
+	public Apathy118() {
+		super(VerConv.toLogFacade(LogManager.getLogger(MODID)));
 		
 		if(instance118 == null) {
 			instance118 = this;
@@ -107,10 +106,10 @@ public abstract class Apathy118 extends Apathy {
 			ruleSpec = new RuleSpecChain(ruleSpecList);
 		}
 		
-		if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, configPath, "builtin-rule");
+		if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, "builtin-rule");
 		if(generalCfg.get(CoreGenOptions.runRuleOptimizer)) {
 			ruleSpec = ruleSpec.optimize();
-			if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, configPath, "builtin-rule-opt");
+			if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, "builtin-rule-opt");
 		}
 		
 		return ruleSpec.build();

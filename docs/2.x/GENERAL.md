@@ -42,4 +42,6 @@ Options that might help when you are making a config file.
 
 ## Debug rules
 
-You can debug the config file rule and the JSON rule. When these options are enabled, the rule will be serialized and written to the directory `config/apathy/dumps/`. If the rule optimizer is enabled, rules will also be debugged after the optimization pass to a separate file, so you can observe the effects of the optimizer.
+You can debug the config file rule and the JSON rule. When these options are enabled, the rule in internal-format will be serialized to json and written to a directory. If the rule optimizer is enabled, rules will also be debugged after the optimization pass to a separate file, so you can observe the effects of the optimizer.
+
+The directory is `config/apathy/dumps/` in old versions, and `apathy-dumps` in version >=2.5. 

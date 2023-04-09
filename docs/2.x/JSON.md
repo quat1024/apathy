@@ -1,6 +1,6 @@
-# `mobs.json`
+# `apathy-mobs.json` / `apathy/mobs.json`
 
-The rule json file lives at `/config/apathy/mobs.json`. It is *not created by default*, but will be loaded if it exists.
+The mobs json file is *not created by default*, but will be loaded if it exists. **On Forge >=2.5**, the path to this file is `config/apathy-mobs.json`. On **all other platforms and versions**, the path is `config/apathy/mobs.json`.
 
 If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered before it returns `allow` or `deny`, the rules in the JSON file will not be examined.
 
@@ -9,7 +9,7 @@ If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered befo
 `general.cfg` has options for dumping the built-in rule as a JSON file if you would like to see an example. If you turn that on, the file will be dumped to:
 
 * old versions: `config/apathy/dumps/builtin-rule.json`
-* 2.5: `apathy-dumps/builtin-rule.json`
+* >=2.5: `apathy-dumps/builtin-rule.json`
 
 Previous versions used some DataFixerUpper `Codec` stuff that outputted the json with a strange format (`type` at the bottom). **In versions >=2.5** the JSON handling code has been completely rewritten and does not use `Codec`, so the JSON is nice looking.
 

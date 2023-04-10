@@ -11,7 +11,7 @@ import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import java.util.Set;
 
 public class CoreBossOptions {
-	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 0).build();
+	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 4).build();
 	
 	public static final ConfigProperty<DragonInitialState> dragonInitialState = ConfigProperty.enumOpt("dragonInitialState", DragonInitialState.DEFAULT,
 			"What is the initial state of the Ender Dragon in the End?",

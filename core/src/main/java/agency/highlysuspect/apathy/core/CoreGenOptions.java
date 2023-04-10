@@ -7,11 +7,12 @@ import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import java.util.Set;
 
 public class CoreGenOptions {
-	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 0).build();
+	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 4).build();
 	
 	public static final ConfigProperty<Integer> recheckInterval = ConfigProperty.intOpt("recheckInterval", 20,
 		"By default, mobs that are currently attacking a player do not check every tick if it's still okay to do so.",
-		"This is how often the mob will check. (Set this to 1 to check every tick.)"
+		"This is how often the mob will check. (Set this to 1 to check every tick.)",
+		"Note that the checks are staggered, and changes to this setting can take a couple moments to come into effect."
 	).atLeast(1).build();
 	
 	public static final ConfigProperty<Boolean> runRuleOptimizer = ConfigProperty.boolOpt("runRuleOptimizer", true,

@@ -67,6 +67,8 @@ public class MobMixin implements Attacker {
 		}
 	}
 	
+	@Unique private int recheckIntervalCache = Integer.MIN_VALUE;
+	
 	@Inject(method = "tick", at = @At("HEAD"))
 	public void apathy$whenTicking(CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
@@ -76,9 +78,12 @@ public class MobMixin implements Attacker {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.instance.generalCfg.get(CoreGenOptions.recheckInterval) == 0
-			&& target instanceof ServerPlayer
-			&& !Apathy119.instance119.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+		//Avoid hitting the config every single tick for this thing that's supposed to be an optimization.
+		long gametime = thi$.level.getGameTime();
+		if(recheckIntervalCache == Integer.MIN_VALUE || gametime % 400 == 0) {
+			recheckIntervalCache = Apathy.instance.generalCfg.get(CoreGenOptions.recheckInterval);
+		}
+		if((gametime + thi$.getId()) % recheckIntervalCache == 0 && target instanceof ServerPlayer && !Apathy119.instance119.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}

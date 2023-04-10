@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class CoreMobOptions {
-	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 0).build();
+	public static final ConfigProperty<Integer> configVersion = ConfigProperty.intOpt("configVersion", 4).build();
 	
 	public static final ConfigProperty<Boolean> nuclearOption = ConfigProperty.boolOpt("nuclearOption", false,
 		"If set to 'true', no mob will ever attack anyone.",

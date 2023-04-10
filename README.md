@@ -15,7 +15,19 @@ Roadmap:
 
 ### where's 1.19.2/.3?
 
-A couple people (including me) stuck with 1.19.2 when .3 dropped, because it was a ridiculous internal overhaul that added nothing user-facing of note. Imo the situation is a *little* bit different in .4, the sum of .3 and .4's user-facing changes is barely enough to bother porting; it's kind of bordering on asking "where's 1.16.1"
+# **Please Stop Playing 1.19.2**
+
+# **Please Stop Playing 1.19.2**
+
+**If You're Going To Insist On Playing Modded On The Latest Version Of Minecraft, At Least Have Conviction**
+
+**I Used To Remember When Writing Mods For This Game Was Fun**
+
+**I Cannot Support Every Random Point Release And Snapshot Of The Game Indefinitely**
+
+# **Please Stop Playing 1.19.2**
+
+# **Please Stop Playing 1.19.2**
 
 ### where's 1.17?
 

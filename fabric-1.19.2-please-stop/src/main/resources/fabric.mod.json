@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "id": "apathy",
+  "version": "${version}",
+
+  "name": "Apathy",
+  "description": "Mobs don't attack players, or maybe they do! Configurable.",
+  "authors": [
+    "quaternary",
+		"whizzball1"
+  ],
+	"contributors": [
+		"jaredlll08",
+		"Darkhax"
+	],
+  "contact": {
+    "homepage": "https://highlysuspect.agency/"
+  },
+
+  "license": "LGPL-3.0-or-later",
+  "icon": "apathy-icon-128.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+			"agency.highlysuspect.apathy.platform.fabric.FabricInit"
+    ]
+  },
+  "mixins": [
+    "apathy.common.mixin.json",
+		"apathy.fabric.mixin.json"
+  ],
+
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "=1.19.2"
+  }
+}

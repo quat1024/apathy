@@ -25,7 +25,7 @@ apply plugin: "java"
 apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
 
-archivesBaseName = "${project.modId}-forge-1.19.4"
+archivesBaseName = "${project.modId}-forge-1.19.2"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 tasks.withType(JavaCompile) {
@@ -44,12 +44,12 @@ mixin {
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:1.19.4-45.0.43"
+	minecraft "net.minecraftforge:forge:1.19.2-43.2.0"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
 	
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
-	compileOnly project(":common-1.19.4")
+	compileOnly project(":common-1.19.2-begrudgingly")
 	compileOnly project(":core")
 }
 
@@ -57,7 +57,7 @@ dependencies {
 
 processResources {
 	//include common resources
-	from project(":common-1.19.4").sourceSets.main.resources
+	from project(":common-1.19.2-begrudgingly").sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
 	
 	inputs.property "version", project.version
@@ -67,34 +67,34 @@ processResources {
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common-1.19.4").sourceSets.main.allSource)
+	source(project(":common-1.19.2-begrudgingly").sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
 }
 
 minecraft {
-	mappings channel: "official", version: "1.19.4" //official mappings epic moments
+	mappings channel: "official", version: "1.19.2" //official mappings epic moments
 	
 	runs {
 		client {
-			taskName "client1.19.4"
+			taskName "client1.19.2"
 			workingDirectory project.file("run")
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common-1.19.4").sourceSets.main
+					source project(":common-1.19.2-begrudgingly").sourceSets.main
 				}
 			}
 		}
 		
 		server {
-			taskName "server1.19.4"
+			taskName "server1.19.2"
 			workingDirectory project.file("run")
 			ideaModule "${rootProject.name}.${project.name}.main"
 			mods {
 				"${project.modId}" {
 					source sourceSets.main
-					source project(":common-1.19.4").sourceSets.main
+					source project(":common-1.19.2-begrudgingly").sourceSets.main
 				}
 			}
 		}

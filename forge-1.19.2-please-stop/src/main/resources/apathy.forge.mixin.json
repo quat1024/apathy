@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "agency.highlysuspect.apathy.platform.forge.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"WitherBossCrustyMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"refmap": "apathy.refmap.json"
+}

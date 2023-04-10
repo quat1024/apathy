@@ -1,0 +1,94 @@
+buildscript {
+	repositories {
+		maven {
+			url = "https://maven.fabricmc.net/"
+			content {
+				includeGroup "net.fabricmc"
+				includeGroup "fabric-loom"
+			}
+		}
+		mavenCentral()
+	}
+	dependencies {
+		classpath "fabric-loom:fabric-loom.gradle.plugin:1.1.10"
+	}
+}
+
+evaluationDependsOn(":core") // fuck gradle episode 151905106
+
+apply plugin: "java"
+apply plugin: "fabric-loom"
+
+archivesBaseName = "${project.modId}-fabric-1.19.2"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.release = 17
+}
+java.withSourcesJar()
+
+/// deps ///
+
+dependencies {
+	//basics
+	minecraft "com.mojang:minecraft:1.19.2"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:0.14.17"
+	compileOnly "org.jetbrains:annotations:24.0.1"
+	
+	//fabric api, TODO trim down to required modules
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.76.0+1.19.2"
+	
+	//xplat
+	implementation project(":common-1.19.2-begrudgingly")
+	implementation project(":core")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	from project(":common-1.19.2-begrudgingly").sourceSets.main.resources
+	from project(":core").sourceSets.main.resources
+	
+	inputs.property "version", project.version
+	filesMatching("**/fabric.mod.json") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common-1.19.2-begrudgingly").sourceSets.main.allSource)
+	source(project(":core").sourceSets.main.allSource)
+}
+
+//loom doesn't generate run configs by default in subprojects
+loom {
+	runs {
+		client {
+			client()
+			setConfigName("Fabric 1.19.2 Client")
+			ideConfigGenerated(true)
+			runDir("run")
+		}
+		server {
+			server()
+			setConfigName("Fabric 1.19.2 Server")
+			ideConfigGenerated(true)
+			runDir("run")
+		}
+	}
+	
+	//nor can it figure out the refmap name in this situation
+	mixin {
+		defaultRefmapName = "${project.modId}.refmap.json"
+		
+		//see https://github.com/FabricMC/fabric-loom/issues/456
+		//todo, maybe also fixable by updating floader?
+		useLegacyMixinAp = true
+	}
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
+}

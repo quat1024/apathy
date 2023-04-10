@@ -17,12 +17,12 @@ public class WardenMixin {
 	@Inject(method = "canTargetEntity", at = @At("HEAD"), cancellable = true)
 	public void apathy$whenCheckingCanTargetEntity(Entity ent, CallbackInfoReturnable<Boolean> cir) {
 		Warden me = (Warden) (Object) this;
-		if(ent instanceof ServerPlayer player && !Apathy119.INSTANCE.allowedToTargetPlayer(me, player)) cir.setReturnValue(false);
+		if(ent instanceof ServerPlayer player && !Apathy119.instance119.allowedToTargetPlayer(me, player)) cir.setReturnValue(false);
 	}
 	
 	@Inject(method = "setAttackTarget", at = @At("HEAD"), cancellable = true)
 	public void apathy$whenSettingAttackTarget(LivingEntity ent, CallbackInfo ci) {
 		Warden me = (Warden) (Object) this;
-		if(ent instanceof ServerPlayer player && !Apathy119.INSTANCE.allowedToTargetPlayer(me, player)) ci.cancel();
+		if(ent instanceof ServerPlayer player && !Apathy119.instance119.allowedToTargetPlayer(me, player)) ci.cancel();
 	}
 }

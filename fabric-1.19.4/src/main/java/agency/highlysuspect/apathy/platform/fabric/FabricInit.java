@@ -3,6 +3,8 @@ package agency.highlysuspect.apathy.platform.fabric;
 import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.ApathyCommands;
 import agency.highlysuspect.apathy.PlayerSetManager;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
+import agency.highlysuspect.apathy.core.config.CrummyConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -26,12 +28,12 @@ public class FabricInit extends Apathy119 implements ModInitializer {
 		ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
 			@Override
 			public ResourceLocation getFabricId() {
-				return Apathy119.id("reload-config");
+				return new ResourceLocation(MODID, "reload-config");
 			}
 			
 			@Override
 			public void onResourceManagerReload(ResourceManager manager) {
-				Apathy119.INSTANCE.loadConfig();
+				refreshConfig();
 			}
 		});
 	}
@@ -46,8 +48,32 @@ public class FabricInit extends Apathy119 implements ModInitializer {
 		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
 	}
 	
+	private Path cfgPath() {
+		return FabricLoader.getInstance().getConfigDir().resolve(MODID); //inside a subfolder of main config directory
+	}
+	
 	@Override
-	public Path getConfigPath() {
-		return FabricLoader.getInstance().getConfigDir().resolve(Apathy119.MODID);
+	public ConfigSchema.Bakery generalConfigBakery() {
+		return new CrummyConfig.Bakery(cfgPath().resolve("general.cfg"));
+	}
+	
+	@Override
+	public ConfigSchema.Bakery mobsConfigBakery() {
+		return new CrummyConfig.Bakery(cfgPath().resolve("mobs.cfg"));
+	}
+	
+	@Override
+	public ConfigSchema.Bakery bossConfigBakery() {
+		return new CrummyConfig.Bakery(cfgPath().resolve("boss.cfg"));
+	}
+	
+	@Override
+	public Path mobsJsonPath() {
+		return cfgPath().resolve("mobs.json");
+	}
+	
+	@Override
+	public Path dumpsDirPath() {
+		return FabricLoader.getInstance().getGameDir().resolve("apathy-dumps");
 	}
 }

@@ -162,12 +162,6 @@ public abstract class Apathy118 extends Apathy {
 	}
 	
 	@Override
-	public void addMobConfig(ConfigSchema schema) {
-		super.addMobConfig(schema);
-		VerMobOptions.visit(schema);
-	}
-	
-	@Override
 	public @Nullable AttackerType parseAttackerType(String s) {
 		s = s.trim();
 		

@@ -27,13 +27,13 @@
     ]
   },
   "mixins": [
-    "apathy.common.mixins.json",
-		"apathy.fabric.mixins.json"
+    "apathy.common.mixin.json",
+		"apathy.fabric.mixin.json"
   ],
 
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": ">=1.18.1"
+    "minecraft": ">=1.19.4"
   }
 }

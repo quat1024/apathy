@@ -1,144 +1,151 @@
 package agency.highlysuspect.apathy;
 
-import agency.highlysuspect.apathy.config.BossConfig;
-import agency.highlysuspect.apathy.config.Config;
-import agency.highlysuspect.apathy.config.GeneralConfig;
-import agency.highlysuspect.apathy.config.MobConfig;
-import agency.highlysuspect.apathy.rule.Rule;
-import agency.highlysuspect.apathy.rule.spec.Specs;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreGenOptions;
+import agency.highlysuspect.apathy.core.CoreMobOptions;
+import agency.highlysuspect.apathy.core.JsonRule;
+import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIs;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
+import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
+import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
+import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.core.rule.Rule;
+import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
+import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
+import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
+import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
+import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
+import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
+import agency.highlysuspect.apathy.core.wrapper.AttackerType;
+import agency.highlysuspect.apathy.core.wrapper.Defender;
+import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
+import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
+import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
+import agency.highlysuspect.apathy.rule.PartialSpecLocation;
+import agency.highlysuspect.apathy.rule.PartialSpecScore;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Difficulty;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
-public abstract class Apathy119 {
-	public static final String MODID = "apathy";
-	public static final Logger LOG = LogManager.getLogger(MODID);
-	public static Apathy119 INSTANCE;
-	
-	public final Path configFolder;
-	
-	public GeneralConfig generalConfig = new GeneralConfig();
-	public MobConfig mobConfig = new MobConfig();
-	public BossConfig bossConfig = new BossConfig();
-	public @Nullable Rule jsonRule;
+public abstract class Apathy119 extends Apathy {
+	public static Apathy119 instance119;
 	
 	public Apathy119() {
-		Apathy119.INSTANCE = this;
-		configFolder = getConfigPath();
+		super(VerConv.toLogFacade(LogManager.getLogger(MODID)));
+		
+		if(instance119 == null) {
+			instance119 = this;
+		} else {
+			IllegalStateException e = new IllegalStateException("Apathy 1.19 instantiated twice!");
+			log.error("Apathy 1.19 instantiated twice!", e);
+			throw e;
+		}
 	}
 	
-	public void init() {
-		//Ensure the config subdirectory exists and things can be placed inside it
-		try {
-			Files.createDirectories(configFolder);
-		} catch (IOException e) {
-			throw new RuntimeException("Problem creating config/apathy/ subdirectory", e);
+	@Override
+	public Rule bakeMobsConfigRule() {
+		Spec<Rule, ?> ruleSpec;
+		
+		if(mobCfg.get(CoreMobOptions.nuclearOption)) {
+			Apathy.instance.log.info("Nuclear option enabled - Ignoring ALL rules in the config file");
+			ruleSpec = RuleSpecAlways.ALWAYS_DENY;
+		} else {
+			ArrayList<Spec<Rule, ?>> ruleSpecList = new ArrayList<>();
+			for(String ruleName : mobCfg.get(CoreMobOptions.ruleOrder)) {
+				switch(ruleName.trim().toLowerCase(Locale.ROOT)) {
+					case "json"       -> ruleSpecList.add(new RuleSpecJson());
+					case "difficulty" -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(CoreMobOptions.difficultySetIncluded),
+						mobCfg.get(CoreMobOptions.difficultySetExcluded),
+						new PartialSpecDifficultyIs(mobCfg.get(CoreMobOptions.difficultySet))
+					));
+					case "boss"       -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(CoreMobOptions.boss),
+						TriState.DEFAULT,
+						PartialSpecAttackerIsBoss.INSTANCE
+					));
+					case "mobset"     -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(CoreMobOptions.mobSetIncluded),
+						mobCfg.get(CoreMobOptions.mobSetExcluded),
+						new PartialSpecAttackerIs(mobCfg.get(CoreMobOptions.mobSet))
+					));
+					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(CoreMobOptions.tagSetIncluded),
+						mobCfg.get(CoreMobOptions.tagSetExcluded),
+						new PartialSpecAttackerTaggedWith(mobCfg.get(CoreMobOptions.tagSet))
+					));
+					case "playerset"  -> mobCfg.get(CoreMobOptions.playerSetName).ifPresent(s ->
+						ruleSpecList.add(new RuleSpecPredicated(
+							mobCfg.get(CoreMobOptions.playerSetIncluded),
+							mobCfg.get(CoreMobOptions.playerSetExcluded),
+							new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
+						)));
+					case "revenge"    -> ruleSpecList.add(new RuleSpecPredicated(
+						TriState.TRUE, TriState.DEFAULT,
+						new PartialSpecRevengeTimer(mobCfg.get(CoreMobOptions.revengeTimer))
+					));
+					default -> Apathy.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+				}
+			}
+			
+			ruleSpec = new RuleSpecChain(ruleSpecList);
 		}
 		
-		//Register all the weird json rule stuff
-		Specs.onInitialize();
-		
-		//Don't load the config files yet, this should happen on server resource load instead.
-		//installConfigFileReloader should set this up.
-		//See https://github.com/quat1024/apathy/issues/9 . This is kind of embarassing...
-		//loadConfig();
-		
-		//Platform dependent init
-		installConfigFileReloader();
-		installCommandRegistrationCallback();
-		installPlayerSetManagerTicker();
-	}
-	
-	public boolean loadConfig() {
-		boolean ok = true;
-		
-		GeneralConfig newGeneralConfig = generalConfig;
-		try {
-			newGeneralConfig = Config.read(new GeneralConfig(), configFolder.resolve("general.cfg"));
-		} catch (Exception e) {
-			LOG.error("Problem reading general.cfg:", e);
-			ok = false;
-		} finally {
-			generalConfig = newGeneralConfig;
+		if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, "builtin-rule");
+		if(generalCfg.get(CoreGenOptions.runRuleOptimizer)) {
+			ruleSpec = ruleSpec.optimize();
+			if(generalCfg.get(CoreGenOptions.debugBuiltinRule)) JsonRule.dump(ruleSpec, "builtin-rule-opt");
 		}
 		
-		MobConfig newMobConfig = mobConfig;
-		try {
-			newMobConfig = Config.read(new MobConfig(), configFolder.resolve("mobs.cfg"));
-		} catch (Exception e) {
-			LOG.error("Problem reading mobs.cfg: ", e);
-			ok = false;
-		} finally {
-			mobConfig = newMobConfig;
-		}
-		
-		BossConfig newBossConfig = bossConfig;
-		try {
-			newBossConfig = Config.read(new BossConfig(), configFolder.resolve("boss.cfg"));
-		} catch (Exception e) {
-			LOG.error("Problem reading boss.cfg: ", e);
-			ok = false;
-		} finally {
-			bossConfig = newBossConfig;
-		}
-		
-		Rule newJsonRule = jsonRule;
-		try {
-			newJsonRule = JsonRule.loadJson(configFolder.resolve("mobs.json"));
-		} catch (Exception e) {
-			LOG.error("Problem reading mobs.json: ", e);
-			ok = false;
-		} finally {
-			jsonRule = newJsonRule;
-		}
-		
-		return ok;
+		return ruleSpec.build();
 	}
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted") //But it makes more sense that way!
 	public boolean allowedToTargetPlayer(Mob attacker, ServerPlayer player) {
-		if(attacker.level.isClientSide) throw new IllegalStateException("Do not call on the client, please");
-		
-		TriState result = mobConfig.rule.apply(attacker, player);
-		if(result != TriState.DEFAULT) return result.get();
-		else return mobConfig.fallthrough;
+		return allowedToTargetPlayer((Attacker) attacker, (Defender) player);
 	}
 	
 	public void noticePlayerAttack(Player player, Entity provoked) {
 		Level level = player.level;
 		if(level.isClientSide) return;
 		
-		if(provoked instanceof MobExt ext) {
-			//Set the revengetimer on the hit entity
-			ext.apathy$provokeNow();
+		if(provoked instanceof Attacker ext) {
+			long now = ext.apathy$now();
 			
-			if(generalConfig.sameTypeRevengeSpread > 0) {
-				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(generalConfig.sameTypeRevengeSpread))) {
-					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+			//revenge timer on the hit entity:
+			ext.apathy$setProvocationTime(now);
+			
+			//revenge timer with same-type spreading:
+			int sameTypeRevengeSpread = generalCfg.get(CoreGenOptions.sameTypeRevengeSpread);
+			if(sameTypeRevengeSpread > 0) {
+				for(Entity nearby : level.getEntitiesOfClass(provoked.getClass(), provoked.getBoundingBox().inflate(sameTypeRevengeSpread))) {
+					if(nearby instanceof Attacker extt) extt.apathy$setProvocationTime(now);
 				}
 			}
 			
-			if(generalConfig.differentTypeRevengeSpread > 0) {
-				//kinda grody sorry
-				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(generalConfig.differentTypeRevengeSpread), ent -> ent instanceof MobExt)) {
-					if(nearby instanceof MobExt extt) extt.apathy$provokeNow();
+			//revenge timer with different-type spreading: (or really "regardless-of-type spreading" i guess)
+			int differentTypeRevengeSpread = generalCfg.get(CoreGenOptions.differentTypeRevengeSpread);
+			if(differentTypeRevengeSpread > 0) {
+				for(Entity nearby : level.getEntities((Entity) null, provoked.getBoundingBox().inflate(differentTypeRevengeSpread), ent -> ent instanceof Attacker)) {
+					if(nearby instanceof Attacker extt) extt.apathy$setProvocationTime(now);
 				}
 			}
 		}
@@ -149,32 +156,61 @@ public abstract class Apathy119 {
 	
 	public void filterMobEffectUtilCall(ServerLevel level, @Nullable Entity provoker, List<ServerPlayer> original) {
 		if(provoker instanceof Warden warden) {
-			if(!bossConfig.wardenDarknessDifficulties.contains(level.getDifficulty())) original.clear();
-			if(bossConfig.wardenDarknessOnlyToPlayersItCanTarget) original.removeIf(player -> !allowedToTargetPlayer(warden, player));
+			if(!bossCfg.get(VerBossOptions.wardenDarknessDifficuties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {
+				original.clear();
+				return;
+			}
+			
+			if(bossCfg.get(VerBossOptions.wardenDarknessOnlyToPlayersItCanTarget)) {
+				original.removeIf(player -> !allowedToTargetPlayer(warden, player));
+			}
 		}
 	}
 	
-	/// Random util crap
-	public static ResourceLocation id(String path) {
-		return new ResourceLocation(MODID, path);
+	@Override
+	public void addRules() {
+		super.addRules();
+		
+		partialSerializers.register("advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
+		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
+		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
+		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
 	}
 	
-	public static <T extends Enum<?>> Set<T> allOf(Class<T> enumClass) {
-		Set<T> set = new HashSet<>();
-		Collections.addAll(set, enumClass.getEnumConstants());
-		return set;
+	@Override
+	public void addBossConfig(ConfigSchema schema) {
+		super.addBossConfig(schema);
+		VerBossOptions.visit(schema);
 	}
 	
-	public static Set<Difficulty> allDifficultiesNotPeaceful() {
-		Set<Difficulty> wow = allOf(Difficulty.class);
-		wow.remove(Difficulty.PEACEFUL);
-		return wow;
+	@Override
+	public @Nullable AttackerType parseAttackerType(String s) {
+		s = s.trim();
+		
+		if(s.isEmpty()) return null; //can sometimes happen due to shitty parsing code in my config library
+		
+		ResourceLocation rl = ResourceLocation.tryParse(s);
+		if(rl == null) {
+			log.error("Can't parse '{}' as a resourcelocation", s);
+			return null;
+		}
+		
+		EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(rl); //defaultedregistry, defaults to pig instead of null
+		return (AttackerType) type; //duck interface
 	}
 	
-	/// Cross platform stuff
-	
-	public abstract void installConfigFileReloader();
-	public abstract void installCommandRegistrationCallback();
-	public abstract void installPlayerSetManagerTicker();
-	public abstract Path getConfigPath();
+	public @Nullable AttackerTag parseAttackerTag(String s) {
+		s = s.trim();
+		if(s.startsWith("#")) s = s.substring(1); //vanilla syntax for "tag-as-opposed-to-resourcelocation" that i don't care about rn
+		
+		if(s.isEmpty()) return null; //can sometimes happen due to shitty parsing code in my config library
+		
+		ResourceLocation rl = ResourceLocation.tryParse(s);
+		if(rl == null) {
+			log.error("Can't parse '{}' as a resourcelocation", s);
+			return null;
+		}
+		
+		return (AttackerTag) (Object) TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), rl);
+	}
 }

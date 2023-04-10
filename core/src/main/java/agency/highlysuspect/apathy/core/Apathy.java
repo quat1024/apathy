@@ -93,13 +93,15 @@ public abstract class Apathy {
 		else return mobCfg.get(CoreMobOptions.fallthrough);
 	}
 	
-	public boolean refreshConfig() {
-		boolean ok = true;
-		
-		//TODO: rethink error handling here (keep the old config around)
-		ok &= generalCfg.refresh();
-		ok &= mobCfg.refresh();
-		ok &= bossCfg.refresh();
+	//TODO: rethink error handling here (keep the old config around)
+	public boolean refreshGeneralConfig() {
+		log.info("general cfg refresh!");
+		return generalCfg.refresh();
+	}
+	
+	public boolean refreshMobConfig() {
+		log.info("mob cfg refresh!");
+		boolean ok = mobCfg.refresh();
 		
 		Rule newConfiguredRule = configuredRule;
 		try {
@@ -120,6 +122,19 @@ public abstract class Apathy {
 		} finally {
 			jsonRule = newJsonRule;
 		}
+		
+		return ok;
+	}
+	
+	public boolean refreshBossConfig() {
+		log.info("boss cfg refresh!");
+		return bossCfg.refresh();
+	}
+	
+	public boolean refreshConfig() {
+		boolean ok = refreshGeneralConfig();
+		ok &= refreshMobConfig();
+		ok &= refreshBossConfig();
 		
 		return ok;
 	}

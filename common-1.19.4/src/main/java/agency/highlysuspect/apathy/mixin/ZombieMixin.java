@@ -1,6 +1,8 @@
 package agency.highlysuspect.apathy.mixin;
 
-import agency.highlysuspect.apathy.Apathy119;
+import agency.highlysuspect.apathy.VerConv;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreGenOptions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -17,11 +19,16 @@ public abstract class ZombieMixin extends Mob {
 		throw new IllegalStateException("dummy constructor for mixin, shouldn't ever get called");
 	}
 	
-	@SuppressWarnings("SimplifiableConditionalExpression") //intellij suggests something truly awful
 	@Override
 	@Intrinsic(displace = true) //mixin wizards feel free to correct me on this
 	public boolean canAttack(LivingEntity other) {
-		return super.canAttack(other) &&
-			(other instanceof Villager ? Apathy119.INSTANCE.generalConfig.zombieAttackVillagerDifficulties.contains(level.getDifficulty()) : true);
+		boolean result = super.canAttack(other);
+		
+		if(result && other instanceof Villager) {
+			result = Apathy.instance.generalCfg.get(CoreGenOptions.zombieAttackVillagerDifficulties)
+				.contains(VerConv.toApathyDifficulty(level.getDifficulty()));	
+		}
+		
+		return result;
 	}
 }

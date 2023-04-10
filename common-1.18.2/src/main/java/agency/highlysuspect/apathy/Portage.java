@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -25,5 +26,9 @@ public class Portage {
 	
 	public static void explodeNoBlockInteraction(Level level, Entity who, double x, double y, double z, float strength) {
 		level.explode(who, x, y, z, strength, Explosion.BlockInteraction.NONE);
+	}
+	
+	public static BlockPos blockPosContaining(double x, double y, double z) {
+		return new BlockPos(x, y, z);
 	}
 }

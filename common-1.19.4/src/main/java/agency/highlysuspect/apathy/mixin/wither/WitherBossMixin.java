@@ -1,7 +1,9 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Apathy119;
 import agency.highlysuspect.apathy.Portage;
+import agency.highlysuspect.apathy.VerConv;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreBossOptions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
@@ -26,31 +28,31 @@ public class WitherBossMixin {
 		//Targeting these with mixin is always a huge pain...
 		//Compose it with another predicate instead, how about that
 		LIVING_ENTITY_SELECTOR = LIVING_ENTITY_SELECTOR.and((ent) -> {
-			if(ent instanceof Player) return Apathy119.INSTANCE.bossConfig.witherTargetsPlayers;
-			else return Apathy119.INSTANCE.bossConfig.witherTargetsMobs;
+			if(ent instanceof Player) return Apathy.instance.bossCfg.get(CoreBossOptions.witherTargetsPlayers);
+			else return Apathy.instance.bossCfg.get(CoreBossOptions.witherTargetsMobs);
 		});
 	}
 	
 	@Inject(method = "canDestroy", at = @At("HEAD"), cancellable = true)
 	private static void apathy$cantDestroy(BlockState block, CallbackInfoReturnable<Boolean> cir) {
-		if(!Apathy119.INSTANCE.bossConfig.witherBreaksBlocks) {
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherBreaksBlocks)) {
 			cir.setReturnValue(false);
 		}
 	}
 	
 	@Inject(method = "performRangedAttack(IDDDZ)V", at = @At("HEAD"), cancellable = true)
-	private void apathy$onPerformRangedAttack(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
-		if((!charged && !Apathy119.INSTANCE.bossConfig.blackWitherSkulls) || (charged && !Apathy119.INSTANCE.bossConfig.blueWitherSkulls)) {
+	private void apathy$noSkulls(int headIndex, double d, double e, double f, boolean charged, CallbackInfo ci) {
+		if((!charged && !Apathy.instance.bossCfg.get(CoreBossOptions.blackWitherSkulls)) || (charged && !Apathy.instance.bossCfg.get(CoreBossOptions.blueWitherSkulls))) {
 			ci.cancel();
 		}
 	}
 	
 	//Erase any stray Withers if they are turned off in this difficulty 
 	@Inject(method = "customServerAiStep", at = @At("HEAD"), cancellable = true)
-	private void apathy$onCustomServerAiStep(CallbackInfo ci) {
+	private void apathy$maybeDelete(CallbackInfo ci) {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
-		if(!Apathy119.INSTANCE.bossConfig.witherDifficulties.contains(level.getDifficulty())) {
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {
 			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(me));
 			me.discard();
 			ci.cancel();

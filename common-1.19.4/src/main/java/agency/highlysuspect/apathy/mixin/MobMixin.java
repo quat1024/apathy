@@ -1,10 +1,17 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.MobExt;
-import agency.highlysuspect.apathy.TriState;
-import agency.highlysuspect.apathy.rule.CodecUtil;
+import agency.highlysuspect.apathy.VerConv;
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreGenOptions;
+import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
+import agency.highlysuspect.apathy.core.wrapper.Attacker;
+import agency.highlysuspect.apathy.core.wrapper.AttackerType;
+import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -20,18 +27,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("ConstantConditions")
 @Mixin(Mob.class)
-public class MobMixin implements MobExt {
+public class MobMixin implements Attacker {
+	/// basic compatibility stuff ///
+	@Override
+	public Object apathy$underlyingObject() {
+		return this;
+	}
+	
+	@Override
+	public ApathyDifficulty apathy$getDifficulty() {
+		return VerConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
+	}
+	
+	@Override
+	public AttackerType apathy$getType() {
+		return (AttackerType) ((Mob) (Object) this).getType();
+	}
+	
+	/// attacking and defending logic ///
+	
 	@Shadow private LivingEntity target;
 	
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
-	public void apathy$onSetTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
+	public void apathy$whenSettingTarget(@Nullable LivingEntity newTarget, CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
 		//Check whether it's okay to target this player.
-		if(newTarget instanceof ServerPlayer && !Apathy119.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
+		if(newTarget instanceof ServerPlayer && !Apathy119.instance119.allowedToTargetPlayer(thi$, (ServerPlayer) newTarget)) {
 			//Keep whatever old target was around.
 			
 			//Btw this is the reason i don't use the forge attack target event and use this mixin even on Forge too.
@@ -44,7 +68,7 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Inject(method = "tick", at = @At("HEAD"))
-	public void apathy$onTick(CallbackInfo ci) {
+	public void apathy$whenTicking(CallbackInfo ci) {
 		Mob thi$ = (Mob) (Object) this;
 		if(thi$.level.isClientSide) return;
 		
@@ -52,22 +76,17 @@ public class MobMixin implements MobExt {
 		if(spawnPosition == null) spawnPosition = thi$.position();
 		
 		//If currently targeting a player, check to make sure it's still okay to do so.
-		if((thi$.level.getGameTime() + thi$.getId()) % Apathy119.INSTANCE.generalConfig.recheckInterval == 0
+		if((thi$.level.getGameTime() + thi$.getId()) % Apathy.instance.generalCfg.get(CoreGenOptions.recheckInterval) == 0
 			&& target instanceof ServerPlayer
-			&& !Apathy119.INSTANCE.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
+			&& !Apathy119.instance119.allowedToTargetPlayer(thi$, (ServerPlayer) target)) {
 			target = null;
 		}
 	}
 	
-	///////////////
+	/// provocation time ///
 	
 	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
-	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
-	@Unique private static final String LOCATION_PREDICATE_CACHE_KEY = "apathy-locationPredicateCache";
-	
-	@Unique long provocationTime = MobExt.NOT_PROVOKED;
-	@Unique @Nullable Vec3 spawnPosition;
-	@Unique @Nullable Map<String, TriState> locationPredicateCache;
+	@Unique long provocationTime = Attacker.NOT_PROVOKED;
 	
 	@Override
 	public void apathy$setProvocationTime(long time) {
@@ -80,8 +99,21 @@ public class MobMixin implements MobExt {
 	}
 	
 	@Override
-	public @Nullable Vec3 apathy$getSpawnPosition() {
-		return spawnPosition;
+	public long apathy$now() {
+		return ((Mob) (Object) this).level.getGameTime();
+	}
+	
+	/// spawn position stuff ///
+	
+	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
+	@Unique private static final String LOCATION_PREDICATE_CACHE_KEY = "apathy-locationPredicateCache";
+	
+	@Unique @Nullable Vec3 spawnPosition;
+	@Unique @Nullable Map<String, TriState> locationPredicateCache;
+	
+	@Override
+	public @Nullable VecThree apathy$getSpawnPosition() {
+		return VerConv.toVecThree(spawnPosition);
 	}
 	
 	@Override
@@ -90,14 +122,20 @@ public class MobMixin implements MobExt {
 		return locationPredicateCache;
 	}
 	
+	/// persistence of the above ///
+	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void apathy$whenSaving(CompoundTag tag, CallbackInfo ci) {
-		if(apathy$wasProvoked()) {
+		if(apathy$getProvocationTime() != Attacker.NOT_PROVOKED) {
 			tag.putLong(PROVOCATION_KEY, provocationTime);
 		}
 		
 		if(spawnPosition != null) {
-			tag.put(SPAWN_POSITION_KEY, CodecUtil.writeVec3(spawnPosition));
+			ListTag asdf = new ListTag();
+			asdf.add(DoubleTag.valueOf(spawnPosition.x));
+			asdf.add(DoubleTag.valueOf(spawnPosition.y));
+			asdf.add(DoubleTag.valueOf(spawnPosition.z));
+			tag.put(SPAWN_POSITION_KEY, asdf);
 		}
 		
 		if(locationPredicateCache != null) {
@@ -111,15 +149,12 @@ public class MobMixin implements MobExt {
 	public void apathy$whenLoading(CompoundTag tag, CallbackInfo ci) {
 		if(tag.contains(PROVOCATION_KEY)) {
 			provocationTime = tag.getLong(PROVOCATION_KEY);
-		} else {
-			provocationTime = NOT_PROVOKED;
-		}
+		} else provocationTime = NOT_PROVOKED;
 		
 		if(tag.contains(SPAWN_POSITION_KEY)) {
-			spawnPosition = CodecUtil.readVec3(tag.getList(SPAWN_POSITION_KEY, CodecUtil.VEC3_LIST_ID));
-		} else {
-			spawnPosition = null;
-		}
+			ListTag asdf = tag.getList(SPAWN_POSITION_KEY, DoubleTag.valueOf(69420).getId());
+			spawnPosition = new Vec3(asdf.getDouble(0), asdf.getDouble(1), asdf.getDouble(2));
+		} else spawnPosition = null;
 		
 		if(tag.contains(LOCATION_PREDICATE_CACHE_KEY)) {
 			locationPredicateCache = new HashMap<>();
@@ -128,8 +163,6 @@ public class MobMixin implements MobExt {
 			for(String k : real.getAllKeys()) {
 				locationPredicateCache.put(k, TriState.fromString(real.getString(k)));
 			}
-		} else {
-			locationPredicateCache = null;
-		}
+		} else locationPredicateCache = null;
 	}
 }

@@ -1,16 +1,16 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ 1.18.2 again?
+Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ ~~1.18.2 again?~~ 1.18.2 and 1.19.4.
 
 For documentation, view the `docs/2.x/` folder.
 
 ## wow there's not any code-sharing across versions
 
-Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked, so I've now hastily pasted the source of everything as subprojects into the same file tree. But the sources are otherwise largely unmodified from that development period.
+Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked so it's now subprojects. But if you see anything inconsistent, like the 1.16 branch being a wholly separate disconnected island, it might be a relic of that time.
 
 Roadmap:
 
-* publish a `2.5` for 1.18, 1.19, and maybe 1.16 that finally uses a shared codebase (work is mostly happening in the `core` and `common-1.18.2` folders)
+* publish a `2.5` for 1.18, 1.19, and maybe 1.16 that finally uses a shared codebase in `core`.
 * publish a `3.0` that addresses some long-standing issues in the mod (i am so, so sorry about this "json config format")
 
 ### where's 1.19.2/.3?

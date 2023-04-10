@@ -13,7 +13,6 @@ import java.util.List;
 
 @Mixin(WitherBoss.class)
 public class WitherBossCrustyMixin {
-	@SuppressWarnings("InvalidInjectorMethodSignature") //mcdev is having a moment
 	@ModifyVariable(
 		method = "customServerAiStep",
 		at = @At(
@@ -21,7 +20,7 @@ public class WitherBossCrustyMixin {
 			target = "Lnet/minecraft/world/level/Level;getNearbyEntities(Ljava/lang/Class;Lnet/minecraft/world/entity/ai/targeting/TargetingConditions;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/AABB;)Ljava/util/List;"
 		)
 	)
-	private List<LivingEntity> filterGetNearbyEntitiesCrusty(List<LivingEntity> nearbyEntities) {
+	private List<LivingEntity> apathy$filterGetNearbyEntitiesCrusty(List<LivingEntity> nearbyEntities) {
 		@SuppressWarnings("ConstantConditions")
 		WitherBoss wither = (WitherBoss) (Object) this;
 		
@@ -31,7 +30,7 @@ public class WitherBossCrustyMixin {
 		//I also did this in fabric on 1.17- which also had a crusty version of mixin.
 		
 		List<LivingEntity> defensiveCopy = new ArrayList<>(nearbyEntities);
-		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy119.INSTANCE.allowedToTargetPlayer(wither, player));
+		defensiveCopy.removeIf(nearby -> nearby instanceof ServerPlayer player && !Apathy119.instance119.allowedToTargetPlayer(wither, player));
 		return defensiveCopy;
 	}
 }

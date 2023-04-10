@@ -19,15 +19,14 @@ public interface EntityGetterMixin {
 	@ModifyVariable(
 		method = "getNearbyEntities", ordinal = 1 /* idk why i need this, there's only one return point */, at = @At("RETURN")
 	)
-	default <T extends LivingEntity> List<T> filterTargets(List<T> targets, Class<T> entityClass, TargetingConditions targetPredicate, LivingEntity targetingEntity, AABB box) {
+	default <T extends LivingEntity> List<T> apathy$filterTargets(List<T> targets, Class<T> entityClass, TargetingConditions targetPredicate, LivingEntity targetingEntity, AABB box) {
 		//Miscellaneous method used for some "find nearby things to target" tasks in the game.
 		//Normally this is a bit redundant, the main purpose of Apathy is to hook MobEntity#setTarget, which catches most cases.
 		//This mixin catches some cases where an entity is attacked without formally being targeted, like the Wither firing black skulls.
 		if(targetingEntity instanceof Mob mob) {
-			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy119.INSTANCE.allowedToTargetPlayer(mob, (ServerPlayer) target));
+			targets.removeIf(target -> target instanceof ServerPlayer && !Apathy119.instance119.allowedToTargetPlayer(mob, (ServerPlayer) target));
 		}
 		
 		return targets;
 	}
 }
-

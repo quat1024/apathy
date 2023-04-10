@@ -1,7 +1,7 @@
 package agency.highlysuspect.apathy.mixin.dragon.phase;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.DragonDuck;
+import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonHoldingPatternPhase;
@@ -18,7 +18,7 @@ public class DragonHoldingPatternPhaseMixin {
 		EnderDragon dergon = ((AbstractDragonPhaseInstanceAccessor) this).apathy$getDragon();
 		DragonDuck dragn = (DragonDuck) dergon;
 		
-		if(player instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy119.INSTANCE.allowedToTargetPlayer(dergon, serverPlayer))) {
+		if(player instanceof ServerPlayer serverPlayer && (!dragn.apathy$canTargetPlayers() || !Apathy119.instance119.allowedToTargetPlayer(dergon, serverPlayer))) {
 			ci.cancel();
 		}
 	}

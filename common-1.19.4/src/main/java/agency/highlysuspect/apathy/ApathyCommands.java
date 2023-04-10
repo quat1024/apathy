@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.core.Apathy;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,7 +29,7 @@ public class ApathyCommands {
 		//I've been burned before
 		//Be careful
 		
-		dispatcher.register(literal(Apathy119.MODID)
+		dispatcher.register(literal(Apathy.MODID)
 			.then(literal("set")
 				.then(literal("join")
 					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
@@ -209,7 +210,7 @@ public class ApathyCommands {
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		boolean ok = Apathy119.INSTANCE.loadConfig();
+		boolean ok = Apathy119.instance119.refreshConfig();
 		
 		if(ok) msg(cmd, "Reloaded Apathy config files.");
 		else err(cmd, "Error reloading Apathy config files. Check the server log.");

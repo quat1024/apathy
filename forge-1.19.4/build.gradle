@@ -39,8 +39,8 @@ mixin {
 	add sourceSets.main, "${project.modId}.refmap.json"
 	
 	//Tell mixingradle which mixin configs exist
-	config "${project.modId}.common.mixins.json"
-	config "${project.modId}.forge.mixins.json"
+	config "${project.modId}.common.mixin.json"
+	config "${project.modId}.forge.mixin.json"
 }
 
 dependencies {

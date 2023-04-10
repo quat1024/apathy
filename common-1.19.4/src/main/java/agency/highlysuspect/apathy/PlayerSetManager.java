@@ -1,5 +1,7 @@
 package agency.highlysuspect.apathy;
 
+import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreMobOptions;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -73,22 +75,23 @@ public class PlayerSetManager extends SavedData {
 	}
 	
 	public void syncWithConfig() {
-		Optional<String> configSetName = Apathy119.INSTANCE.mobConfig.playerSetName;
+		Optional<String> configSetName = Apathy.instance.mobCfg.get(CoreMobOptions.playerSetName);
 		if(configSetName.isPresent()) {
 			String name = configSetName.get();
+			boolean selfselectiness = Apathy.instance.mobCfg.get(CoreMobOptions.playerSetSelfSelect);
 			
 			Entry set = playerSets.get(name);
 			
 			//Create the playerset, if it does not exist
 			if(set == null) {
-				set = Entry.newEmpty(Apathy119.INSTANCE.mobConfig.playerSetSelfSelect);
+				set = Entry.newEmpty(selfselectiness);
 				playerSets.put(name, set);
 				setDirty();
 			}
 			
 			//Set its selfselectness, if it's different
-			if(set.selfSelect != Apathy119.INSTANCE.mobConfig.playerSetSelfSelect) {
-				playerSets.put(name, set.withSelfSelect(Apathy119.INSTANCE.mobConfig.playerSetSelfSelect));
+			if(set.selfSelect != selfselectiness) {
+				playerSets.put(name, set.withSelfSelect(selfselectiness));
 				setDirty();
 			}
 		}
@@ -96,7 +99,7 @@ public class PlayerSetManager extends SavedData {
 	
 	///
 	
-	public PlayerSetManager.JoinResult join(ServerPlayer player, String name, boolean op) {
+	public JoinResult join(ServerPlayer player, String name, boolean op) {
 		Entry set = playerSets.get(name);
 		
 		if(set == null) return JoinResult.NO_SUCH_SET;
@@ -118,7 +121,7 @@ public class PlayerSetManager extends SavedData {
 	
 	///
 	
-	public PlayerSetManager.PartResult part(ServerPlayer player, String name, boolean op) {
+	public PartResult part(ServerPlayer player, String name, boolean op) {
 		Entry set = playerSets.get(name);
 		
 		if(set == null) return PartResult.NO_SUCH_SET;
@@ -140,7 +143,7 @@ public class PlayerSetManager extends SavedData {
 	
 	///
 	
-	public PlayerSetManager.DeleteResult delete(String name) {
+	public DeleteResult delete(String name) {
 		Entry removed = playerSets.remove(name);
 		if(removed == null) return DeleteResult.NO_SUCH_SET;
 		
@@ -155,7 +158,7 @@ public class PlayerSetManager extends SavedData {
 	
 	///
 	
-	public PlayerSetManager.EditResult edit(String name, boolean newSelfSelect) {
+	public EditResult edit(String name, boolean newSelfSelect) {
 		Entry set = playerSets.get(name);
 		
 		if(set == null) return EditResult.NO_SUCH_SET;
@@ -177,7 +180,7 @@ public class PlayerSetManager extends SavedData {
 	
 	///
 	
-	public PlayerSetManager.CreateResult create(String name, boolean newSelfSelect) {
+	public CreateResult create(String name, boolean newSelfSelect) {
 		if(playerSets.get(name) != null) return CreateResult.ALREADY_EXISTS;
 		
 		playerSets.put(name, Entry.newEmpty(newSelfSelect));
@@ -219,10 +222,7 @@ public class PlayerSetManager extends SavedData {
 	
 	public Component printAllPlayerSets() {
 		//prints all sets such that self select ones are marked with a "(self-select)" note
-		return ComponentUtils.formatList(playerSets.entrySet(), entry -> {
-			String key = entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "");
-			return Component.literal(key);
-		});
+		return ComponentUtils.formatList(playerSets.entrySet(), entry -> Portage.literal(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
 	}
 	
 	public static record Entry(Set<UUID> members, boolean selfSelect) {

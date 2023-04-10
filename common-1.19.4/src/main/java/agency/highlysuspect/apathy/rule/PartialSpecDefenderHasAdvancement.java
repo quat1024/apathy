@@ -20,7 +20,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancementIds) implements Spec<Partial, PartialSpecDefenderHasAdvancement> {
+@SuppressWarnings("ClassCanBeRecord")
+public class PartialSpecDefenderHasAdvancement implements Spec<Partial, PartialSpecDefenderHasAdvancement> {
+	public PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancementIds) {
+		this.advancementIds = advancementIds;
+	}
+	
+	private final Set<ResourceLocation> advancementIds;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
 		if(advancementIds.isEmpty()) return PartialSpecAlways.FALSE;

@@ -10,7 +10,6 @@ import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.LocationPredicate;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -18,7 +17,22 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Locale;
 import java.util.Map;
 
-public record PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) implements Spec<Partial, PartialSpecLocation> {
+@SuppressWarnings("ClassCanBeRecord")
+public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
+	public PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) {
+		this.pred = pred;
+		this.who = who;
+		this.uniqueId = uniqueId;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.offsetZ = offsetZ;
+	}
+	
+	private final LocationPredicate pred;
+	private final LocationGetter who;
+	private final String uniqueId;
+	private final int offsetX, offsetY, offsetZ;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
 		if(pred == LocationPredicate.ANY) return PartialSpecAlways.TRUE;

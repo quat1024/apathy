@@ -17,7 +17,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public record PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) implements Spec<Partial, PartialSpecDefenderInPlayerSet> {
+@SuppressWarnings("ClassCanBeRecord")
+public class PartialSpecDefenderInPlayerSet implements Spec<Partial, PartialSpecDefenderInPlayerSet> {
+	public PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) {
+		this.playerSetNames = playerSetNames;
+	}
+	
+	private final Set<String> playerSetNames;
+	
 	@Override
 	public Spec<Partial, ?> optimize() {
 		if(playerSetNames.isEmpty()) return PartialSpecAlways.FALSE;

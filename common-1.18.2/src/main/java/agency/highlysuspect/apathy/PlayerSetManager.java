@@ -20,6 +20,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -225,18 +226,23 @@ public class PlayerSetManager extends SavedData {
 		return ComponentUtils.formatList(playerSets.entrySet(), entry -> Portage.literal(entry.getKey() + (entry.getValue().selfSelect() ? " (self-select)" : "")));
 	}
 	
-	public static record Entry(Set<UUID> members, boolean selfSelect) {
+	@SuppressWarnings("ClassCanBeRecord")
+	public static final class Entry {
+		public Entry(Set<UUID> members, boolean selfSelect) {
+			this.members = members;
+			this.selfSelect = selfSelect;
+		}
+		
+		private final Set<UUID> members;
+		private final boolean selfSelect;
+		
 		public static Entry newEmpty(boolean selfSelect) {
 			return new Entry(new HashSet<>(), selfSelect);
 		}
 		
-		///
-		
 		public boolean contains(ServerPlayer player) {
 			return members.contains(player.getUUID());
 		}
-		
-		///
 		
 		public Entry withAddition(ServerPlayer newPlayer) {
 			Set<UUID> members2 = new HashSet<>(members);
@@ -253,8 +259,6 @@ public class PlayerSetManager extends SavedData {
 		public Entry withSelfSelect(boolean newSelfSelect) {
 			return new Entry(members, newSelfSelect);
 		}
-		
-		///
 		
 		public static Entry fromTag(CompoundTag tag) {
 			HashSet<UUID> members = new HashSet<>();
@@ -276,6 +280,27 @@ public class PlayerSetManager extends SavedData {
 			tag.put("Members", memberList);
 			tag.putBoolean("SelfSelect", selfSelect);
 			return tag;
+		}
+		
+		public Set<UUID> members() {
+			return members;
+		}
+		
+		public boolean selfSelect() {
+			return selfSelect;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if(obj == this) return true;
+			else if(obj == null || obj.getClass() != this.getClass()) return false;
+			else return Objects.equals(this.members, ((Entry) obj).members) &&
+					this.selfSelect == ((Entry) obj).selfSelect;
+		}
+		
+		@Override
+		public int hashCode() {
+			return members.hashCode() ^ (selfSelect ? Integer.MAX_VALUE : 0);
 		}
 	}
 }

@@ -12,7 +12,20 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
-public record PartialSpecScore(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) implements Spec<Partial, PartialSpecScore> {
+@SuppressWarnings("ClassCanBeRecord")
+public class PartialSpecScore implements Spec<Partial, PartialSpecScore> {
+	public PartialSpecScore(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) {
+		this.scoreboardObjective = scoreboardObjective;
+		this.who = who;
+		this.thresholdMode = thresholdMode;
+		this.threshold = threshold;
+	}
+	
+	private final String scoreboardObjective;
+	private final Who who;
+	private final ThresholdMode thresholdMode;
+	private final int threshold;
+	
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {

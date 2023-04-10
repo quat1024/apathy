@@ -47,14 +47,14 @@ public class CoreGenOptions {
 	).atLeast(0).build();
 	
 	public static final ConfigProperty<Boolean> debugBuiltinRule = ConfigProperty.boolOpt("debugBuiltinRule", false,
-		"If 'true', Apathy will dump the rule specified in the config file to the file 'comfig/apathy/dumps/builtin-rule.json'.",
-		"It will also dump the automatically optimized rule out to 'config/apathy/dumps/builtin-rule-opt.json'.",
+		"If 'true', Apathy will dump the rule specified in the config file to the file 'apathy-dumps/builtin-rule.json'.",
+		"It will also dump the automatically optimized rule out to 'apathy-dumps/builtin-rule-opt.json'.",
 		"Maybe this is handy if you'd like to see what the .json format looks like for a particular config file."
 	).build();
 	
 	public static final ConfigProperty<Boolean> debugJsonRule = ConfigProperty.boolOpt("debugJsonRule", false,
-		"If 'true', Apathy will dump the rule specified in mobs.json to the file 'config/apathy/dumps/json-rule.json'.",
-		"It will also dump the automatically optimized rule out to 'config/apathy/dumps/json-rule-opt.json'."
+		"If 'true', Apathy will dump the rule specified in mobs.json to the file 'apathy-dumps/json-rule.json'.",
+		"It will also dump the automatically optimized rule out to 'apathy-dumps/json-rule-opt.json'."
 	).build();
 	
 	public static void visit(ConfigSchema schema) {

@@ -37,7 +37,12 @@ public class NotRegistry<T> {
 	
 	//weird time
 	
-	public void the() {
+	public void unregister(String name) {
+		if(name.startsWith(OPTIONAL_PREFIX)) name = name.substring(OPTIONAL_PREFIX_LENGTH);
 		
+		T thing = get(name);
+		if(thing == null) return;
+		byThing.remove(thing);
+		byName.remove(name);
 	}
 }

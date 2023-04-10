@@ -1,12 +1,18 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ ~~1.18.2 again?~~ 1.18.2 and 1.19.4.
+Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ ~~1.18.2 again?~~ ~~1.18.2 and 1.19.4~~ ~~1.18.2 and 1.19.2 and 1.19.4~~ 1.16.5 and 1.18.2 and 1.19.2 and 1.19.4. Are you happy yet.
 
 For documentation, view the `docs/2.x/` folder.
 
-## wow there's not any code-sharing across versions
+## todo
 
-Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked so it's now subprojects. But if you see anything inconsistent, like the 1.16 branch being a wholly separate disconnected island, it might be a relic of that time.
+* 1.19.2 forge is broken (at least in dev) and this time i cant figure out why. it kinda deserves it for being 1.19.2
+* 1.16.5 fabric is almost certainly broken (hastily ported common-1.16 to java8 without really checking)
+* 1.16 is in the tag dark ages, i need to fix it & fix the AttackerTag mixin
+
+## wow the code is a mess
+
+Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked so it's now subprojects. But if you see anything inconsistent it might be a relic of that time.
 
 Roadmap:
 

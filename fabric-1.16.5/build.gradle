@@ -14,6 +14,11 @@ buildscript {
 	}
 }
 
+evaluationDependsOn(":core") //Gradle Do Not Be Weird Challenge (Impossible)
+evaluationDependsOn(":common-1.16.5")
+
+var WHAT = project(":common-1.16.5")
+
 apply plugin: "java"
 apply plugin: "fabric-loom"
 
@@ -27,15 +32,12 @@ tasks.withType(JavaCompile) {
 }
 java.withSourcesJar()
 
-//TODO (amalgamation): Remove this version-specific override
-version = "1.1.2"
-
 /// deps ///
 
 dependencies {
 	//basics
 	minecraft "com.mojang:minecraft:1.16.5"
-	mappings "net.fabricmc:yarn:1.16.5+build.9:v2" //TODO (amalgamation) fuck Yarn
+	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.11.3"
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
@@ -43,12 +45,14 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:0.34.2+1.16"
 	
 	//xplat
-	//implementation project(":common-1.16.5")
+	implementation WHAT
+	implementation project(":core")
 }
 
 //fold in xplat resources and sources
 processResources {
-	//from project(":common-1.16.5").sourceSets.main.resources //TODO (amalgamation)
+	from WHAT.sourceSets.main.resources
+	from project(":core").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/fabric.mod.json") {
@@ -57,7 +61,8 @@ processResources {
 }
 
 tasks.withType(JavaCompile) {
-	//source(project(":common-1.16.5").sourceSets.main.allSource) //TODO (amalgamation)
+	source(WHAT.sourceSets.main.allSource)
+	source(project(":core").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects

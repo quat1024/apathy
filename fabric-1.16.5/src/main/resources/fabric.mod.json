@@ -1,37 +1,39 @@
 {
-  "schemaVersion": 1,
-  "id": "apathy",
-  "version": "${version}",
-
-  "name": "Apathy",
-  "description": "Mobs don't attack players.",
-  "authors": [
-    "quaternary",
+	"schemaVersion": 1,
+	"id": "apathy",
+	"version": "${version}",
+	
+	"name": "Apathy",
+	"description": "Mobs don't attack players, or maybe they do! Configurable.",
+	"authors": [
+		"quaternary",
 		"whizzball1"
-  ],
-  "contact": {
-    "homepage": "https://highlysuspect.agency/"
-  },
-
-  "license": "LGPL-3.0-or-later",
-  "icon": "assets/apathy/icon-128.png",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "agency.highlysuspect.apathy.Init"
-    ]
-  },
-  "mixins": [
-    "apathy.mixins.json"
-  ],
-
-  "depends": {
-    "fabricloader": ">=0.7.4",
-    "fabric": "*",
-    "minecraft": "1.16.x"
-  },
-  "suggests": {
-    "another-mod": "*"
-  }
+	],
+	"contributors": [
+		"jaredlll08",
+		"Darkhax"
+	],
+	"contact": {
+		"homepage": "https://highlysuspect.agency/"
+	},
+	
+	"license": "LGPL-3.0-or-later",
+	"icon": "apathy-icon-128.png",
+	
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"agency.highlysuspect.apathy.platform.fabric.FabricInit"
+		]
+	},
+	"mixins": [
+		"apathy.common.mixin.json",
+		"apathy.fabric.mixin.json"
+	],
+	
+	"depends": {
+		"fabricloader": "*",
+		"fabric": "*",
+		"minecraft": "=1.16.5"
+	}
 }

@@ -28,6 +28,7 @@ import agency.highlysuspect.apathy.rule.PartialSpecScore;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -71,44 +72,48 @@ public abstract class Apathy116 extends Apathy {
 						break;
 					case "difficulty":
 						ruleSpecList.add(new RuleSpecPredicated(
-						mobCfg.get(CoreMobOptions.difficultySetIncluded),
-						mobCfg.get(CoreMobOptions.difficultySetExcluded),
-						new PartialSpecDifficultyIs(mobCfg.get(CoreMobOptions.difficultySet))
-					));
+							mobCfg.get(CoreMobOptions.difficultySetIncluded),
+							mobCfg.get(CoreMobOptions.difficultySetExcluded),
+							new PartialSpecDifficultyIs(mobCfg.get(CoreMobOptions.difficultySet))
+						));
 						break;
-//					case "boss"       -> ruleSpecList.add(new RuleSpecPredicated(
-//						mobCfg.get(CoreMobOptions.boss),
-//						TriState.DEFAULT,
-//						PartialSpecAttackerIsBoss.INSTANCE
-//					));
-					case "boss": log.warn("boss rule disabled in 1.16 for now!!"); //TODO restore (fix tags)
-						break;
-					case "mobset": ruleSpecList.add(new RuleSpecPredicated(
-						mobCfg.get(CoreMobOptions.mobSetIncluded),
-						mobCfg.get(CoreMobOptions.mobSetExcluded),
-						new PartialSpecAttackerIs(mobCfg.get(CoreMobOptions.mobSet))
-					));
-					break;
-//					case "tagset"     -> ruleSpecList.add(new RuleSpecPredicated(
-//						mobCfg.get(CoreMobOptions.tagSetIncluded),
-//						mobCfg.get(CoreMobOptions.tagSetExcluded),
-//						new PartialSpecAttackerTaggedWith(mobCfg.get(CoreMobOptions.tagSet))
-//					));
-					case "tagset": log.warn("tag set rule disabled in 1.16 for now!!"); //TODO restore (fix tags)
-						break;
-					case "playerset": mobCfg.get(CoreMobOptions.playerSetName).ifPresent(s ->
+					case "boss":
 						ruleSpecList.add(new RuleSpecPredicated(
-							mobCfg.get(CoreMobOptions.playerSetIncluded),
-							mobCfg.get(CoreMobOptions.playerSetExcluded),
-							new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
-						)));
-					break;
-					case "revenge": ruleSpecList.add(new RuleSpecPredicated(
-						TriState.TRUE, TriState.DEFAULT,
-						new PartialSpecRevengeTimer(mobCfg.get(CoreMobOptions.revengeTimer))
-					));
-					break;
-					default: Apathy.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
+							mobCfg.get(CoreMobOptions.boss),
+							TriState.DEFAULT,
+							PartialSpecAttackerIsBoss.INSTANCE
+						));
+						break;
+					case "mobset":
+						ruleSpecList.add(new RuleSpecPredicated(
+							mobCfg.get(CoreMobOptions.mobSetIncluded),
+							mobCfg.get(CoreMobOptions.mobSetExcluded),
+							new PartialSpecAttackerIs(mobCfg.get(CoreMobOptions.mobSet))
+						));
+						break;
+					case "tagset":
+						ruleSpecList.add(new RuleSpecPredicated(
+							mobCfg.get(CoreMobOptions.tagSetIncluded),
+							mobCfg.get(CoreMobOptions.tagSetExcluded),
+							new PartialSpecAttackerTaggedWith(mobCfg.get(CoreMobOptions.tagSet))
+						));
+						break;
+					case "playerset":
+						mobCfg.get(CoreMobOptions.playerSetName).ifPresent(s ->
+							ruleSpecList.add(new RuleSpecPredicated(
+								mobCfg.get(CoreMobOptions.playerSetIncluded),
+								mobCfg.get(CoreMobOptions.playerSetExcluded),
+								new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
+							)));
+						break;
+					case "revenge":
+						ruleSpecList.add(new RuleSpecPredicated(
+							TriState.TRUE, TriState.DEFAULT,
+							new PartialSpecRevengeTimer(mobCfg.get(CoreMobOptions.revengeTimer))
+						));
+						break;
+					default:
+						Apathy.instance.log.warn("Unknown rule " + ruleName + " listed in the ruleOrder config option.");
 				}
 			}
 			
@@ -169,10 +174,6 @@ public abstract class Apathy116 extends Apathy {
 		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
-		
-		//TODO fix tags
-		partialSerializers.unregister("attacker_tagged_with");
-		partialSerializers.unregister("attacker_is_boss");
 	}
 	
 	@Override
@@ -192,10 +193,48 @@ public abstract class Apathy116 extends Apathy {
 	}
 	
 	public @Nullable AttackerTag parseAttackerTag(String s) {
-		//TODO fix tags
-		//e.g. on 1.16 you'd have to register tags before using them, fabric had "TagRegistry" class
-		//it is generally a pain in the rear to reimplement that stuff
-		log.error("Apathy 1.16 hasn't implemented tag parsing yet because quat is lazy; ignoring tag {}", s);
-		return null;
+		s = s.trim();
+		
+		if(s.isEmpty()) return null; //can sometimes happen due to shitty parsing code in my config library
+		
+		ResourceLocation rl = ResourceLocation.tryParse(s);
+		if(rl == null) {
+			log.error("Can't parse '{}' as a resourcelocation", s);
+			return null;
+		}
+		
+		Tag.Named<EntityType<?>> tag = constructTagUsingWeirdAncientMethods(rl);
+		if(tag == null) {
+			log.error("Couldn't construct tag with id '{}'", s);
+			return null;
+		}
+		
+		return new TagWrapper(tag);
 	}
+	
+	//in lieu of a mixin this time (??just because??)
+	public static class TagWrapper implements AttackerTag {
+		public TagWrapper(Tag.Named<EntityType<?>> tag) {
+			this.tag = tag;
+		}
+		
+		private final Tag.Named<EntityType<?>> tag;
+		
+		@Override
+		public Object apathy$underlyingObject() {
+			return tag;
+		}
+		
+		@Override
+		public boolean apathy$is(Attacker attacker) {
+			return tag.contains(((Entity) attacker.apathy$underlyingObject()).getType());
+		}
+		
+		@Override
+		public String apathy$id() {
+			return tag.getName().toString();
+		}
+	}
+	
+	public abstract @Nullable Tag.Named<EntityType<?>> constructTagUsingWeirdAncientMethods(ResourceLocation rl);
 }

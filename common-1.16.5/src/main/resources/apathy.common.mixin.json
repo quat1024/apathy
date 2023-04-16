@@ -16,6 +16,7 @@
 		"impl.EntityTypeMixin_ImplAttackerType",
 		"impl.ServerPlayerMixin_ImplDefender",
 		"wither.LivingEntityInvoker",
+		"wither.WitherBossCrustyMixin",
 		"wither.WitherBossMixin",
 		"wither.WitherSkullBlockMixin",
 		"LivingEntityMixin",

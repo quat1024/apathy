@@ -10,10 +10,14 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.entity.EntityType;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -75,5 +79,12 @@ public class FabricInit extends Apathy116 implements ModInitializer {
 	@Override
 	public Path dumpsDirPath() {
 		return FabricLoader.getInstance().getGameDir().resolve("apathy-dumps");
+	}
+	
+	@Override
+	public @Nullable Tag.Named<EntityType<?>> constructTagUsingWeirdAncientMethods(ResourceLocation rl) {
+		//TagRegistry.entityType delegates through to TagRegistry.create(), which always returns a tag.named.
+		//Not sure why the return type on the more specific methods is erased a bit. Unchecked downcast should be fine?
+		return (Tag.Named<EntityType<?>>) TagRegistry.entityType(rl);
 	}
 }

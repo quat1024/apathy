@@ -1,14 +1,12 @@
 # Apathy
 
-Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ ~~1.18.2 again?~~ ~~1.18.2 and 1.19.4~~ ~~1.18.2 and 1.19.2 and 1.19.4~~ 1.16.5 and 1.18.2 and 1.19.2 and 1.19.4. Are you happy yet.
+Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge ~~1.16~~ ~~1.17~~ ~~1.18~~ ~~1.18.2~~ ~~1.19.4~~ ~~1.18.2 again?~~ ~~1.18.2 and 1.19.4~~ ~~1.18.2 and 1.19.2 and 1.19.4~~ 1.16.5 (not forge) and 1.18.2 and 1.19.2 and 1.19.4. Are you happy yet.
 
 For documentation, view the `docs/2.x/` folder.
 
 ## todo
 
 * 1.19.2 forge is broken (at least in dev) and this time i cant figure out why. it kinda deserves it for being 1.19.2
-* 1.16.5 fabric is almost certainly broken (hastily ported common-1.16 to java8 without really checking)
-* 1.16 is in the tag dark ages, i need to fix it & fix the AttackerTag mixin
 
 ## wow the code is a mess
 
@@ -23,17 +21,7 @@ Roadmap:
 
 # **Please Stop Playing 1.19.2**
 
-# **Please Stop Playing 1.19.2**
-
-**If You're Going To Insist On Playing Modded On The Latest Version Of Minecraft, At Least Have Conviction**
-
-**I Used To Remember When Writing Mods For This Game Was Fun**
-
-**I Cannot Support Every Random Point Release And Snapshot Of The Game Indefinitely**
-
-# **Please Stop Playing 1.19.2**
-
-# **Please Stop Playing 1.19.2**
+**If You're Going To Insist On Playing Modded On The Latest Version Of Minecraft, At Least Have Conviction. I Cannot Support Every Random Point Release And Snapshot Of The Game Indefinitely**
 
 ### where's 1.17?
 
@@ -41,7 +29,10 @@ I've decided to drop 1.17 due to extremely low adoption from the playerbase. I t
 
 ### where's 1.16 forge?
 
-I only ported the mod to Forge in 1.18. The Gradle subproject structure is an anachronism and there was never a 1.16 Forge version. I am interested in producing a port to this version (provided ForgeGradle cooperates).
+As far as I can tell it's impossible to do multiloader 1.16 mods with a "shared" source-set (and apathy has a lot of shared source) because Forge 1.16's "official" mappings channel is a lie and not actually official mappings.
+
+* somehow convince mcpconfig to use real not-lies official names (will $100% break forge)
+* paste the common sourceset into the forge project and rename all the classes (will have to wait until i have some spare patience for that task >.>)
 
 ## license yadda yadda
 

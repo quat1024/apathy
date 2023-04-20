@@ -86,7 +86,6 @@ public class ForgeInit extends Apathy119 {
 		
 		//when reloading forge configs:
 		FMLJavaModLoadingContext.get().getModEventBus().addListener((ModConfigEvent.Reloading e) -> {
-			log.info("reloading event! {}", e.getConfig().getFileName());
 			if(e.getConfig().getSpec() == generalForge) refreshGeneralConfig();
 			else if(e.getConfig().getSpec() == mobsForge) refreshMobConfig();
 			else if(e.getConfig().getSpec() == bossForge) refreshBossConfig();

@@ -95,12 +95,10 @@ public abstract class Apathy {
 	
 	//TODO: rethink error handling here (keep the old config around)
 	public boolean refreshGeneralConfig() {
-		log.info("general cfg refresh!");
 		return generalCfg.refresh();
 	}
 	
 	public boolean refreshMobConfig() {
-		log.info("mob cfg refresh!");
 		boolean ok = mobCfg.refresh();
 		
 		Rule newConfiguredRule = configuredRule;
@@ -127,7 +125,6 @@ public abstract class Apathy {
 	}
 	
 	public boolean refreshBossConfig() {
-		log.info("boss cfg refresh!");
 		return bossCfg.refresh();
 	}
 	

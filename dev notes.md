@@ -13,7 +13,7 @@ all fabrics using the latest fabric-api version on modrinth as of apr 19 2023
 * 1.18.2 forge
 * mobs cfg works
 * general cfg works
-* hmm...decided to reload the world in the middle of spawn_gateway effect and it crashed (exitPos is null, set from a shadow of portalLocation)... should test on otther versions too
+* ~~hmm...decided to reload the world in the middle of spawn_gateway effect and it crashed (exitPos is null, set from a shadow of portalLocation)... should test on otther versions too~~ fixed!
 * 1.19.2 fabric
 * mobs cfg works
 * tested most of the general cfg it seems to work

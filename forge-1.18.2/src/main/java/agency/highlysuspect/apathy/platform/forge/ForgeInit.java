@@ -47,9 +47,9 @@ public class ForgeInit extends Apathy118 {
 		
 		init(); //this calls xxxConfigBakery().cook(), which populates the forge spec
 		
-		ForgeConfigSpec generalForge = generalForgeSpec.build();
-		ForgeConfigSpec mobsForge = mobsForgeSpec.build();
-		ForgeConfigSpec bossForge = bossForgeSpec.build();
+		generalForge = generalForgeSpec.build();
+		mobsForge = mobsForgeSpec.build();
+		bossForge = bossForgeSpec.build();
 		
 		//XXX: i like the idea of forge's server-only, per-world configs, but it's not commonly understood how to make them not per-world.
 		//if i used per-world configs, i think i'd just get 50 comments of the form "where's the config file?" or "oh, i can't configure
@@ -60,6 +60,7 @@ public class ForgeInit extends Apathy118 {
 	}
 	
 	private final ForgeConfigSpec.Builder generalForgeSpec, mobsForgeSpec, bossForgeSpec;
+	private final ForgeConfigSpec generalForge, mobsForge, bossForge;
 	
 	@SuppressWarnings("Convert2Lambda")
 	@Override
@@ -76,13 +77,17 @@ public class ForgeInit extends Apathy118 {
 		
 		//when loading forge configs:
 		FMLJavaModLoadingContext.get().getModEventBus().addListener((ModConfigEvent.Loading e) -> {
-			//sortof a kludgy way to double-check that it's one of mine
-			if(e.getConfig().getFileName().startsWith("apathy")) refreshConfig();
+			//todo; in practice refreshMobConfig has a dependency on refreshGeneralConfig (because that's where the dump options are stored)
+			if(e.getConfig().getSpec() == generalForge) refreshGeneralConfig();
+			else if(e.getConfig().getSpec() == mobsForge) refreshMobConfig();
+			else if(e.getConfig().getSpec() == bossForge) refreshBossConfig();
 		});
 		
 		//when reloading forge configs:
 		FMLJavaModLoadingContext.get().getModEventBus().addListener((ModConfigEvent.Reloading e) -> {
-			if(e.getConfig().getFileName().startsWith("apathy")) refreshConfig();
+			if(e.getConfig().getSpec() == generalForge) refreshGeneralConfig();
+			else if(e.getConfig().getSpec() == mobsForge) refreshMobConfig();
+			else if(e.getConfig().getSpec() == bossForge) refreshBossConfig();
 		});
 	}
 	

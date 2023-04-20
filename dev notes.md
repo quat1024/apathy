@@ -1,3 +1,35 @@
+# v2.5 testing marathon
+
+all fabrics using the latest fabric-api version on modrinth as of apr 19 2023
+
+* 1.16.5 fabric
+* mobs cfg seems to work (was worried about tag rules but it seems to be okay)
+* general cfg: **angryPiggies did not work**
+* boss: dragon disabling works (not sure about ai patterns), wither disabling works, elder guardian effect works
+* 1.18.2 fabric
+* mobs cfg seems to work
+* general cfg seems to work
+* boss: same
+* 1.18.2 forge
+* mobs cfg works
+* general cfg works
+* hmm...decided to reload the world in the middle of spawn_gateway effect and it crashed (exitPos is null, set from a shadow of portalLocation)... should test on otther versions too
+* 1.19.2 fabric
+* mobs cfg works
+* tested most of the general cfg it seems to work
+* boss stuff works including warden
+* 1.19.2 forge: **crashes on startup** requiring weird version of javafml
+* 1.19.4 fabric:
+* mobs cfg works
+* general cfg works
+* boss disabling works
+* 1.19.4 forge:
+* mobs cfg works
+* general cfg works
+* boss disabling works
+
+forge seems to load its configs "too much" (based on the debug prints) but i think it's fine, most of that is not actually hitting the harddisk it's jsut setting values from an event
+
 # I'm really good at forgetting how Forge configs work
 
 it's weird but not that complicated

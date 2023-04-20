@@ -8,31 +8,36 @@ For documentation, view the `docs/2.x/` folder.
 
 * 1.19.2 forge is broken (at least in dev) and this time i cant figure out why. it kinda deserves it for being 1.19.2
 
-## wow the code is a mess
-
-Originally each version was developed in a separate branch; when making a cross-version fix I'd run a bunch of `git checkout`s and `cherry-pick`s. This sucked so it's now subprojects. But if you see anything inconsistent it might be a relic of that time.
-
 Roadmap:
 
 * publish a `2.5` for 1.18, 1.19, and maybe 1.16 that finally uses a shared codebase in `core`.
 * publish a `3.0` that addresses some long-standing issues in the mod (i am so, so sorry about this "json config format")
 
+# Code note
+
+Versions prior to 2.5 were developed separately, one codebase per version. Maintaining that was difficult, so everything is now in a giant Gradle subproject. This is also unwieldy but in a different way - if you're having trouble fitting the damn thing into RAM, comment out a few subprojects from `settings.gradle`.
+
+* `core` - Truly version-independent code, only depends on a (slightly old version of) google gson. Lowest-common-denominator code.
+* `common-xxx` - Allows accessing Minecraft (through [VanillaGradle](https://github.com/SpongePowered/VanillaGradle)) and writing the code of mixins. Contains glue between the version-independent core and the Minecraft version in question.
+* `fabric-xxx` and `forge-xxx` - Can refer to Minecraft as well as features from the specific modloader. This is generally just a tiny bit of glue code, initialization using modloader services, platform-specific mixins, blah blah.
+
+Each layer includes the code of the previous, both as a Gradle dependency and textually (the sources are compiled together). The stuff in the core is compiled many times over. It's not great.
+
+The `collect.sh` script will dig into each subproject's `build/libs/` directory, copy all jars into a `collect/` directory at the top level, and organize them a bit. This is done in CI to make the artifacts download more convenient.
+
 ### where's 1.19.2/.3?
 
-# **Please Stop Playing 1.19.2**
+**If You're Going To Insist On Playing Modded On The Latest Version Of Minecraft, At Least Have Conviction, I Cannot Support Every Random Point Release And Snapshot Of The Game Indefinitely**
 
-**If You're Going To Insist On Playing Modded On The Latest Version Of Minecraft, At Least Have Conviction. I Cannot Support Every Random Point Release And Snapshot Of The Game Indefinitely**
+1.19.2 source exists but I'm not happy about it. There's no interest in 1.19.3 or .1 currently, and especially none in .0 except by people who whine about chat reports
 
 ### where's 1.17?
 
-I've decided to drop 1.17 due to extremely low adoption from the playerbase. I think the mod got like 22 downloads and most of those were surely the 9minecaft bots.
+I've decided to drop 1.17 due to extremely low adoption from the playerbase. The mod got like 22 downloads; most of those were surely the 9minecaft bots.
 
 ### where's 1.16 forge?
 
-As far as I can tell it's impossible to do multiloader 1.16 mods with a "shared" source-set (and apathy has a lot of shared source) because Forge 1.16's "official" mappings channel is a lie and not actually official mappings.
-
-* somehow convince mcpconfig to use real not-lies official names (will $100% break forge)
-* paste the common sourceset into the forge project and rename all the classes (will have to wait until i have some spare patience for that task >.>)
+As far as I can tell it's impossible to do multiloader 1.16 mods with a "shared" source-set (and apathy has a lot of shared source) because Forge 1.16's "official" mappings channel is a lie and not actually official mappings. It uses method names from official mappings but class names from the previous MCP version.
 
 ## license yadda yadda
 

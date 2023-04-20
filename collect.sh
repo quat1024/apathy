@@ -1,15 +1,18 @@
 #!/bin/sh
+shopt -s failglob
 
-# dig out all the stuff from the various ./build/libs folders
-rm -rfv collect
-mkdir -pv collect
-cp -v ./**/build/libs/* collect
+alias rm="rm -v"
+alias mkdir="mkdir -v"
+alias cp="cp -v"
+alias mv="mv -v"
 
-# move the "common" artifacts into their own folder because they're not super useful
-mkdir -v ./collect/common
-mv -v ./collect/*common*.jar ./collect/common
-mv -v ./collect/*core*.jar ./collect/common
+rm -rf collect
+mkdir collect
+mkdir collect/common
+mkdir collect/sources
 
-# ditto for sources artifacts
-mkdir -v ./collect/sources
-mv -v ./collect/*-sources.jar ./collect/sources
+cp ./**/build/libs/*.jar collect
+
+mv ./collect/*sources*.jar collect/sources
+mv ./collect/*common*.jar collect/common
+mv ./collect/*core*.jar collect/common

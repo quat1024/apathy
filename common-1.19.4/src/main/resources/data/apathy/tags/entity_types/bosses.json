@@ -3,6 +3,14 @@
 	"values": [
 		"minecraft:wither",
 		"minecraft:ender_dragon",
-		"minecraft:warden"
+		"minecraft:warden",
+		{
+			"id": "#c:bosses",
+			"required": false
+		},
+		{
+			"id": "#forge:bosses",
+			"required": false
+		}
 	]
 }

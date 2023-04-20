@@ -4,11 +4,7 @@ Overconfigurable port/rewrite of Apathetic Mobs for ~~Fabric~~ Fabric and Forge 
 
 For documentation, view the `docs/2.x/` folder.
 
-## todo
-
-* 1.19.2 forge is broken (at least in dev) and this time i cant figure out why. it kinda deserves it for being 1.19.2
-
-Roadmap:
+## road map
 
 * publish a `2.5` for 1.18, 1.19, and maybe 1.16 that finally uses a shared codebase in `core`.
 * publish a `3.0` that addresses some long-standing issues in the mod (i am so, so sorry about this "json config format")

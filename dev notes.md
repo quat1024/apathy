@@ -18,7 +18,10 @@ all fabrics using the latest fabric-api version on modrinth as of apr 19 2023
 * mobs cfg works
 * tested most of the general cfg it seems to work
 * boss stuff works including warden
-* 1.19.2 forge: **crashes on startup** requiring weird version of javafml
+* 1.19.2 forge
+* mobs cfg works
+* general cfg works
+* boss disabling works
 * 1.19.4 fabric:
 * mobs cfg works
 * general cfg works

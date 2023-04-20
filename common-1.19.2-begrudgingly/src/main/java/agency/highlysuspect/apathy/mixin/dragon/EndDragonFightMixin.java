@@ -122,7 +122,7 @@ public abstract class EndDragonFightMixin {
 		}
 		
 		//3. Handle the ticker for the ResummonSequence.SPAWN_GATEWAY mechanic.
-		if(gatewayTimer != NOT_RUNNING) {
+		if(gatewayTimer != NOT_RUNNING && portalLocation != null) {
 			if(gatewayTimer > 0) {
 				gatewayTimer--;
 			} else {

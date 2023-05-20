@@ -26,6 +26,7 @@ import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
 import agency.highlysuspect.apathy.rule.PartialSpecLocation;
 import agency.highlysuspect.apathy.rule.PartialSpecScore;
+import agency.highlysuspect.apathy.rule.PartialSpecScoreboardTeam;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -175,6 +176,7 @@ public abstract class Apathy119 extends Apathy {
 		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
+		partialSerializers.register("team", PartialSpecScoreboardTeam.Serializer.INSTANCE);
 	}
 	
 	@Override

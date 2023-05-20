@@ -173,6 +173,12 @@ For example, this predicate:
 
 will return `true` when the defending player has >=10 points on the scoreboard objective named "fruit". If the scoreboard objective does not exist, this predicate will always return `false`.
 
+## `team` **(NEW in 2.6)**
+Arguments:
+* `team`, a string
+
+"true" if the defending player is on the named scoreboard team.
+
 ## `advancements`
 Arguments:
 * `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`

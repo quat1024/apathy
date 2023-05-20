@@ -143,8 +143,8 @@ public abstract class Apathy {
 		ruleSerializers.register("debug", RuleSpecDebug.Serializer.INSTANCE);
 		ruleSerializers.register("difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
-		ruleSerializers.register("predicated", RuleSpecPredicated.Serializer.INSTANCE);
 		ruleSerializers.register("if", RuleSpecIf.Serializer.INSTANCE);
+		ruleSerializers.register("predicated", RuleSpecPredicated.Serializer.INSTANCE);
 		
 		partialSerializers.register("all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);

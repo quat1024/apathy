@@ -10,4 +10,9 @@ public class ServerPlayerMixin_ImplDefender implements Defender {
 	public Object apathy$getUnderlyingObject() {
 		return this;
 	}
+	
+	@Override
+	public String apathy$scoreboardName() {
+		return ((ServerPlayer) (Object) this).getScoreboardName();
+	}
 }

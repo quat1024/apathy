@@ -34,6 +34,7 @@ public class RuleSpecChain implements Spec<Rule, RuleSpecChain> {
 			filteredRules.add(spec);
 			if(spec == RuleSpecAlways.ALWAYS_ALLOW) break;
 			if(spec == RuleSpecAlways.ALWAYS_DENY) break;
+			//TODO: cut the chain early when a Predicated/If rule will never pass
 		}
 		
 		if(filteredRules.size() == 0) return RuleSpecAlways.ALWAYS_PASS;

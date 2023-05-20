@@ -18,6 +18,7 @@ import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDebug;
 import agency.highlysuspect.apathy.core.rule.RuleSpecDifficultyCase;
+import agency.highlysuspect.apathy.core.rule.RuleSpecIf;
 import agency.highlysuspect.apathy.core.rule.RuleSpecJson;
 import agency.highlysuspect.apathy.core.rule.RuleSpecPredicated;
 import agency.highlysuspect.apathy.core.rule.Spec;
@@ -143,6 +144,7 @@ public abstract class Apathy {
 		ruleSerializers.register("difficulty_case", RuleSpecDifficultyCase.Serializer.INSTANCE);
 		ruleSerializers.register("evaluate_json_file", RuleSpecJson.Serializer.INSTANCE);
 		ruleSerializers.register("predicated", RuleSpecPredicated.Serializer.INSTANCE);
+		ruleSerializers.register("if", RuleSpecIf.Serializer.INSTANCE);
 		
 		partialSerializers.register("all", PartialSpecAll.Serializer.INSTANCE);
 		partialSerializers.register("always", PartialSpecAlways.Serializer.INSTANCE);

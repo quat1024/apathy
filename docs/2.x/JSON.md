@@ -1,17 +1,14 @@
 # `apathy-mobs.json` / `apathy/mobs.json`
 
-The mobs json file is *not created by default*, but will be loaded if it exists. **On Forge >=2.5**, the path to this file is `config/apathy-mobs.json`. On **all other platforms and versions**, the path is `config/apathy/mobs.json`.
+The mobs json file is *not created by default*, but will be loaded if it exists. **On Forge**, the path to this file is `config/apathy-mobs.json`. On **other platforms**, the path is `config/apathy/mobs.json`. 
 
 If mobs.cfg's `ruleOrder` option does not contain `json`, or a rule ordered before it returns `allow` or `deny`, the rules in the JSON file will not be examined.
 
+See the bottom of this page for notes about versions older than v2.5 (which was a pretty significant rewrite of Apathy).
+
 ## Dumping
 
-`general.cfg` has options for dumping the built-in rule as a JSON file if you would like to see an example. If you turn that on, the file will be dumped to:
-
-* old versions: `config/apathy/dumps/builtin-rule.json`
-* >=2.5: `apathy-dumps/builtin-rule.json`
-
-Previous versions used some DataFixerUpper `Codec` stuff that outputted the json with a strange format (`type` at the bottom). **In versions >=2.5** the JSON handling code has been completely rewritten and does not use `Codec`, so the JSON is nice looking.
+`general.cfg` has options for dumping the built-in rule as a JSON file if you would like to see an example. If you turn that on, the file will be dumped to `apathy-dumps/builtin-rule.json`.
 
 (If you'd like to use the dumped rule as a starting point to create your own `mobs.json`, remember to remove the `evaluate_json_file` rule!!!)
 
@@ -21,25 +18,25 @@ Let's start things off with an illustrative example:
 
 ```json
 {
-	"type": "apathy:chain",
+	"type": "chain",
 	"rules": [
 		{
-			"type": "apathy:predicated",
+			"type": "predicated",
 			"predicate": {
-				"type": "apathy:difficulty_is",
+				"type": "difficulty_is",
 				"difficulties": ["easy"]
 			},
 			"if_true": "deny"
 		},
 		{
-			"type": "apathy:predicated",
+			"type": "predicated",
 			"predicate": {
-				"type": "apathy:attacker_is_boss"
+				"type": "attacker_is_boss"
 			},
 			"if_true": "allow"
 		},
 		{
-			"type": "apathy:always",
+			"type": "always",
 			"value": "allow"
 		}
 	]
@@ -48,54 +45,50 @@ Let's start things off with an illustrative example:
 
 A *rule* is a JSON object consisting of at least one property: `type`. The rest of the properties in the object are different, depending on the `type`.
 
-**In versions >=2.5, the `apathy:` prefixes are optional.**
-
 Here are the possible rule `type`s.
 
-## `apathy:always`
+## `always`
 Arguments:
 * `value`: Can be one of `"allow"`, `"deny"`, or `"pass"`.
 
 The rule always allows, denies, or passes.
 
-## `apathy:chain`
+## `chain`
 Arguments:
 * `rules`: An array of other rules.
 
 The rules are checked top-to-bottom. The first rule that doesn't evaluate to `"pass"` is used.
 
-## `apathy:predicated`
+## `predicated`
 Arguments:
 * `predicate`: A predicate to check against. (More on these below - there's a bunch.)
 * `if_true`: Optional. Can be one of `"allow"`, `deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
 * `if_false`: Optional. Can be one of `"allow`, `"deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
 
-The predicate is tested. If it is true, the rule evaluates to `if_true` and same for `if_false`.
+The predicate is tested. If it is true, the rule evaluates to `if_true`. If it is false, the rule evaluates to `if_false`.
 
-## `apathy:allow_if`
+### `allow_if` and `deny_if` (deprecated 2.5)
+
+`allow_if` is a synonym for `predicated` with `if_true` pre-set to `allow` and `if_false` pre-set to `pass`. `deny_if` is the same, but `if_true` is pre-set to `deny`.
+
+These are deprecated because it's just a more confusing way of accessing `predicated` - it does the same thing.
+
+## `if` **(new in 2.6)**
 Arguments:
-* `predicate`.
+* `predicate`: A predicate to check against. (More on these below.)
+* `if_true`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
+* `if_false`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
 
-Synonym for `predicated`, with `if_true` set to `"allow"`, and `if_false` set to `"pass"`.
+The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated.
 
-**Deprecated in version 2.5**. I recommend just using `predicated`, and I regret adding two ways to accomplish the same task.
-
-## `apathy:deny_if`
-Arguments:
-* `predicate`.
-
-Synonym for `predicated`, with `if_true` set to `"deny"`, and `if_false` set to `"pass"`.
-
-**Deprecated in version 2.5**. I recommend just using `predicated`, and I regret adding two ways to accomplish the same task.
-
-## `apathy:debug`
+## `debug`
 Arguments:
 * `message`: Any string you want.
 * `rule`: A rule to wrap in debug output.
 
 Whenever the rule is tested: the message, and the evaluation of the rule, are printed to the server log.
 
-## `apathy:difficulty_case`
+## `difficulty_case`
 Arguments:
 * `cases`: A JSON object.
 
@@ -108,7 +101,7 @@ The object may have the following fields:
 
 A different rule is tested depending on the current world difficulty.
 
-## `apathy:evaluate_json_file`
+## `evaluate_json_file`
 Arguments: None.
 
 This rule evaluates the contents of the `mobs.json` file as a rule. Needless to say, if you include this in the `mobs.json` file itself, the game will go into an infinite loop!
@@ -118,46 +111,46 @@ It will show up in dumps when you dump the builtin rule, so, watch out for that.
 # Predicates
 Much like a rule, a predicate is a JSON object of at least one field - `type` - and the rest of the fields depend on the `type`. These can be passed to the `predicated`/`allow_if`/`deny_if` rules. And it's where the meat of the mod is.
 
-## `apathy:always`
+## `always`
 Arguments:
 * `value`, can be `true` or `false` (no double quotes).
 
 Always evaulates to true or false.
 
-## `apathy:attacker_tagged_with`
+## `attacker_tagged_with`
 Arguments:
 * `tags`, an array of strings such as `["minecraft:raiders"]`.
 
 The predicate returns `true` if the attacker has one of these tags.
 
-## `apathy:attacker_is_boss`
+## `attacker_is_boss`
 Arguments: None.
 
 Synonym for `attacker_tagged_with` with the tag `apathy:bosses`.
 
-## `apathy:attacker_is`
+## `attacker_is`
 Arguments: `mobs`, an array of mob IDs such as `["minecraft:creeper"]`.
 
 The predicate returns `true` if the attacker is one of these mobs.
 
-## `apathy:in_player_set`
+## `in_player_set`
 Arguments: `player_sets`, an array of strings such as `["my-cool-set"]`.
 
 The predicate returns `true` if the defending player is part of one of these player sets.
 
-## `apathy:revenge_timer`
+## `revenge_timer`
 Arguments: `timeout`, a number like `60`.
 
 The predicate returns `true` while the mob was last attacked within this many ticks (1/20ths of a second).
 
 For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires, the predicate will start returning `false`.
 
-## `apathy:difficulty_is`
+## `difficulty_is`
 Arguments: `difficulties`, an array of difficulty strings like `["easy", "normal"]`.
 
 The predicate returns `true` if the current world difficulty appears in the array.
 
-## `apathy:score` (✨ NEW in 1.18.1 ✨)
+## `score`
 Arguments:
 * `objective`, any string
 * `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player) (if not specified, defaults to `"defender"` in 1.18.2)
@@ -170,7 +163,7 @@ For example, this predicate:
 
 ```json
 {
-	"type": "apathy:score",
+	"type": "score",
 	"objective": "fruit",
 	"who": "defender",
 	"thresholdMode": "at_least",
@@ -180,13 +173,13 @@ For example, this predicate:
 
 will return `true` when the defending player has >=10 points on the scoreboard objective named "fruit". If the scoreboard objective does not exist, this predicate will always return `false`.
 
-## `apathy:advancements` (✨ NEW in 1.18.2 ✨)
+## `advancements`
 Arguments:
 * `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`
 
 The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
 
-## `apathy:location` (✨ NEW in 1.18.2 ✨)
+## `location`
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
 * `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
@@ -217,40 +210,28 @@ For example, this predicate:
 
 returns `true` if the defending player is standing in a Stronghold structure, and `false` otherwise.
 
-## `apathy:all` and `apathy:any`
+## `all` and `any`
 Arguments: `predicates`, an array of more predicates.
 
 `all` returns `true` only when all of the component predicates return true.
 
 `any` returns `true` when at least one of the component predicates returns true.
 
-## `apathy:not`
+## `not`
 Arguments: `predicate`, a single predicate.
 
 Returns `true` whenever its component predicate returns `false`, and vice versa.
 
-# Gotchas
+# Gotcha
 
-Note that this does *not* work (although I wish it did):
+Rules and predicates happen to be both specified in fields named "`type`", but they cannot be interchanged. Rules evaluate to "allow", "deny", or "pass", but predicates are a true/false thing. There's several possible mappings from true/false to allow/deny/pass - you have to use the `predicated` rule and set `if_true` and `if_false` to tell the mod which mapping you want.
 
-```json
-{
-	"type": "apathy:allow_if",
-	"predicate": "apathy:attacker_is_boss"
-}
-```
+# Version differences to be aware of
 
-You have to do it like this:
-
-```json
-{
-	"type": "apathy:allow_if",
-	"predicate": {
-		"type": "apathy:attacker_is_boss"	
-	}
-}
-```
-
-Note that rules and predicates are both specified with the parameter `type` and they cannot be interchanged. A rule can be lifted into a predicate with `predicated`.
-
-(This is the other reason `allow_if` and `deny_if` are considered **deprecated in version 2.5**. It's harder to make this "conversational"-sounding mistake with `predicated`.)
+||pre-2.5|2.5 and later|
+|---|---|---|
+|File location|`config/apathy/mobs.json` always|`config/apathy-mobs.json` (on Forge)<br>`config/apathy/mobs.json` (on Fabric)|
+|Dump directory|`config/apathy/dumps/`|`apathy-dumps/`|
+|Rule and predicate IDs|**Must be prefixed with `apathy:`**|The `apathy:` prefix is not required|
+|Dumps look weird and confusing?|Yes, DataFixerUpper quirk|No, I rewrote all the json code|
+|`advancements`, `location`, and `score` rules|Not available|Available|

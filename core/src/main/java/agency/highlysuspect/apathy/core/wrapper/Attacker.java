@@ -25,4 +25,8 @@ public interface Attacker {
 	
 	@Nullable VecThree apathy$getSpawnPosition();
 	Map<String, TriState> apathy$getOrCreateLocationPredicateCache();
+	
+	/// PartialSpecRandom ///
+	
+	int apathy$uuidBits();
 }

@@ -170,4 +170,11 @@ public class MobMixin implements Attacker {
 			}
 		} else locationPredicateCache = null;
 	}
+	
+	/// PartialSpecRandom ///
+	
+	@Override
+	public int apathy$uuidBits() {
+		return ((Mob) (Object) this).getUUID().hashCode();
+	}
 }

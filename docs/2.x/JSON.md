@@ -179,6 +179,12 @@ Arguments:
 
 "true" if the defending player is on the named scoreboard team.
 
+## `random` **(NEW in 2.6)**
+Arguments:
+* `chance`, a double somewhere in the range 0 to 1
+
+Returns "true" on approximately chance% of attacking mobs. For example, if `"chance": 0.7`, about 70% of mobs will pass this test. Randomness is seeded from the mob's UUID.
+
 ## `advancements`
 Arguments:
 * `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`

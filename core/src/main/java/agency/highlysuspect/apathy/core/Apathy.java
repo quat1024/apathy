@@ -12,6 +12,7 @@ import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecNot;
+import agency.highlysuspect.apathy.core.rule.PartialSpecRandom;
 import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
@@ -155,6 +156,7 @@ public abstract class Apathy {
 		partialSerializers.register("attacker_tagged_with", PartialSpecAttackerTaggedWith.Serializer.INSTANCE);
 		partialSerializers.register("difficulty_is", PartialSpecDifficultyIs.Serializer.INSTANCE);
 		partialSerializers.register("not", PartialSpecNot.Serializer.INSTANCE);
+		partialSerializers.register("random", PartialSpecRandom.Serializer.INSTANCE);
 		partialSerializers.register("revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
 		
 		//backwards compatibilty/deprecated stuff (allow_if is a subset of predicated's functionality)

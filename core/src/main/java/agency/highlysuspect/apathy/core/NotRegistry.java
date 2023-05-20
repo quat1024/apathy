@@ -3,6 +3,7 @@ package agency.highlysuspect.apathy.core;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Really really basic registry type, string keys.
@@ -33,6 +34,10 @@ public class NotRegistry<T> {
 	
 	public String getName(T thing) {
 		return byThing.get(thing);
+	}
+	
+	public Set<String> names() {
+		return byName.keySet();
 	}
 	
 	//weird time

@@ -18,25 +18,23 @@ import java.util.stream.Collectors;
 public class JsonRule {
 	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	
-	public static @Nullable Rule loadJson(Path mobsJson) throws IOException, JsonParseException {
+	public static @Nullable Rule loadJson(Path mobsJson) throws Exception {
 		if(!Files.exists(mobsJson)) return null;
 		
 		//read it into string
 		String stuff;
 		try {
 			stuff = Files.lines(mobsJson).collect(Collectors.joining("\n"));
-		} catch (IOException e) {
-			e.addSuppressed(new RuntimeException("Problem loading json rule at " + mobsJson));
-			throw e;
+		} catch (Exception e) {
+			throw context(e, "Problem loading json rule at " + mobsJson + ":");
 		}
 		
 		//parse the string as unstructured json
 		JsonElement json;
 		try {
 			json = GSON.fromJson(stuff, JsonElement.class);
-		} catch (JsonParseException e) {
-			e.addSuppressed(new RuntimeException("Problem parsing json rule at " + mobsJson));
-			throw e;
+		} catch (Exception e) {
+			throw context(e, "Problem parsing json rule at " + mobsJson + ":");
 		}
 		
 		//parse the json into a java object
@@ -44,8 +42,7 @@ public class JsonRule {
 		try {
 			spec = Apathy.instance.readRule(json);
 		} catch (Exception e) {
-			e.addSuppressed(new RuntimeException("Problem decoding json rule"));
-			throw e;
+			throw context(e, "Problem decoding json rule:");
 		}
 		
 		//realize the rulespec into a rule
@@ -62,9 +59,14 @@ public class JsonRule {
 			
 			return spec.build();
 		} catch (Exception e) {
-			e.addSuppressed(new RuntimeException("Problem finalizing rule"));
-			throw e;
+			throw context(e, "Problem finalizing rule:");
 		}
+	}
+	
+	public static <T extends Throwable> RuntimeException context(T in, String message) {
+		RuntimeException ctx = new RuntimeException(message, in);
+		ctx.setStackTrace(new StackTraceElement[0]);
+		return ctx;
 	}
 	
 	/**

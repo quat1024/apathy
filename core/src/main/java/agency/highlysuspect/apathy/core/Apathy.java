@@ -32,6 +32,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 /**
  * how much of Apathy is it possible to port while not touching minecraft at all? Surprisingly, a lot, i guess
@@ -190,15 +191,34 @@ public abstract class Apathy {
 	
 	//TODO maybe find a better home for these 4 methods?
 	public Spec<Rule, ?> readRule(JsonElement jsonElem) {
-		if(!(jsonElem instanceof JsonObject)) throw new IllegalArgumentException("Not json object");
+		if(!(jsonElem instanceof JsonObject)) {
+			throw new IllegalArgumentException("Expected json object, found " + (jsonElem == null ? "nothing" : jsonElem.getClass().getSimpleName()));
+		}
 		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
 		JsonSerializer<? extends Spec<Rule, ?>> jsonSerializer = ruleSerializers.get(type);
 		
-		//TODO way better error message (list the valid options?)
-		if(jsonSerializer == null) throw new IllegalArgumentException("No rule serializer with name " + type);
-		else return jsonSerializer.read(json);
+		if(jsonSerializer == null) {
+			StringBuilder message = new StringBuilder("No rule serializer with name '").append(type).append("'.");
+			
+			//better error for putting a partial where a rule was expected
+			if(partialSerializers.names().contains(type)) {
+				message.append("\n   (Apathy does have something named '").append(type).append("', but it's a predicate, not a rule.)");
+			}
+			
+			message.append("\n   Valid rules are '");
+			message.append(ruleSerializers.names().stream().sorted().collect(Collectors.joining("', '")));
+			message.append("'.");
+			
+			throw new IllegalArgumentException(message.toString());
+		} else {
+			try {
+				return jsonSerializer.read(json);
+			} catch (Exception e) {
+				throw JsonRule.context(e, "Problem decoding '" + type + "' rule:");
+			}
+		}
 	}
 	
 	public <T extends Spec<Rule, T>> JsonObject writeRule(Spec<Rule, T> rule) {
@@ -214,15 +234,34 @@ public abstract class Apathy {
 	}
 	
 	public Spec<Partial, ?> readPartial(JsonElement jsonElem) {
-		if(!(jsonElem instanceof JsonObject)) throw new IllegalArgumentException("Not json object");
+		if(!(jsonElem instanceof JsonObject)) {
+			throw new IllegalArgumentException("Expected json object, found " + (jsonElem == null ? "nothing" : jsonElem.getClass().getSimpleName()));
+		}
 		JsonObject json = (JsonObject) jsonElem;
 		
 		String type = json.getAsJsonPrimitive("type").getAsString();
 		JsonSerializer<? extends Spec<Partial, ?>> jsonSerializer = partialSerializers.get(type);
 		
-		//TODO way better error message (list the valid options?)
-		if(jsonSerializer == null) throw new IllegalArgumentException("No partial serializer with name " + type);
-		else return jsonSerializer.read(json);
+		if(jsonSerializer == null) {
+			StringBuilder message = new StringBuilder("No predicate serializer with name '").append(type).append("'.");
+			
+			//better error for putting a rule where a partial was expected
+			if(ruleSerializers.names().contains(type)) {
+				message.append("\n  (Apathy does have something named '").append(type).append("', but it's a rule, not a predicate.)");
+			}
+			
+			message.append("\n   Valid predicates are '");
+			message.append(partialSerializers.names().stream().sorted().collect(Collectors.joining("', '")));
+			message.append("'.");
+			
+			throw new IllegalArgumentException(message.toString());
+		} else {
+			try {
+				return jsonSerializer.read(json);
+			} catch (Exception e) {
+				throw JsonRule.context(e, "Problem decoding '" + type + "' predicate:");
+			}
+		}
 	}
 	
 	public <T extends Spec<Partial, T>> JsonObject writePartial(Spec<Partial, T> part) {

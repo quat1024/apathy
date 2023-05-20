@@ -1,21 +1,16 @@
 buildscript {
 	repositories {
-		maven {
-			url = "https://repo.spongepowered.org/repository/maven-public/"
-			content {
-				includeGroup "org.spongepowered"
-				includeGroup "net.minecraftforge" //vanillagradle dep
-			}
-		}
+		maven { url = "https://maven.fabricmc.net/"}
+		maven { url = "https://repo.sleeping.town/" }
 		gradlePluginPortal()
 	}
 	dependencies {
-		classpath "org.spongepowered:vanillagradle:0.2.1-SNAPSHOT"
+		classpath "agency.highlysuspect:minivan:0.2"
 	}
 }
 
 apply plugin: "java"
-apply plugin: "org.spongepowered.gradle.vanilla"
+apply plugin: "agency.highlysuspect.minivan"
 
 archivesBaseName = "${project.modId}-common-1.19.2"
 
@@ -26,7 +21,7 @@ tasks.withType(JavaCompile) {
 }
 java.withSourcesJar()
 
-minecraft {
+minivan {
 	version("1.19.2")
 }
 

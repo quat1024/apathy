@@ -16,4 +16,5 @@ include(
 	
 	"common-1.16.5",
 	"fabric-1.16.5"
+	//Forge 1.16 doesn't acutally use official mappings, rip
 )

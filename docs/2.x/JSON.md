@@ -67,6 +67,20 @@ Arguments:
 
 The predicate is tested. If it is true, the rule evaluates to `if_true`. If it is false, the rule evaluates to `if_false`.
 
+It works like this:
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 60
+	}
+}
+```
+
 ### `allow_if` and `deny_if` (deprecated 2.5)
 
 `allow_if` is a synonym for `predicated` with `if_true` pre-set to `allow` and `if_false` pre-set to `pass`. `deny_if` is the same, but `if_true` is pre-set to `deny`.
@@ -79,7 +93,27 @@ Arguments:
 * `if_true`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
 * `if_false`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
 
-The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated.
+The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated instead.
+
+It works like this:
+
+```json5
+{
+	"type": "if",
+	"if_true": {
+		"type": "chain",
+		"rules": // ... 
+	},
+	"if_false": {
+		"type": "predicated",
+		"predicate": // ...
+	},
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 60
+	}
+}
+```
 
 ## `debug`
 Arguments:

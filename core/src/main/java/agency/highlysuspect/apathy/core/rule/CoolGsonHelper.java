@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class CoolGsonHelper {
 	public static TriState getAllowDenyPassTriState(JsonObject json, String key) {
@@ -27,6 +29,10 @@ public class CoolGsonHelper {
 	
 	public static <T extends JsonElement> Collector<T, ?, JsonArray> toJsonArray() {
 		return Collector.of(JsonArray::new, JsonArray::add, (left, right) -> { left.addAll(right); return left; });
+	}
+	
+	public static Stream<JsonElement> streamArray(JsonArray a) {
+		return StreamSupport.stream(a.spliterator(), false);
 	}
 	
 	//Sloppy backport of a method from a future version of gson

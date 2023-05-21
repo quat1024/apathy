@@ -418,9 +418,11 @@ This rule returns `"allow"` when the defending player has >= 10 points on the sc
 
 ## `team` **(NEW in 2.6)**
 Arguments:
-* `team`, a string
+* `teams`, an array of strings
 
-`true` if the defending player is on the named scoreboard team. `false` if the player is not on the team, or if the team does not exist.
+`true` if the defending player is on one of the named scoreboard teams. `false` if the player is not on the team, or if the team does not exist.
+
+Teams can be managed with the vanilla `/team` command.
 
 ### Example
 
@@ -431,7 +433,10 @@ Arguments:
 	"if_false": "pass",
 	"predicate": {
 		"type": "team",
-		"team": "nomobs"
+		"teams": [
+			"no-mobs",
+			"gamers"
+		]
 	}
 }
 ```

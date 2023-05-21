@@ -30,6 +30,7 @@ import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.LogFacade;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
@@ -198,9 +199,13 @@ public abstract class Apathy {
 		}
 		JsonObject json = (JsonObject) jsonElem;
 		
-		String type = json.getAsJsonPrimitive("type").getAsString();
-		JsonSerializer<? extends Spec<Rule, ?>> jsonSerializer = ruleSerializers.get(type);
+		JsonPrimitive typeField = json.getAsJsonPrimitive("type");
+		if(typeField == null) {
+			throw new IllegalArgumentException("Expected json object to have field 'type', but didn't find any");
+		}
+		String type = typeField.getAsString();
 		
+		JsonSerializer<? extends Spec<Rule, ?>> jsonSerializer = ruleSerializers.get(type);
 		if(jsonSerializer == null) {
 			StringBuilder message = new StringBuilder("No rule serializer with name '").append(type).append("'.");
 			
@@ -228,7 +233,7 @@ public abstract class Apathy {
 		JsonSerializer<T> serializer = rule.getSerializer();
 		
 		String name = ruleSerializers.getName(serializer);
-		if(name == null) throw new IllegalArgumentException("internal error, unregistered rule serializer: " + serializer.getClass().getName());
+		if(name == null) throw new IllegalArgumentException("internal error, unregistered rule serializer for " + serializer.getClass().getName());
 		
 		ok.addProperty("type", name);
 		serializer.writeErased(rule, ok);
@@ -241,9 +246,13 @@ public abstract class Apathy {
 		}
 		JsonObject json = (JsonObject) jsonElem;
 		
-		String type = json.getAsJsonPrimitive("type").getAsString();
-		JsonSerializer<? extends Spec<Partial, ?>> jsonSerializer = partialSerializers.get(type);
+		JsonPrimitive typeField = json.getAsJsonPrimitive("type");
+		if(typeField == null) {
+			throw new IllegalArgumentException("Expected json object to have field 'type', but didn't find any");
+		}
+		String type = typeField.getAsString();
 		
+		JsonSerializer<? extends Spec<Partial, ?>> jsonSerializer = partialSerializers.get(type);
 		if(jsonSerializer == null) {
 			StringBuilder message = new StringBuilder("No predicate serializer with name '").append(type).append("'.");
 			
@@ -271,7 +280,7 @@ public abstract class Apathy {
 		JsonSerializer<T> serializer = part.getSerializer();
 		
 		String name = partialSerializers.getName(serializer);
-		if(name == null) throw new IllegalArgumentException("internal error, unregistered partial serializer: " + serializer.getClass().getName());
+		if(name == null) throw new IllegalArgumentException("internal error, unregistered partial serializer for " + serializer.getClass().getName());
 		
 		ok.addProperty("type", name);
 		serializer.writeErased(part, ok);

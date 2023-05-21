@@ -14,7 +14,11 @@ See the bottom of this page for notes about versions older than v2.5 (which was 
 
 # Json Format
 
-Let's start things off with an illustrative example:
+An example. This rule encodes the following process:
+
+* If the difficulty is set to Easy, return "deny".
+* If not, and the attacker is tagged with `apathy:bosses`, return "allow".
+* If not, return "deny".
 
 ```json
 {
@@ -37,7 +41,7 @@ Let's start things off with an illustrative example:
 		},
 		{
 			"type": "always",
-			"value": "allow"
+			"value": "deny"
 		}
 	]
 }
@@ -53,21 +57,56 @@ Arguments:
 
 The rule always allows, denies, or passes.
 
+### Example
+
+```json
+{
+	"type": "always",
+	"value": "allow"
+}
+```
+
+This rule always returns "allow".
+
 ## `chain`
 Arguments:
 * `rules`: An array of other rules.
 
-The rules are checked top-to-bottom. The first rule that doesn't evaluate to `"pass"` is used.
+The rules are checked top-to-bottom. The first rule that doesn't evaluate to `"pass"` is returned. If all rules evaluated to `"pass"`, then `pass` is returned. 
+
+### Example
+
+First, the `predicated` rule is evaluated. If it returns `pass`, the `always` rule is evaluated.
+
+```json
+{
+	"type": "chain",
+	"rules": [
+		{
+			"type": "predicated",
+			"...": "..."
+		},
+		{
+			"type": "always",
+			"value": "allow"
+		}
+	]
+}
+```
 
 ## `predicated`
 Arguments:
-* `predicate`: A predicate to check against. (More on these below - there's a bunch.)
+* `predicate`: A predicate to check against.
 * `if_true`: Optional. Can be one of `"allow"`, `deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
 * `if_false`: Optional. Can be one of `"allow`, `"deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
 
 The predicate is tested. If it is true, the rule evaluates to `if_true`. If it is false, the rule evaluates to `if_false`.
 
-It works like this:
+A list of predicates is available in the next section.
+
+### Example
+
+If the `revenge_timer` predicate passes, the rule evaluates to `allow`. If not, the rule evaluates to `pass`.
 
 ```json
 {
@@ -89,24 +128,32 @@ These are deprecated because it's just a more confusing way of accessing `predic
 
 ## `if` **(new in 2.6)**
 Arguments:
-* `predicate`: A predicate to check against. (More on these below.)
+* `predicate`: A predicate to check against.
 * `if_true`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
 * `if_false`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
 
 The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated instead.
 
-It works like this:
+### Example
 
-```json5
+If the `revenge_timer` predicate passes (more detals on predicates in the next section), the rule evaluates to the result of the `chain` rule. If not, the rule evaluates to the result of the `predicated` rule.
+
+```json
 {
 	"type": "if",
 	"if_true": {
 		"type": "chain",
-		"rules": // ... 
+		"rules": [
+			{
+				"type": "..."
+			}
+		]
 	},
 	"if_false": {
 		"type": "predicated",
-		"predicate": // ...
+		"predicate": {
+			"type": "..."
+		}
 	},
 	"predicate": {
 		"type": "revenge_timer",
@@ -120,7 +167,31 @@ Arguments:
 * `message`: Any string you want.
 * `rule`: A rule to wrap in debug output.
 
-Whenever the rule is tested: the message, and the evaluation of the rule, are printed to the server log.
+Whenever the rule is evaluated: the message, and the evaluation of the rule, are printed to the server log.
+
+### Example
+
+When this rule is evaluated:
+
+```json
+{
+	"type": "debug",
+	"message": "Evaluating my rule!",
+	"rule": {
+		"type": "always",
+		"value": "allow"
+	}
+}
+```
+
+the console will print:
+
+```console
+rule: Evaluating my rule!
+returned: allow
+```
+
+and the rule will evaluate to `allow`.
 
 ## `difficulty_case`
 Arguments:
@@ -134,6 +205,28 @@ The object may have the following fields:
 * `hard`: A rule to evaluate on Hard difficulty.
 
 A different rule is tested depending on the current world difficulty.
+
+If the current world difficulty is not included in `cases`, the rule evaluates to `pass`.
+
+### Example
+
+This rule evaluates to `deny` on Easy, `pass` on Normal/Peaceful, and `allow` on Hard.
+
+```json
+{
+	"rule": "difficulty_case",
+	"cases": {
+		"easy": {
+			"rule": "always",
+			"value": "deny"
+		},
+		"hard": {
+			"rule": "always",
+			"value": "allow"
+		}
+	}
+}
+```
 
 ## `evaluate_json_file`
 Arguments: None.
@@ -151,26 +244,94 @@ Arguments:
 
 Always evaulates to true or false.
 
+### Example
+
+This rule always evaluates to "allow", because the predicate always evaluates to "true".
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "always",
+		"value": true
+	}
+}
+```
+
 ## `attacker_tagged_with`
 Arguments:
 * `tags`, an array of strings such as `["minecraft:raiders"]`.
 
 The predicate returns `true` if the attacker has one of these tags.
 
+### Example
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "attacker_tagged_with",
+		"tags": [
+			"minecraft:raiders",
+			"somemod:sometag"
+		]
+	}
+}
+```
+
 ## `attacker_is_boss`
 Arguments: None.
 
-Synonym for `attacker_tagged_with` with the tag `apathy:bosses`.
+Synonym for `attacker_tagged_with` with the tag `apathy:bosses`. This tag includes the Ender Dragon, Wither, Warden, and the contents of the `c:bosses` and `forge:bosses` tags if they exist.
 
 ## `attacker_is`
 Arguments: `mobs`, an array of mob IDs such as `["minecraft:creeper"]`.
 
 The predicate returns `true` if the attacker is one of these mobs.
 
+### Example
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "attacker_is",
+		"mobs": [
+			"minecraft:creeper",
+			"minecraft:spider"
+		]
+	}
+}
+```
+
 ## `in_player_set`
 Arguments: `player_sets`, an array of strings such as `["my-cool-set"]`.
 
-The predicate returns `true` if the defending player is part of one of these player sets.
+The predicate returns `true` if the defending player is part of one of these player sets. Player sets can be managed with the `/apathy set` and `/apathy set-admin` commands.
+
+### Example
+
+This rule honors a "no-mobs" player set. If the player is in that set, all mobs will be denied from attacking.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "in_player_set",
+		"player_sets": [
+			"no-mobs"
+		]
+	}
+}
+```
 
 ## `revenge_timer`
 Arguments: `timeout`, a number like `60`.
@@ -179,10 +340,51 @@ The predicate returns `true` while the mob was last attacked within this many ti
 
 For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires, the predicate will start returning `false`.
 
+### Example
+
+This rule allows mobs to retaliate for 20 seconds after being attacked.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 400
+	}
+}
+```
+
 ## `difficulty_is`
 Arguments: `difficulties`, an array of difficulty strings like `["easy", "normal"]`.
 
 The predicate returns `true` if the current world difficulty appears in the array.
+
+### Example
+
+This rule acts a litlte bit like `difficulty_case`. Note that this example makes use of the `if` rule, which is new in version 2.6.
+
+```json
+{
+	"type": "if",
+	"if_true": {
+		"type": "chain",
+		"rules": [...]
+	},
+	"if_false": {
+		"type": "predicated",
+		"predicate": {...}
+	},
+	"predicate": {
+		"type": "difficulty_is",
+		"difficulties": [
+			"easy",
+			"normal"
+		]
+	}
+}
+```
 
 ## `score`
 Arguments:
@@ -191,45 +393,111 @@ Arguments:
 * `thresholdMode`, either `"at_least"`, `"at_most"`, or `"equal"`
 * `threshold`, any integer
 
-The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not.
+The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not. A `"thresholdMode"` of `"at_least"` performs a "greater than or equal to" test. `"at_most"` performs a "less than or equal to" test.
 
-For example, this predicate:
+If the scoreboard objective does not exist, this predicate will always return `false`.
+
+### Example
+
+This rule returns `"allow"` when the defending player has >= 10 points on the scoreboard objective "fruit".
 
 ```json
 {
-	"type": "score",
-	"objective": "fruit",
-	"who": "defender",
-	"thresholdMode": "at_least",
-	"threshold": 10
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "score",
+		"objective": "fruit",
+		"who": "defender",
+		"thresholdMode": "at_least",
+		"threshold": 10
+	}
 }
 ```
-
-will return `true` when the defending player has >=10 points on the scoreboard objective named "fruit". If the scoreboard objective does not exist, this predicate will always return `false`.
 
 ## `team` **(NEW in 2.6)**
 Arguments:
 * `team`, a string
 
-"true" if the defending player is on the named scoreboard team.
+`true` if the defending player is on the named scoreboard team. `false` if the player is not on the team, or if the team does not exist.
+
+### Example
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "team",
+		"team": "nomobs"
+	}
+}
+```
 
 ## `random` **(NEW in 2.6)**
 Arguments:
 * `chance`, a double somewhere in the range 0 to 1
 
-Returns "true" on approximately chance% of attacking mobs. For example, if `"chance": 0.7`, about 70% of mobs will pass this test. Randomness is seeded from the mob's UUID.
+Returns "true" on approximately chance% of attacking mobs. For example, if `"chance": 0.7`, about 70% of mobs will pass this test.
+
+Randomness is seeded from the mob's UUID, so the same mob will always pass or fail the test.
+
+### Example
+
+This makes use of the `all` predicate, documented later, to make half of all zombies passive towards the player.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "all",
+		"predicates": [
+			{
+				"type": "attacker_is",
+				"mobs": [ "minecraft:zombie" ]
+			},
+			{
+				"type": "random",
+				"chance": 0.5
+			}
+		]
+	}
+}
+```
 
 ## `advancements`
 Arguments:
-* `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/ender_the_end", "minecraft:story/ender_the_nether"]`
+* `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/enter_the_end", "minecraft:story/enter_the_nether"]`
 
 The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
 
-## `location`
+### Example
+
+This rule makes mobs passive until the player enters the End for the first time.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "advancements",
+		"advancements": [
+			"minecraft:story/enter_the_end"
+		]
+	}
+}
+```
+
+## `,location`
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
 * `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
-* `uniqueId`, any String you want. Only required for `attacker_spawn_location`. **kinda new parameter btw**
+* `uniqueId`, any String you want. Required for `attacker_spawn_location`.
 
 This predicate does the following:
 
@@ -241,32 +509,82 @@ This predicate does the following:
 
 LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
 
-`uniqueId` is required because (in the latest update) the result of `"who": "attacker_spawn_location"` predicates are tested only one time, and cached on the entity. This helps on performance, but also fixes cases like "the predicate returns false when `attacker_spawn_location` is used, and the mob has walked so far away that the spawn location is now unloaded".
+`uniqueId` is required because the result of `"who": "attacker_spawn_location"` predicates is tested only one time and cached on the entity. This helps on performance, and fixes issues relating to the attacker's spawn location being unloaded.
 
-For example, this predicate:
+### Example
+
+This rule returns `"deny"` if the defending player is standing in a Stronghold structure, and `"pass"` otherwise.
+
 ```json
 {
-	"type": "apathy:location",
-	"who": "defender",
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
 	"predicate": {
-		"feature": "stronghold"
+		"type": "location",
+		"who": "defender",
+		"predicate": {
+			"feature": "stronghold"
+		}
 	}
 }
 ```
 
-returns `true` if the defending player is standing in a Stronghold structure, and `false` otherwise.
-
 ## `all` and `any`
 Arguments: `predicates`, an array of more predicates.
 
-`all` returns `true` only when all of the component predicates return true.
+`all` returns `true` only when *all of* the component predicates return true.
 
-`any` returns `true` when at least one of the component predicates returns true.
+`any` returns `true` when *at least one of* the component predicates returns true.
+
+### Example
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "and",
+		"predicates": [
+			{
+				"type": "attacker_is",
+				"mobs": [ "minecraft:zombie" ]
+			},
+			{
+				"type": "random",
+				"chance": 0.5
+			}
+		]
+	}
+}
+```
 
 ## `not`
 Arguments: `predicate`, a single predicate.
 
 Returns `true` whenever its component predicate returns `false`, and vice versa.
+
+### Example
+
+This rule returns `"allow"` when the difficulty is *not* Easy.
+
+```json
+{
+	"rule": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "not",
+		"predicate": {
+			"type": "difficulty_is",
+			"difficulties": [
+				"easy"
+			]
+		}
+	}
+}
+```
 
 # Gotcha
 

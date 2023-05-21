@@ -474,6 +474,52 @@ This makes use of the `all` predicate, documented later, to make half of all zom
 }
 ```
 
+## `spawn_type` **(NEW in 2.6)**
+Arguments:
+* `types`, array of strings from the set "unknown", "natural", "chunk_generation", "spawner", "structure", "breeding", "mob_summoned", "jockey", "event", "conversion", "reinforcement", "triggered", "bucket", "spawn_egg", "command", "dispenser", and "patrol".
+
+Returns `true` if the attacking mob was spawned from one of the given sources. This corresponds to the vanilla `MobSpawnType` enum.
+
+Here are how the spawn types are used in vanilla - mods might add their own mechanics for spawning mobs, but they will have to go through one of these spawn types.
+
+* `unknown`: Apathy doesn't know how this mob was spawned. (Either `Mob#finalizeSpawn` wasn't called, or the mob existed before installing Apathy.)
+* `natural`: The mob was spawned from the "regular" spawning process (e.g. a zombie that spawned because it's dark)
+* `chunk_generation`: The mob was generated alongside a chunk as part of regular world generation. (Probably doesn't apply to most hostile mobs.)
+* `spawner`: The mob was spawned **from a dungeon spawner**.
+* `structure`: The mob generated as part of a structure.
+* `breeding`: The mob was spawned by breeding other mobs. (Probably doesn't apply to most hostile mobs.)
+* `mob_summoned`: The mob was spawned by another mob. For example, an Evoker summoning a Vex.
+* `jockey`: *Sometimes* used for one mob of a mount/rider relation (like the chicken of a chicken jockey), other times not used (like either mob in a skeleton jockey). Kinda weird.
+* `event`: Zombie sieges, wandering traders, raid mobs, etc.
+* `conversion`: Zombie -> zombie villager, zombie villager -> villager.
+* `reinformcement`: The mob was spawned as part of the "zombie reinforcement" mechanic.
+* `triggered`: The mob was spawned as part of some "event". This covers the skeleton horse lightning trap gimmick, and the Warden.
+* `bucket`: The mob was dumped out of a bucket. Applies to fish and pufferfish.
+* `spawn_egg`: The mob was spawned by manually clicking with a spawn egg.
+* `command`: The mob was spawned through `/summon`.
+* `dispenser`: The mob was spawned by dispensing a spawn egg.
+* `patrol`: The mob was spawned as part of a pillager patrol.
+
+To examine the spawn type of a mob, check the `apathy-spawnType` NBT tag. The tag will be missing if the spawn type is "unknown".
+
+### Example
+
+This rule will make mobs from dungeon spawners always hostile.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "spawn_type",
+		"types": [
+			"spawner"
+		]
+	}
+}
+```
+
 ## `advancements`
 Arguments:
 * `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/enter_the_end", "minecraft:story/enter_the_nether"]`

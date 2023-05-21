@@ -14,6 +14,7 @@ import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecNot;
 import agency.highlysuspect.apathy.core.rule.PartialSpecRandom;
 import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.core.rule.PartialSpecSpawnType;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
@@ -159,6 +160,7 @@ public abstract class Apathy {
 		partialSerializers.register("not", PartialSpecNot.Serializer.INSTANCE);
 		partialSerializers.register("random", PartialSpecRandom.Serializer.INSTANCE);
 		partialSerializers.register("revenge_timer", PartialSpecRevengeTimer.Serializer.INSTANCE);
+		partialSerializers.register("spawn_type", PartialSpecSpawnType.Serializer.INSTANCE);
 		
 		//backwards compatibilty/deprecated stuff (allow_if is a subset of predicated's functionality)
 		ruleSerializers.register("allow_if", RuleSpecPredicated.LegacyAllowIfSerializer.INSTANCE);

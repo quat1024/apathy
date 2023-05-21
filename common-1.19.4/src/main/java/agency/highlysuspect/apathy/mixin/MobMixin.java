@@ -13,8 +13,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,8 +27,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Mixin(Mob.class)
@@ -89,8 +95,6 @@ public class MobMixin implements Attacker {
 	}
 	
 	/// provocation time ///
-	
-	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
 	@Unique long provocationTime = Attacker.NOT_PROVOKED;
 	
 	@Override
@@ -110,9 +114,6 @@ public class MobMixin implements Attacker {
 	
 	/// spawn position stuff ///
 	
-	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
-	@Unique private static final String LOCATION_PREDICATE_CACHE_KEY = "apathy-locationPredicateCache";
-	
 	@Unique @Nullable Vec3 spawnPosition;
 	@Unique @Nullable Map<String, TriState> locationPredicateCache;
 	
@@ -127,7 +128,26 @@ public class MobMixin implements Attacker {
 		return locationPredicateCache;
 	}
 	
+	/// spawn type stuff ///
+	
+	@Unique @Nullable String spawnType;
+	
+	@Inject(method = "finalizeSpawn", at = @At("HEAD"))
+	public void apathy$finalizeSpawn(ServerLevelAccessor blah, DifficultyInstance blahblah, MobSpawnType mobSpawnType, SpawnGroupData blahblahblah, CompoundTag blahblahblahblah, CallbackInfoReturnable<SpawnGroupData> cir) {
+		spawnType = mobSpawnType.name().toLowerCase(Locale.ROOT);
+	}
+	
+	@Override
+	public @Nullable String apathy$getSpawnType() {
+		return spawnType;
+	}
+	
 	/// persistence of the above ///
+	
+	@Unique private static final String PROVOCATION_KEY = "apathy-provocationTime";
+	@Unique private static final String SPAWN_POSITION_KEY = "apathy-spawnPosition";
+	@Unique private static final String LOCATION_PREDICATE_CACHE_KEY = "apathy-locationPredicateCache";
+	@Unique private static final String SPAWN_TYPE_KEY = "apathy-spawnType";
 	
 	@Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
 	public void apathy$whenSaving(CompoundTag tag, CallbackInfo ci) {
@@ -147,6 +167,10 @@ public class MobMixin implements Attacker {
 			CompoundTag real = new CompoundTag();
 			locationPredicateCache.forEach((k, v) -> real.putString(k, v.toString()));
 			tag.put(LOCATION_PREDICATE_CACHE_KEY, real);
+		}
+		
+		if(spawnType != null) {
+			tag.putString(SPAWN_TYPE_KEY, spawnType);
 		}
 	}
 	
@@ -169,6 +193,10 @@ public class MobMixin implements Attacker {
 				locationPredicateCache.put(k, TriState.fromString(real.getString(k)));
 			}
 		} else locationPredicateCache = null;
+		
+		if(tag.contains(SPAWN_TYPE_KEY)) {
+			spawnType = tag.getString(SPAWN_TYPE_KEY);
+		} else spawnType = null;
 	}
 	
 	/// PartialSpecRandom ///

@@ -29,4 +29,8 @@ public interface Attacker {
 	/// PartialSpecRandom ///
 	
 	int apathy$uuidBits();
+	
+	/// PartialSpecSpawnType ///
+	
+	@Nullable String apathy$getSpawnType();
 }

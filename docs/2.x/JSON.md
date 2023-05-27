@@ -544,7 +544,7 @@ This rule makes mobs passive until the player enters the End for the first time.
 }
 ```
 
-## `,location`
+## `location`
 Arguments:
 * `predicate`, a vanilla `LocationPredicate`.
 * `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
@@ -596,7 +596,7 @@ Arguments: `predicates`, an array of more predicates.
 	"if_true": "deny",
 	"if_false": "pass",
 	"predicate": {
-		"type": "and",
+		"type": "all",
 		"predicates": [
 			{
 				"type": "attacker_is",

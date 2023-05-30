@@ -23,6 +23,7 @@ import agency.highlysuspect.apathy.core.wrapper.Defender;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderHasAdvancement;
 import agency.highlysuspect.apathy.rule.PartialSpecDefenderInPlayerSet;
+import agency.highlysuspect.apathy.rule.PartialSpecEffect;
 import agency.highlysuspect.apathy.rule.PartialSpecLocation;
 import agency.highlysuspect.apathy.rule.PartialSpecScore;
 import agency.highlysuspect.apathy.rule.PartialSpecScoreboardTeam;
@@ -172,6 +173,7 @@ public abstract class Apathy116 extends Apathy {
 		super.addRules();
 		
 		partialSerializers.register("advancements", PartialSpecDefenderHasAdvancement.Serializer.INSTANCE);
+		partialSerializers.register("effect", PartialSpecEffect.Serializer.INSTANCE);
 		partialSerializers.register("in_player_set", PartialSpecDefenderInPlayerSet.Serializer.INSTANCE);
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);

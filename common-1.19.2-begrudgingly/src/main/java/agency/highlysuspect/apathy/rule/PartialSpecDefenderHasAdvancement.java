@@ -70,7 +70,7 @@ public class PartialSpecDefenderHasAdvancement implements Spec<Partial, PartialS
 		
 		@Override
 		public PartialSpecDefenderHasAdvancement read(JsonObject json) {
-			return new PartialSpecDefenderHasAdvancement(StreamSupport.stream(json.getAsJsonArray("advancements").spliterator(), false)
+			return new PartialSpecDefenderHasAdvancement(CoolGsonHelper.streamArray(json.getAsJsonArray("advancements"))
 				.map(JsonElement::getAsString)
 				.map(ResourceLocation::new)
 				.collect(Collectors.toSet()));

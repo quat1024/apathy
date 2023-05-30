@@ -4,7 +4,6 @@ import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -64,7 +63,7 @@ public class PartialSpecDefenderHasAdvancement implements Spec<Partial, PartialS
 		
 		@Override
 		public PartialSpecDefenderHasAdvancement read(JsonObject json) {
-			return new PartialSpecDefenderHasAdvancement(StreamSupport.stream(json.getAsJsonArray("advancements").spliterator(), false)
+			return new PartialSpecDefenderHasAdvancement(CoolGsonHelper.streamArray(json.getAsJsonArray("advancements"))
 				.map(JsonElement::getAsString)
 				.map(ResourceLocation::new)
 				.collect(Collectors.toSet()));

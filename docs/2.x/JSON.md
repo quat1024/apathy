@@ -389,13 +389,13 @@ This rule acts a litlte bit like `difficulty_case`. Note that this example makes
 ## `score`
 Arguments:
 * `objective`, any string
-* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player) (if not specified, defaults to `"defender"` in 1.18.2)
+* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
 * `thresholdMode`, either `"at_least"`, `"at_most"`, or `"equal"`
 * `threshold`, any integer
 
 The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not. A `"thresholdMode"` of `"at_least"` performs a "greater than or equal to" test. `"at_most"` performs a "less than or equal to" test.
 
-If the scoreboard objective does not exist, this predicate will always return `false`.
+If the scoreboard objective does not exist, this predicate will always return `false`. If `who` is not specified, the default value is `"defender"`, but don't rely on this for new scripts.
 
 ### Example
 
@@ -515,6 +515,32 @@ This rule will make mobs from dungeon spawners always hostile.
 		"type": "spawn_type",
 		"types": [
 			"spawner"
+		]
+	}
+}
+```
+
+## `effect` **(NEW in 2.7)**
+Arguments:
+* `who`, either `"attacker"` or `"defender"`
+* `effects`, array of potion effect IDs
+
+The predicate returns `true` if the attacking mob or the defending player (select with `who`) has at least one of the specified effects.
+
+### Example
+
+This rule will make mobs ignore players with the Invisibility effect.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "effect",
+		"who": "defender",
+		"effects": [
+			"minecraft:invisibility"
 		]
 	}
 }

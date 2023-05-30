@@ -11,13 +11,12 @@ import agency.highlysuspect.apathy.core.wrapper.VecThree;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings("ClassCanBeRecord")
+//@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
 	public PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) {
 		this.pred = pred;

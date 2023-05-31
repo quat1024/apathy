@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecEffect implements Spec<Partial, PartialSpecEffect> {
 	public PartialSpecEffect(Set<MobEffect> mobEffects, Who who) {
 		this.mobEffects = mobEffects;

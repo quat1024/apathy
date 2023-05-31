@@ -21,10 +21,10 @@ public class CoreMobOptions {
 	).build();
 	
 	public static final ConfigProperty<List<String>> ruleOrder = ConfigProperty.stringListOpt("ruleOrder",
-			Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge"),
+			Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "potionSet", "playerSet", "revenge"),
 			"Which order should the rules in this config file be evaluated in?",
 			"Comma-separated list built out of any or all of the following keywords, in any order:",
-			"json, difficulty, boss, mobSet, tagSet, playerSet, revenge")
+			"json, difficulty, boss, mobSet, tagSet, playerSet, potionSet, revenge")
 		.note("If a rule is not listed in the rule order, it will not be checked.")
 		.example("difficulty, revenge, playerSet")
 		.build();

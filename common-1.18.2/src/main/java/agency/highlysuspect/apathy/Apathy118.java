@@ -91,6 +91,11 @@ public abstract class Apathy118 extends Apathy {
 						mobCfg.get(CoreMobOptions.tagSetExcluded),
 						new PartialSpecAttackerTaggedWith(mobCfg.get(CoreMobOptions.tagSet))
 					));
+					case "potionset"  -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(VerMobOptions.mobEffectSetIncluded),
+						mobCfg.get(VerMobOptions.mobEffectSetExcluded),
+						new PartialSpecEffect(mobCfg.get(VerMobOptions.mobEffectSet), mobCfg.get(VerMobOptions.mobEffectWho))
+					));
 					case "playerset"  -> mobCfg.get(CoreMobOptions.playerSetName).ifPresent(s ->
 						ruleSpecList.add(new RuleSpecPredicated(
 							mobCfg.get(CoreMobOptions.playerSetIncluded),
@@ -163,6 +168,12 @@ public abstract class Apathy118 extends Apathy {
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
 		partialSerializers.register("team", PartialSpecScoreboardTeam.Serializer.INSTANCE);
+	}
+	
+	@Override
+	public void addMobConfig(ConfigSchema schema) {
+		super.addMobConfig(schema);
+		VerMobOptions.visit(schema);
 	}
 	
 	@Override

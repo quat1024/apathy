@@ -2,6 +2,7 @@ package agency.highlysuspect.apathy.core.config;
 
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.rule.Who;
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
@@ -254,7 +255,7 @@ public interface ConfigProperty<T> {
 	}
 	
 	static <B extends Builder<Set<AttackerType>, B>> B attackerTypeSetOpt(String name, Set<AttackerType> defaultValue, String... comment) {
-		return new ConfigProperty.Builder<Set<AttackerType>, B>(name, defaultValue)
+		return new Builder<Set<AttackerType>, B>(name, defaultValue)
 			.comment(comment)
 			.writer(set -> set.stream()
 				.map(AttackerType::apathy$id)
@@ -267,7 +268,7 @@ public interface ConfigProperty<T> {
 	}
 	
 	static <B extends Builder<Set<AttackerTag>, B>> B attackerTagSetOpt(String name, Set<AttackerTag> defaultValue, String... comment) {
-		return new ConfigProperty.Builder<Set<AttackerTag>, B>(name, defaultValue)
+		return new Builder<Set<AttackerTag>, B>(name, defaultValue)
 			.comment(comment)
 			.writer(set -> set.stream()
 				.map(AttackerTag::apathy$id)
@@ -277,5 +278,12 @@ public interface ConfigProperty<T> {
 				.map(Apathy.instance::parseAttackerTag)
 				.filter(Objects::nonNull)
 				.collect(Collectors.toSet()));
+	}
+	
+	static <B extends Builder<Who, B>> B whoOpt(String name, Who defaultValue, String... comment) {
+		return new Builder<Who, B>(name, defaultValue)
+			.comment(comment)
+			.writer(Who::toString)
+			.parser(Who::fromString);
 	}
 }

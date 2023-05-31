@@ -5,6 +5,7 @@ import agency.highlysuspect.apathy.core.CoreGenOptions;
 import agency.highlysuspect.apathy.core.CoreMobOptions;
 import agency.highlysuspect.apathy.core.JsonRule;
 import agency.highlysuspect.apathy.core.TriState;
+import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
@@ -108,6 +109,13 @@ public abstract class Apathy116 extends Apathy {
 								new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
 							)));
 						break;
+					case "potionset":
+						ruleSpecList.add(new RuleSpecPredicated(
+							mobCfg.get(VerMobOptions.mobEffectSetIncluded),
+							mobCfg.get(VerMobOptions.mobEffectSetExcluded),
+							new PartialSpecEffect(mobCfg.get(VerMobOptions.mobEffectSet), mobCfg.get(VerMobOptions.mobEffectWho))
+						));
+						break;
 					case "revenge":
 						ruleSpecList.add(new RuleSpecPredicated(
 							TriState.TRUE, TriState.DEFAULT,
@@ -178,6 +186,12 @@ public abstract class Apathy116 extends Apathy {
 		partialSerializers.register("location", PartialSpecLocation.Serializer.INSTANCE);
 		partialSerializers.register("score", PartialSpecScore.Serializer.INSTANCE);
 		partialSerializers.register("team", PartialSpecScoreboardTeam.Serializer.INSTANCE);
+	}
+	
+	@Override
+	public void addMobConfig(ConfigSchema schema) {
+		super.addMobConfig(schema);
+		VerMobOptions.visit(schema);
 	}
 	
 	@Override

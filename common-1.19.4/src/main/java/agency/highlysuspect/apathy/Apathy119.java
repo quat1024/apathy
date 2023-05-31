@@ -11,6 +11,7 @@ import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.core.rule.PartialSpecSpawnType;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
@@ -105,6 +106,11 @@ public abstract class Apathy119 extends Apathy {
 							mobCfg.get(CoreMobOptions.playerSetExcluded),
 							new PartialSpecDefenderInPlayerSet(Collections.singleton(s))
 						)));
+					case "spawntype"  -> ruleSpecList.add(new RuleSpecPredicated(
+						mobCfg.get(CoreMobOptions.spawnTypeIncluded),
+						mobCfg.get(CoreMobOptions.spawnTypeExcluded),
+						new PartialSpecSpawnType(mobCfg.get(CoreMobOptions.spawnTypeSet))
+					));
 					case "revenge"    -> ruleSpecList.add(new RuleSpecPredicated(
 						TriState.TRUE, TriState.DEFAULT,
 						new PartialSpecRevengeTimer(mobCfg.get(CoreMobOptions.revengeTimer))

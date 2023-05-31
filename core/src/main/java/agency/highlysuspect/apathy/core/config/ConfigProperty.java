@@ -207,6 +207,15 @@ public interface ConfigProperty<T> {
 				.collect(Collectors.toList()));
 	}
 	
+	static <B extends Builder<Set<String>, B>> B stringSetOpt(String name, Set<String> defaultValue, String... comment) {
+		return new Builder<Set<String>, B>(name, defaultValue)
+			.comment(comment)
+			.writer(s -> s.stream().sorted().collect(Collectors.joining(", ")))
+			.parser(s -> Arrays.stream(s.trim().split(","))
+				.map(String::trim)
+				.collect(Collectors.toSet()));
+	}
+	
 	static <B extends Builder<Set<ApathyDifficulty>, B>> B difficultySetOpt(String name, Set<ApathyDifficulty> defaultValue, String... comment) {
 		return new Builder<Set<ApathyDifficulty>, B>(name, defaultValue)
 			.comment(comment)

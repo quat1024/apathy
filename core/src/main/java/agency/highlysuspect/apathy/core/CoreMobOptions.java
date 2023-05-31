@@ -8,6 +8,7 @@ import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,13 +22,13 @@ public class CoreMobOptions {
 	).build();
 	
 	public static final ConfigProperty<List<String>> ruleOrder = ConfigProperty.stringListOpt("ruleOrder",
-			Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "potionSet", "playerSet", "revenge"),
-			"Which order should the rules in this config file be evaluated in?",
-			"Comma-separated list built out of any or all of the following keywords, in any order:",
-			"json, difficulty, boss, mobSet, tagSet, playerSet, potionSet, revenge")
-		.note("If a rule is not listed in the rule order, it will not be checked.")
-		.example("difficulty, revenge, playerSet")
-		.build();
+		Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "potionSet", "playerSet", "spawnType", "revenge"),
+		"Which order should the rules in this config file be evaluated in?",
+		"Comma-separated list built out of any or all of the following keywords, in any order:",
+		"json, difficulty, boss, mobSet, tagSet, playerSet, potionSet, spawnType, revenge"
+	).note("If a rule is not listed in the rule order, it will not be checked.")
+	.example("difficulty, revenge, playerSet")
+	.build();
 	
 	public static final ConfigProperty<Set<ApathyDifficulty>> difficultySet = ConfigProperty.difficultySetOpt("difficultySet", Collections.emptySet(),
 			"Comma-separated list of difficulties.")
@@ -51,14 +52,14 @@ public class CoreMobOptions {
 	).build();
 	
 	public static final ConfigProperty<TriState> boss = ConfigProperty.allowDenyPassOpt("boss", TriState.TRUE,
-			"What happens when the attacker is a boss?",
-			"'Bossness' is defined by inclusion in the 'apathy:bosses' tag.",
-			"May be one of:",
-			"allow - Every boss is allowed to attack everyone.",
-			"deny  - No boss is allowed to attack anyone.",
-			"pass  - Defer to the next rule.")
-		.note("If the current attacker is *not* a boss, always passes to the next rule.")
-		.build();
+		"What happens when the attacker is a boss?",
+		"'Bossness' is defined by inclusion in the 'apathy:bosses' tag.",
+		"May be one of:",
+		"allow - Every boss is allowed to attack everyone.",
+		"deny  - No boss is allowed to attack anyone.",
+		"pass  - Defer to the next rule."
+	).note("If the current attacker is *not* a boss, always passes to the next rule.")
+	.build();
 	
 	public static final ConfigProperty<Set<AttackerType>> mobSet = ConfigProperty.attackerTypeSetOpt("mobSet", Collections.emptySet(), "A comma-separated set of mob IDs.")
 		.example("minecraft:creeper, minecraft:spider")
@@ -127,17 +128,40 @@ public class CoreMobOptions {
 	).build();
 	
 	public static final ConfigProperty<Long> revengeTimer = ConfigProperty.longOpt("revengeTimer", -1,
-			"For how many ticks is a mob allowed to retaliate after being attacked?",
-			"Set to -1 to disable this 'revenge' mechanic.",
-			"When the timer expires, defers to the next rule.")
-		.note(
-			"The exact duration of the attack may be up to (<revengeTimer> + <recheckInterval>) ticks.",
-			"Btw, the original mod had an option for 'eternal revenge', with an uncapped timer.",
-			"I didn't port that, but the maximum value of the timer is " + Long.MAX_VALUE + " ticks.",
-			"Make of that information what you will ;)"
-		)
-		.atLeast(-1)
-		.build();
+		"For how many ticks is a mob allowed to retaliate after being attacked?",
+		"Set to -1 to disable this 'revenge' mechanic.",
+		"When the timer expires, defers to the next rule."
+	).note(
+		"The exact duration of the attack may be up to (<revengeTimer> + <recheckInterval>) ticks.",
+		"Btw, the original mod had an option for 'eternal revenge', with an uncapped timer.",
+		"I didn't port that, but the maximum value of the timer is " + Long.MAX_VALUE + " ticks.",
+		"Make of that information what you will ;)"
+	)
+	.atLeast(-1)
+	.build();
+	
+	public static final ConfigProperty<Set<String>> spawnTypeSet = ConfigProperty.stringSetOpt("spawnTypeSet", new HashSet<>(),
+		"Comma-separated list of spawn types.",
+		"The options are \"unknown\", \"natural\", \"chunk_generation\", \"spawner\", \"structure\", \"breeding\", \"mob_summoned\", \"jockey\",",
+		"\"event\", \"conversion\", \"reinforcement\", \"triggered\", \"bucket\", \"spawn_egg\", \"command\", \"dispenser\", and \"patrol\".",
+		"More documentation for exactly what these do is on the wiki."
+	).build();
+	
+	public static final ConfigProperty<TriState> spawnTypeIncluded = ConfigProperty.allowDenyPassOpt("spawnTypeIncluded", TriState.DEFAULT,
+		"What happens to mobs spawned with a method included in spawnTypeSet?",
+		"May be one of:",
+		"allow - The mob is allowed to attack the player.",
+		"deny  - The mob is not allowed to attack the player.",
+		"pass  - Defer to the next rule."
+	).build();
+	
+	public static final ConfigProperty<TriState> spawnTypeExcluded = ConfigProperty.allowDenyPassOpt("spawnTypeExcluded", TriState.DEFAULT,
+		"What happens to mobs that were *not* spawned with a method included in spawnTypeSet?",
+		"May be one of:",
+		"allow - The mob is allowed to attack the player.",
+		"deny  - The mob is not allowed to attack the player.",
+		"pass  - Defer to the next rule."
+	).build();
 	
 	public static final ConfigProperty<Boolean> fallthrough = ConfigProperty.boolAllowDenyOpt("fallthrough", true,
 		"If absolutely none of the previous rules applied, what happens?",
@@ -157,6 +181,7 @@ public class CoreMobOptions {
 		schema.section("Mob Set Rule", mobSet, mobSetIncluded, mobSetExcluded);
 		schema.section("Tag Set Rule", tagSet, tagSetIncluded, tagSetExcluded);
 		schema.section("Player Set Rule", playerSetName, playerSetSelfSelect, playerSetIncluded, playerSetExcluded);
+		schema.section("Spawn Type Rule", spawnTypeSet, spawnTypeIncluded, spawnTypeExcluded);
 		schema.section("Revenge Rule", revengeTimer);
 		schema.section("Last Resort Rule", fallthrough);
 	}

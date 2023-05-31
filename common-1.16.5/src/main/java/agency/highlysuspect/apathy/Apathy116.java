@@ -11,6 +11,7 @@ import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerIsBoss;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAttackerTaggedWith;
 import agency.highlysuspect.apathy.core.rule.PartialSpecDifficultyIs;
 import agency.highlysuspect.apathy.core.rule.PartialSpecRevengeTimer;
+import agency.highlysuspect.apathy.core.rule.PartialSpecSpawnType;
 import agency.highlysuspect.apathy.core.rule.Rule;
 import agency.highlysuspect.apathy.core.rule.RuleSpecAlways;
 import agency.highlysuspect.apathy.core.rule.RuleSpecChain;
@@ -114,6 +115,13 @@ public abstract class Apathy116 extends Apathy {
 							mobCfg.get(VerMobOptions.mobEffectSetIncluded),
 							mobCfg.get(VerMobOptions.mobEffectSetExcluded),
 							new PartialSpecEffect(mobCfg.get(VerMobOptions.mobEffectSet), mobCfg.get(VerMobOptions.mobEffectWho))
+						));
+						break;
+					case "spawntype":
+						ruleSpecList.add(new RuleSpecPredicated(
+							mobCfg.get(CoreMobOptions.spawnTypeIncluded),
+							mobCfg.get(CoreMobOptions.spawnTypeExcluded),
+							new PartialSpecSpawnType(mobCfg.get(CoreMobOptions.spawnTypeSet))
 						));
 						break;
 					case "revenge":

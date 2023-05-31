@@ -94,74 +94,6 @@ First, the `predicated` rule is evaluated. If it returns `pass`, the `always` ru
 }
 ```
 
-## `predicated`
-Arguments:
-* `predicate`: A predicate to check against.
-* `if_true`: Optional. Can be one of `"allow"`, `deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
-* `if_false`: Optional. Can be one of `"allow`, `"deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
-
-The predicate is tested. If it is true, the rule evaluates to `if_true`. If it is false, the rule evaluates to `if_false`.
-
-A list of predicates is available in the next section.
-
-### Example
-
-If the `revenge_timer` predicate passes, the rule evaluates to `allow`. If not, the rule evaluates to `pass`.
-
-```json
-{
-	"type": "predicated",
-	"if_true": "allow",
-	"if_false": "pass",
-	"predicate": {
-		"type": "revenge_timer",
-		"timeout": 60
-	}
-}
-```
-
-### `allow_if` and `deny_if` (deprecated 2.5)
-
-`allow_if` is a synonym for `predicated` with `if_true` pre-set to `allow` and `if_false` pre-set to `pass`. `deny_if` is the same, but `if_true` is pre-set to `deny`.
-
-These are deprecated because it's just a more confusing way of accessing `predicated` - it does the same thing.
-
-## `if` **(new in 2.6)**
-Arguments:
-* `predicate`: A predicate to check against.
-* `if_true`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
-* `if_false`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
-
-The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated instead.
-
-### Example
-
-If the `revenge_timer` predicate passes (more detals on predicates in the next section), the rule evaluates to the result of the `chain` rule. If not, the rule evaluates to the result of the `predicated` rule.
-
-```json
-{
-	"type": "if",
-	"if_true": {
-		"type": "chain",
-		"rules": [
-			{
-				"type": "..."
-			}
-		]
-	},
-	"if_false": {
-		"type": "predicated",
-		"predicate": {
-			"type": "..."
-		}
-	},
-	"predicate": {
-		"type": "revenge_timer",
-		"timeout": 60
-	}
-}
-```
-
 ## `debug`
 Arguments:
 * `message`: Any string you want.
@@ -235,8 +167,132 @@ This rule evaluates the contents of the `mobs.json` file as a rule. Needless to 
 
 It will show up in dumps when you dump the builtin rule, so, watch out for that.
 
+## `if` (2.6+)
+Arguments:
+* `predicate`: A predicate to check against.
+* `if_true`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
+* `if_false`: Optional. A rule. Defaults to `{"type": "always", "value": "pass"}` if you do not specify it.
+
+The predicate is tested. If it is true, the `if_true` rule is evaluated. If it is false, the `if_false` rule is evaluated instead.
+
+A list of predicates is available in [the next section](#predicates)
+
+### Example
+
+If the `revenge_timer` predicate passes (more detals on predicates in the next section), the rule evaluates to the result of the `chain` rule. If not, the rule evaluates to the result of the `predicated` rule.
+
+```json
+{
+	"type": "if",
+	"if_true": {
+		"type": "chain",
+		"rules": [
+			{
+				"type": "..."
+			}
+		]
+	},
+	"if_false": {
+		"type": "predicated",
+		"predicate": {
+			"type": "..."
+		}
+	},
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 60
+	}
+}
+```
+
+## `predicated`
+Arguments:
+* `predicate`: A predicate to check against.
+* `if_true`: Optional. Can be one of `"allow"`, `deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
+* `if_false`: Optional. Can be one of `"allow`, `"deny"`, or `"pass"`. Defaults to `"pass"` if you do not specify it.
+
+The predicate is tested. If it is true, the rule evaluates to `if_true`. If it is false, the rule evaluates to `if_false`.
+
+A list of predicates is available in [the next section](#predicates)
+
+### Example
+
+If the `revenge_timer` predicate passes, the rule evaluates to `allow`. If not, the rule evaluates to `pass`.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 60
+	}
+}
+```
+
+### `allow_if` and `deny_if` (deprecated 2.5)
+
+`allow_if` is a synonym for `predicated` with `if_true` pre-set to `allow` and `if_false` pre-set to `pass`. `deny_if` is the same, but `if_true` is pre-set to `deny`.
+
+These are deprecated because it's just a more confusing way of accessing `predicated` - it does the same thing.
+
 # Predicates
 Much like a rule, a predicate is a JSON object of at least one field - `type` - and the rest of the fields depend on the `type`. These can be passed to the `predicated`/`allow_if`/`deny_if` rules. And it's where the meat of the mod is.
+
+## `all` and `any`
+Arguments: `predicates`, an array of more predicates.
+
+`all` returns `true` only when *all of* the component predicates return true.
+
+`any` returns `true` when *at least one of* the component predicates returns true.
+
+### Example
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "all",
+		"predicates": [
+			{
+				"type": "attacker_is",
+				"mobs": [ "minecraft:zombie" ]
+			},
+			{
+				"type": "random",
+				"chance": 0.5
+			}
+		]
+	}
+}
+```
+
+## `advancements`
+Arguments:
+* `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/enter_the_end", "minecraft:story/enter_the_nether"]`
+
+The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
+
+### Example
+
+This rule makes mobs passive until the player enters the End for the first time.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "advancements",
+		"advancements": [
+			"minecraft:story/enter_the_end"
+		]
+	}
+}
+```
 
 ## `always`
 Arguments:
@@ -260,34 +316,6 @@ This rule always evaluates to "allow", because the predicate always evaluates to
 }
 ```
 
-## `attacker_tagged_with`
-Arguments:
-* `tags`, an array of strings such as `["minecraft:raiders"]`.
-
-The predicate returns `true` if the attacker has one of these tags.
-
-### Example
-
-```json
-{
-	"type": "predicated",
-	"if_true": "allow",
-	"if_false": "deny",
-	"predicate": {
-		"type": "attacker_tagged_with",
-		"tags": [
-			"minecraft:raiders",
-			"somemod:sometag"
-		]
-	}
-}
-```
-
-## `attacker_is_boss`
-Arguments: None.
-
-Synonym for `attacker_tagged_with` with the tag `apathy:bosses`. This tag includes the Ender Dragon, Wither, Warden, and the contents of the `c:bosses` and `forge:bosses` tags if they exist.
-
 ## `attacker_is`
 Arguments: `mobs`, an array of mob IDs such as `["minecraft:creeper"]`.
 
@@ -310,48 +338,30 @@ The predicate returns `true` if the attacker is one of these mobs.
 }
 ```
 
-## `in_player_set`
-Arguments: `player_sets`, an array of strings such as `["my-cool-set"]`.
+## `attacker_is_boss`
+Arguments: None.
 
-The predicate returns `true` if the defending player is part of one of these player sets. Player sets can be managed with the `/apathy set` and `/apathy set-admin` commands.
+Synonym for `attacker_tagged_with` with the tag `apathy:bosses`. This tag includes the Ender Dragon, Wither, Warden, and the contents of the `c:bosses` and `forge:bosses` tags if they exist.
 
-### Example
+## `attacker_tagged_with`
+Arguments:
+* `tags`, an array of strings such as `["minecraft:raiders"]`.
 
-This rule honors a "no-mobs" player set. If the player is in that set, all mobs will be denied from attacking.
-
-```json
-{
-	"type": "predicated",
-	"if_true": "deny",
-	"if_false": "pass",
-	"predicate": {
-		"type": "in_player_set",
-		"player_sets": [
-			"no-mobs"
-		]
-	}
-}
-```
-
-## `revenge_timer`
-Arguments: `timeout`, a number like `60`.
-
-The predicate returns `true` while the mob was last attacked within this many ticks (1/20ths of a second).
-
-For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires, the predicate will start returning `false`.
+The predicate returns `true` if the attacker has one of these tags.
 
 ### Example
-
-This rule allows mobs to retaliate for 20 seconds after being attacked.
 
 ```json
 {
 	"type": "predicated",
 	"if_true": "allow",
-	"if_false": "pass",
+	"if_false": "deny",
 	"predicate": {
-		"type": "revenge_timer",
-		"timeout": 400
+		"type": "attacker_tagged_with",
+		"tags": [
+			"minecraft:raiders",
+			"somemod:sometag"
+		]
 	}
 }
 ```
@@ -386,45 +396,16 @@ This rule acts a litlte bit like `difficulty_case`. Note that this example makes
 }
 ```
 
-## `score`
+## `effect` (2.7+)
 Arguments:
-* `objective`, any string
-* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
-* `thresholdMode`, either `"at_least"`, `"at_most"`, or `"equal"`
-* `threshold`, any integer
+* `who`, either `"attacker"` or `"defender"`
+* `effects`, array of potion effect IDs
 
-The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not. A `"thresholdMode"` of `"at_least"` performs a "greater than or equal to" test. `"at_most"` performs a "less than or equal to" test.
-
-If the scoreboard objective does not exist, this predicate will always return `false`. If `who` is not specified, the default value is `"defender"`, but don't rely on this for new scripts.
+The predicate returns `true` if the attacking mob or the defending player (select with `who`) has at least one of the specified effects.
 
 ### Example
 
-This rule returns `"allow"` when the defending player has >= 10 points on the scoreboard objective "fruit".
-
-```json
-{
-	"type": "predicated",
-	"if_true": "allow",
-	"if_false": "pass",
-	"predicate": {
-		"type": "score",
-		"objective": "fruit",
-		"who": "defender",
-		"thresholdMode": "at_least",
-		"threshold": 10
-	}
-}
-```
-
-## `team` **(NEW in 2.6)**
-Arguments:
-* `teams`, an array of strings
-
-`true` if the defending player is on one of the named scoreboard teams. `false` if the player is not on the team, or if the team does not exist.
-
-Teams can be managed with the vanilla `/team` command.
-
-### Example
+This rule will make mobs ignore players with the Invisibility effect.
 
 ```json
 {
@@ -432,16 +413,102 @@ Teams can be managed with the vanilla `/team` command.
 	"if_true": "deny",
 	"if_false": "pass",
 	"predicate": {
-		"type": "team",
-		"teams": [
-			"no-mobs",
-			"gamers"
+		"type": "effect",
+		"who": "defender",
+		"effects": [
+			"minecraft:invisibility"
 		]
 	}
 }
 ```
 
-## `random` **(NEW in 2.6)**
+## `in_player_set`
+Arguments: `player_sets`, an array of strings such as `["my-cool-set"]`.
+
+The predicate returns `true` if the defending player is part of one of these player sets. Player sets can be managed with the `/apathy set` and `/apathy set-admin` commands.
+
+### Example
+
+This rule honors a "no-mobs" player set. If the player is in that set, all mobs will be denied from attacking.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "in_player_set",
+		"player_sets": [
+			"no-mobs"
+		]
+	}
+}
+```
+
+## `location`
+Arguments:
+* `predicate`, a vanilla `LocationPredicate`.
+* `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
+* `uniqueId`, any String you want. Required for `attacker_spawn_location`.
+
+This predicate does the following:
+
+* picks a *location* dependent on the value of `who`:
+	* `attacker`: the attacking mob's location
+	* `defender`: the defending player's location
+	* `attacker_spawn_location`: the first location where the attacking mob was noticed
+* returns `true` if the location is loaded and passes the `LocationPredicate`.
+
+LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
+
+`uniqueId` is required because the result of `"who": "attacker_spawn_location"` predicates is tested only one time and cached on the entity. This helps on performance, and fixes issues relating to the attacker's spawn location being unloaded.
+
+### Example
+
+This rule returns `"deny"` if the defending player is standing in a Stronghold structure, and `"pass"` otherwise.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "deny",
+	"if_false": "pass",
+	"predicate": {
+		"type": "location",
+		"who": "defender",
+		"predicate": {
+			"feature": "stronghold"
+		}
+	}
+}
+```
+
+## `not`
+Arguments: `predicate`, a single predicate.
+
+Returns `true` whenever its component predicate returns `false`, and vice versa.
+
+### Example
+
+This rule returns `"allow"` when the difficulty is *not* Easy.
+
+```json
+{
+	"rule": "predicated",
+	"if_true": "allow",
+	"if_false": "deny",
+	"predicate": {
+		"type": "not",
+		"predicate": {
+			"type": "difficulty_is",
+			"difficulties": [
+				"easy"
+			]
+		}
+	}
+}
+```
+
+## `random` (2.6+)
 Arguments:
 * `chance`, a double somewhere in the range 0 to 1
 
@@ -474,7 +541,60 @@ This makes use of the `all` predicate, documented later, to make half of all zom
 }
 ```
 
-## `spawn_type` **(NEW in 2.6)**
+## `revenge_timer`
+Arguments: `timeout`, a number like `60`.
+
+The predicate returns `true` while the mob was last attacked within this many ticks (1/20ths of a second).
+
+For example, if `timeout` is `60`, the predicate will return `true` if the mob was attacked within the last 3 seconds. After the time expires, the predicate will start returning `false`.
+
+### Example
+
+This rule allows mobs to retaliate for 20 seconds after being attacked.
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "revenge_timer",
+		"timeout": 400
+	}
+}
+```
+
+## `score` (2.5+)
+Arguments:
+* `objective`, any string
+* `who`, either `"attacker"` (the attacking mob) or `"defender"` (the defending player)
+* `thresholdMode`, either `"at_least"`, `"at_most"`, or `"equal"`
+* `threshold`, any integer
+
+The predicate tests a scoreboard value of either the attacker or the defending player (choose with `who`). It returns `true` if the test passes, and `false` if it does not. A `"thresholdMode"` of `"at_least"` performs a "greater than or equal to" test. `"at_most"` performs a "less than or equal to" test.
+
+If the scoreboard objective does not exist, this predicate will always return `false`. If `who` is not specified, the default value is `"defender"`, but don't rely on this for new scripts.
+
+### Example
+
+This rule returns `"allow"` when the defending player has >= 10 points on the scoreboard objective "fruit".
+
+```json
+{
+	"type": "predicated",
+	"if_true": "allow",
+	"if_false": "pass",
+	"predicate": {
+		"type": "score",
+		"objective": "fruit",
+		"who": "defender",
+		"thresholdMode": "at_least",
+		"threshold": 10
+	}
+}
+```
+
+## `spawn_type` (2.6+)
 Arguments:
 * `types`, array of strings from the set "unknown", "natural", "chunk_generation", "spawner", "structure", "breeding", "mob_summoned", "jockey", "event", "conversion", "reinforcement", "triggered", "bucket", "spawn_egg", "command", "dispenser", and "patrol".
 
@@ -520,99 +640,13 @@ This rule will make mobs from dungeon spawners always hostile.
 }
 ```
 
-## `effect` **(NEW in 2.7)**
+## `team` (2.6+)
 Arguments:
-* `who`, either `"attacker"` or `"defender"`
-* `effects`, array of potion effect IDs
+* `teams`, an array of strings
 
-The predicate returns `true` if the attacking mob or the defending player (select with `who`) has at least one of the specified effects.
+`true` if the defending player is on one of the named scoreboard teams. `false` if the player is not on the team, or if the team does not exist.
 
-### Example
-
-This rule will make mobs ignore players with the Invisibility effect.
-
-```json
-{
-	"type": "predicated",
-	"if_true": "deny",
-	"if_false": "pass",
-	"predicate": {
-		"type": "effect",
-		"who": "defender",
-		"effects": [
-			"minecraft:invisibility"
-		]
-	}
-}
-```
-
-## `advancements`
-Arguments:
-* `advancements`, an array of strings corresponding to advancement IDs, like `["minecraft:story/enter_the_end", "minecraft:story/enter_the_nether"]`
-
-The predicate returns `true` if the defending player has at least one of the mentioned advancements, and `false` if they do not have any.
-
-### Example
-
-This rule makes mobs passive until the player enters the End for the first time.
-
-```json
-{
-	"type": "predicated",
-	"if_true": "allow",
-	"if_false": "deny",
-	"predicate": {
-		"type": "advancements",
-		"advancements": [
-			"minecraft:story/enter_the_end"
-		]
-	}
-}
-```
-
-## `location`
-Arguments:
-* `predicate`, a vanilla `LocationPredicate`.
-* `who`, either `"attacker"`, `"defender"`, or `"attacker_spawn_location"` (the default)
-* `uniqueId`, any String you want. Required for `attacker_spawn_location`.
-
-This predicate does the following:
-
-* picks a *location* dependent on the value of `who`:
-  * `attacker`: the attacking mob's location
-  * `defender`: the defending player's location
-  * `attacker_spawn_location`: the first location where the attacking mob was noticed
-* returns `true` if the location is loaded and passes the `LocationPredicate`.
-
-LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
-
-`uniqueId` is required because the result of `"who": "attacker_spawn_location"` predicates is tested only one time and cached on the entity. This helps on performance, and fixes issues relating to the attacker's spawn location being unloaded.
-
-### Example
-
-This rule returns `"deny"` if the defending player is standing in a Stronghold structure, and `"pass"` otherwise.
-
-```json
-{
-	"type": "predicated",
-	"if_true": "deny",
-	"if_false": "pass",
-	"predicate": {
-		"type": "location",
-		"who": "defender",
-		"predicate": {
-			"feature": "stronghold"
-		}
-	}
-}
-```
-
-## `all` and `any`
-Arguments: `predicates`, an array of more predicates.
-
-`all` returns `true` only when *all of* the component predicates return true.
-
-`any` returns `true` when *at least one of* the component predicates returns true.
+Teams can be managed with the vanilla `/team` command.
 
 ### Example
 
@@ -622,43 +656,11 @@ Arguments: `predicates`, an array of more predicates.
 	"if_true": "deny",
 	"if_false": "pass",
 	"predicate": {
-		"type": "all",
-		"predicates": [
-			{
-				"type": "attacker_is",
-				"mobs": [ "minecraft:zombie" ]
-			},
-			{
-				"type": "random",
-				"chance": 0.5
-			}
+		"type": "team",
+		"teams": [
+			"no-mobs",
+			"gamers"
 		]
-	}
-}
-```
-
-## `not`
-Arguments: `predicate`, a single predicate.
-
-Returns `true` whenever its component predicate returns `false`, and vice versa.
-
-### Example
-
-This rule returns `"allow"` when the difficulty is *not* Easy.
-
-```json
-{
-	"rule": "predicated",
-	"if_true": "allow",
-	"if_false": "deny",
-	"predicate": {
-		"type": "not",
-		"predicate": {
-			"type": "difficulty_is",
-			"difficulties": [
-				"easy"
-			]
-		}
 	}
 }
 ```

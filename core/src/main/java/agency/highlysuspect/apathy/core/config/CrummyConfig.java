@@ -1,16 +1,20 @@
 package agency.highlysuspect.apathy.core.config;
 
 import agency.highlysuspect.apathy.core.Apathy;
+import agency.highlysuspect.apathy.core.CoreBossOptions;
+import agency.highlysuspect.apathy.core.CoreMobOptions;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 //TODO: exclude on Forge builds? (it's not needed)
 public class CrummyConfig implements CookedConfig {
@@ -79,6 +83,25 @@ public class CrummyConfig implements CookedConfig {
 			}
 			
 			parsedValues.put(prop, parsed);
+		}
+		
+		//CONFIG UPGRADING (cant find a better place to put this)
+		if(parsedValues.containsKey(CoreMobOptions.configVersion)) {
+			Integer cfgVersion = get(CoreMobOptions.configVersion);
+			if(cfgVersion != null && cfgVersion == 4) {
+				//OLD rule order: json, difficulty, boss, mobSet, tagSet,            playerSet,            revenge
+				//NEW rule order: json, difficulty, boss, mobSet, tagSet, potionSet, playerSet, spawnType, revenge
+				//if you had the old default, upgrade it to the new default
+				
+				if(Objects.equals(
+					get(CoreMobOptions.ruleOrder),
+					Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "playerSet", "revenge")
+				)) {
+					parsedValues.put(CoreMobOptions.ruleOrder, Arrays.asList("json", "difficulty", "boss", "mobSet", "tagSet", "potionSet", "playerSet", "spawnType", "revenge"));
+				}
+				
+				parsedValues.put(CoreMobOptions.configVersion, 5);
+			}
 		}
 	}
 	

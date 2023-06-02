@@ -1,12 +1,13 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.PlayerSetManager;
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
+import agency.highlysuspect.apathy.coreplusminecraft.PlayerSetManagerGuts;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecDefenderInPlayerSet implements Spec<Partial, PartialSpecDefenderInPlayerSet> {
 	public PartialSpecDefenderInPlayerSet(Set<String> playerSetNames) {
 		this.playerSetNames = playerSetNames;
@@ -34,11 +34,11 @@ public class PartialSpecDefenderInPlayerSet implements Spec<Partial, PartialSpec
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			ServerPlayer defenderSp = VerConv.player(defender);
+			ServerPlayer defenderSp = MinecraftConv.player(defender);
 			MinecraftServer server = defenderSp.getServer();
 			assert server != null;
 			
-			PlayerSetManager setManager = PlayerSetManager.getFor(server);
+			PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(server);
 			for(String playerSetName : playerSetNames) {
 				if(setManager.playerInSet(defenderSp, playerSetName)) return true;
 			}

@@ -1,23 +1,21 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.Portage;
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
 	public PartialSpecLocation(LocationPredicate pred, LocationGetter who, String uniqueId, int offsetX, int offsetY, int offsetZ) {
 		this.pred = pred;
@@ -42,19 +40,20 @@ public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			Level level = VerConv.level(defender);
-			if(!(level instanceof ServerLevel slevel)) return false;
+			ServerLevel slevel = MinecraftConv.level(defender);
 			
 			//too hard to port im lazy
-			Vec3 attackerPos = VerConv.mob(attacker).position();
-			Vec3 defenderPos = VerConv.player(defender).position();
+			Vec3 attackerPos = MinecraftConv.mob(attacker).position();
+			Vec3 defenderPos = MinecraftConv.player(defender).position();
 			
-			return switch(who) {
+			switch(who) {
 				//Easy cases (that can't be cached anyways because the entities wander around the world)
-				case ATTACKER -> test(slevel, pred, attackerPos.x, attackerPos.y, attackerPos.z);
-				case DEFENDER -> test(slevel, pred, defenderPos.x, defenderPos.y, defenderPos.z);
+				case ATTACKER:
+					return test(slevel, pred, attackerPos.x, attackerPos.y, attackerPos.z);
+				case DEFENDER:
+					return test(slevel, pred, defenderPos.x, defenderPos.y, defenderPos.z);
 				//OK this one is fun!!
-				case ATTACKER_SPAWN_LOCATION -> {
+				case ATTACKER_SPAWN_LOCATION:
 					//The spawn position is fixed, so there is no need to check the LocationPredicate every single tick.
 					//But more importantly, the entity might wander so far away from its spawn position that its not loaded anymore.
 					//LocationPredicates return incorrect results for unloaded positions. I want to avoid the behavior of an entity
@@ -63,30 +62,31 @@ public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
 					//Look up the cached result. If one exists, yield it
 					Map<String, TriState> cache = attacker.apathy$getOrCreateLocationPredicateCache();
 					TriState cachedResult = cache.getOrDefault(uniqueId, TriState.DEFAULT);
-					if(cachedResult == TriState.TRUE) yield true;
-					if(cachedResult == TriState.FALSE) yield false;
+					if(cachedResult == TriState.TRUE) return true;
+					if(cachedResult == TriState.FALSE) return false;
 					
 					//Begin computing the uncached result.
 					//Look up the spawn position of this entity
 					VecThree vecThree = attacker.apathy$getSpawnPosition();
 					if(vecThree == null) {
 						//The spawn position is unknown for this entity
-						yield false;
+						return false;
 					}
 					
 					//Compute and store the cached result, if the position is loaded
-					if(slevel.isLoaded(Portage.blockPosContaining(vecThree.x(), vecThree.y(), vecThree.z()))) {
+					
+					if(slevel.isLoaded(ApathyPlusMinecraft.instanceMinecraft.blockPosContaining(vecThree.x(), vecThree.y(), vecThree.z()))) {
 						boolean result = test(slevel, pred, vecThree.x(), vecThree.y(), vecThree.z());
 						cache.put(uniqueId, TriState.fromBoolean(result));
-						yield result;
+						return result;
 					}
 					
 					//If we're here, the spawn position is known, but it hasn't ever been loaded at the same time as this entity... somehow
 					//Might be an entity that existed in a world created before the update that added this caching system.
 					//We can't know for sure whether the location predicate passes or not so default to false
-					yield false;
-				}
-			};
+					return false;
+			}
+			return false; //unreachable
 		};
 	}
 	
@@ -142,12 +142,12 @@ public class PartialSpecLocation implements Spec<Partial, PartialSpecLocation> {
 		}
 		
 		public static LocationGetter fromString(String name) {
-			return switch(name.toLowerCase(Locale.ROOT)) {
-				case "attacker" -> ATTACKER;
-				case "attacker_spawn_location" -> ATTACKER_SPAWN_LOCATION;
-				case "defender" -> DEFENDER;
-				default -> throw new IllegalArgumentException("expected 'attacker', 'defender', or 'attacker_spawn_location");
-			};
+			switch(name.toLowerCase(Locale.ROOT)) {
+				case "attacker": return ATTACKER;
+				case "attacker_spawn_location": return ATTACKER_SPAWN_LOCATION;
+				case "defender": return DEFENDER;
+				default: throw new IllegalArgumentException("expected 'attacker', 'defender', or 'attacker_spawn_location");
+			}
 		}
 	}
 }

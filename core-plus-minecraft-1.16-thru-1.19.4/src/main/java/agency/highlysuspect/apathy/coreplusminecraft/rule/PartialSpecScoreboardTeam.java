@@ -1,10 +1,10 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecScoreboardTeam implements Spec<Partial, PartialSpecScoreboardTeam> {
 	public PartialSpecScoreboardTeam(Set<String> teamNames) {
 		this.teamNames = teamNames;
@@ -27,7 +26,7 @@ public class PartialSpecScoreboardTeam implements Spec<Partial, PartialSpecScore
 	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			ServerLevel level = VerConv.level(defender);
+			ServerLevel level = MinecraftConv.level(defender);
 			ServerScoreboard scoreboard = level.getScoreboard();
 			
 			PlayerTeam team = scoreboard.getPlayersTeam(defender.apathy$scoreboardName());

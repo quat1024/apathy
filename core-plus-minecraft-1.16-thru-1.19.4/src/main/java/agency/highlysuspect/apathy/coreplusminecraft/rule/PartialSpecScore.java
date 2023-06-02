@@ -1,18 +1,17 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.rule.ThresholdMode;
 import agency.highlysuspect.apathy.core.rule.Who;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import com.google.gson.JsonObject;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecScore implements Spec<Partial, PartialSpecScore> {
 	public PartialSpecScore(String scoreboardObjective, Who who, ThresholdMode thresholdMode, int threshold) {
 		this.scoreboardObjective = scoreboardObjective;
@@ -33,7 +32,7 @@ public class PartialSpecScore implements Spec<Partial, PartialSpecScore> {
 			Objective objective = scoreboard.getObjective(scoreboardObjective);
 			if(objective == null) return false;
 			
-			Entity which = who.choose(VerConv.mob(attacker), VerConv.player(defender));
+			Entity which = who.choose(MinecraftConv.mob(attacker), MinecraftConv.player(defender));
 			String scoreboardName = which.getScoreboardName();
 			
 			int score = scoreboard.hasPlayerScore(scoreboardName, objective) ? scoreboard.getOrCreatePlayerScore(scoreboardName, objective).getScore() : 0;

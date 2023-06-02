@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy.mixin.wither;
 
-import agency.highlysuspect.apathy.Portage;
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreBossOptions;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
@@ -52,8 +52,8 @@ public class WitherBossMixin {
 	private void apathy$maybeDelete(CallbackInfo ci) {
 		WitherBoss me = (WitherBoss) (Object) this;
 		Level level = me.level;
-		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(VerConv.toApathyDifficulty(level.getDifficulty()))) {
-			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(Portage.comicalAnvilSound(me));
+		if(!Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(MinecraftConv.toApathyDifficulty(level.getDifficulty()))) {
+			((LivingEntityInvoker) me).apathy$dropAllDeathLoot(ApathyPlusMinecraft.instanceMinecraft.comicalAnvilSound(me));
 			me.remove();
 			ci.cancel();
 		}

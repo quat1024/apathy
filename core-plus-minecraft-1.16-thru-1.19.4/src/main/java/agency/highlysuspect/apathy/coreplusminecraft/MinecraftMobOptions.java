@@ -1,23 +1,24 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.coreplusminecraft;
 
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.TriState;
 import agency.highlysuspect.apathy.core.config.ConfigProperty;
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.rule.Who;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class VerMobOptions {
-	public static final ConfigProperty<Set<MobEffect>> mobEffectSet = mobEffectSetOpt("potionEffectSet", Set.of(MobEffects.INVISIBILITY),
+public class MinecraftMobOptions {
+	public static final ConfigProperty<Set<MobEffect>> mobEffectSet = mobEffectSetOpt("potionEffectSet", Collections.singleton(MobEffects.INVISIBILITY),
 		"A set of potion effects.",
 		"Example: minecraft:invisibility, minecraft:jump_boost"
 	).build();
@@ -53,7 +54,7 @@ public class VerMobOptions {
 		return new ConfigProperty.Builder<Set<MobEffect>, B>(name, defaultValue)
 			.comment(comment)
 			.writer(set -> set.stream()
-				.map(BuiltInRegistries.MOB_EFFECT::getKey)
+				.map(ApathyPlusMinecraft.instanceMinecraft.mobEffectRegistry()::getKey)
 				.filter(Objects::nonNull)
 				.map(ResourceLocation::toString)
 				.sorted()
@@ -62,13 +63,17 @@ public class VerMobOptions {
 				.map(String::trim)
 				.flatMap(st -> {
 					ResourceLocation rl = ResourceLocation.tryParse(st);
-					if(rl == null) Apathy.instance.log.warn("invalid resource location: " + st);
-					return Optional.ofNullable(rl).stream();
+					if(rl == null) {
+						Apathy.instance.log.warn("invalid resource location: " + st);
+						return Stream.of();
+					} else return Stream.of(rl);
 				})
 				.flatMap(rl -> {
-					MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(rl);
-					if(effect == null) Apathy.instance.log.warn("invalid mob effect: " + rl);
-					return Optional.ofNullable(effect).stream();
+					MobEffect effect = ApathyPlusMinecraft.instanceMinecraft.mobEffectRegistry().get(rl);
+					if(effect == null) {
+						Apathy.instance.log.warn("invalid mob effect: " + rl);
+						return Stream.of();
+					} else return Stream.of(effect);
 				})
 				.collect(Collectors.toSet()));
 	}

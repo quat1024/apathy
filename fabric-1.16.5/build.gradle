@@ -47,12 +47,14 @@ dependencies {
 	//xplat
 	implementation WHAT
 	implementation project(":core")
+	implementation project(":core-plus-minecraft-1.16-thru-1.19.4")
 }
 
 //fold in xplat resources and sources
 processResources {
 	from WHAT.sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16-thru-1.19.4").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/fabric.mod.json") {
@@ -63,6 +65,7 @@ processResources {
 tasks.withType(JavaCompile) {
 	source(WHAT.sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16-thru-1.19.4").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects

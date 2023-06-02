@@ -51,6 +51,7 @@ dependencies {
 	
 	compileOnly project(":common-1.18.2")
 	compileOnly project(":core")
+	compileOnly project(":core-plus-minecraft-1.16-thru-1.19.4")
 }
 
 //fold in xplat resources and sources
@@ -59,6 +60,7 @@ processResources {
 	//include common resources
 	from project(":common-1.18.2").sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16-thru-1.19.4").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/mods.toml") {
@@ -69,6 +71,7 @@ processResources {
 tasks.withType(JavaCompile) {
 	source(project(":common-1.18.2").sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16-thru-1.19.4").sourceSets.main.allSource)
 }
 
 minecraft {

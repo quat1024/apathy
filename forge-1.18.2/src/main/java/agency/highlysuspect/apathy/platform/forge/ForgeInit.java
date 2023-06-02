@@ -1,9 +1,9 @@
 package agency.highlysuspect.apathy.platform.forge;
 
 import agency.highlysuspect.apathy.Apathy118;
-import agency.highlysuspect.apathy.ApathyCommands;
-import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyCommands;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -102,7 +102,7 @@ public class ForgeInit extends Apathy118 {
 			if(e.phase == TickEvent.Phase.START) {
 				//Imagine having access to the server, that is ticking, in something called "Server Tick Event".
 				//What a FUCKIng concept!
-				PlayerSetManager.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
+				ApathyPlusMinecraft.instanceMinecraft.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
 			}
 		});
 	}

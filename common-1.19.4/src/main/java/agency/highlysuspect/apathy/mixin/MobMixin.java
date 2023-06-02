@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreGenOptions;
 import agency.highlysuspect.apathy.core.TriState;
@@ -9,6 +8,7 @@ import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
 import agency.highlysuspect.apathy.core.wrapper.AttackerType;
 import agency.highlysuspect.apathy.core.wrapper.VecThree;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -43,7 +43,7 @@ public class MobMixin implements Attacker {
 	
 	@Override
 	public ApathyDifficulty apathy$getDifficulty() {
-		return VerConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
+		return MinecraftConv.toApathyDifficulty(((Mob) (Object) this).level.getDifficulty());
 	}
 	
 	@Override
@@ -119,7 +119,7 @@ public class MobMixin implements Attacker {
 	
 	@Override
 	public @Nullable VecThree apathy$getSpawnPosition() {
-		return VerConv.toVecThree(spawnPosition);
+		return MinecraftConv.toVecThree(spawnPosition);
 	}
 	
 	@Override

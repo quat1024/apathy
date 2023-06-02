@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.coreplusminecraft;
 
 import agency.highlysuspect.apathy.core.wrapper.ApathyDifficulty;
 import agency.highlysuspect.apathy.core.wrapper.Attacker;
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
  * to anything from minecraft, so it contains wrappers for minecraft-specific concepts like "the game difficulty".
  * this file contains conversions to and from those wrapper types, to glue minecraft together with the core
  */
-public class VerConv {
+public class MinecraftConv {
 	public static LogFacade toLogFacade(Logger logger) {
 		return new LogFacade() {
 			@Override
@@ -47,16 +47,6 @@ public class VerConv {
 		}
 	}
 	
-	public static Difficulty fromApathyDifficulty(ApathyDifficulty diff) {
-		switch(diff) {
-			case PEACEFUL: return Difficulty.PEACEFUL;
-			case EASY: return Difficulty.EASY;
-			case NORMAL: return Difficulty.NORMAL;
-			case HARD: return Difficulty.HARD;
-			default: throw new IllegalArgumentException(diff.toString());
-		}
-	}
-	
 	public static VecThree toVecThree(Vec3 vec3) {
 		return new VecThree() {
 			@Override
@@ -74,10 +64,6 @@ public class VerConv {
 				return vec3.z;
 			}
 		};
-	}
-	
-	public static Vec3 fromVecThree(VecThree three) {
-		return new Vec3(three.x(), three.y(), three.z());
 	}
 	
 	///

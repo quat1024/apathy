@@ -1,10 +1,10 @@
 package agency.highlysuspect.apathy.platform.fabric;
 
 import agency.highlysuspect.apathy.Apathy119;
-import agency.highlysuspect.apathy.ApathyCommands;
-import agency.highlysuspect.apathy.PlayerSetManager;
 import agency.highlysuspect.apathy.core.config.ConfigSchema;
 import agency.highlysuspect.apathy.core.config.CrummyConfig;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyCommands;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -45,7 +45,7 @@ public class FabricInit extends Apathy119 implements ModInitializer {
 	
 	@Override
 	public void installPlayerSetManagerTicker() {
-		ServerTickEvents.START_SERVER_TICK.register(server -> PlayerSetManager.getFor(server).syncWithConfig());
+		ServerTickEvents.START_SERVER_TICK.register(server -> ApathyPlusMinecraft.instanceMinecraft.getFor(server).syncWithConfig());
 	}
 	
 	private Path cfgPath() {

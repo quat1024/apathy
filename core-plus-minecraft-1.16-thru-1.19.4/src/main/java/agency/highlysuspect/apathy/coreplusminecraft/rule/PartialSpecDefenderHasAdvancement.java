@@ -1,11 +1,10 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
 import agency.highlysuspect.apathy.core.rule.Partial;
-import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -18,9 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-@SuppressWarnings("ClassCanBeRecord")
 public class PartialSpecDefenderHasAdvancement implements Spec<Partial, PartialSpecDefenderHasAdvancement> {
 	public PartialSpecDefenderHasAdvancement(Set<ResourceLocation> advancementIds) {
 		this.advancementIds = advancementIds;
@@ -29,15 +26,9 @@ public class PartialSpecDefenderHasAdvancement implements Spec<Partial, PartialS
 	private final Set<ResourceLocation> advancementIds;
 	
 	@Override
-	public Spec<Partial, ?> optimize() {
-		if(advancementIds.isEmpty()) return PartialSpecAlways.FALSE;
-		else return this;
-	}
-	
-	@Override
 	public Partial build() {
 		return (attacker, defender) -> {
-			ServerPlayer defenderSp = VerConv.player(defender); 
+			ServerPlayer defenderSp = MinecraftConv.player(defender); 
 			
 			MinecraftServer server = defenderSp.server;
 			ServerAdvancementManager serverAdvancementManager = server.getAdvancements();

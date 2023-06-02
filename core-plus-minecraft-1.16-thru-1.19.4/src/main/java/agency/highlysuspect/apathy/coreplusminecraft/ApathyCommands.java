@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy;
+package agency.highlysuspect.apathy.coreplusminecraft;
 
 import agency.highlysuspect.apathy.core.Apathy;
 import com.mojang.brigadier.CommandDispatcher;
@@ -33,10 +33,10 @@ public class ApathyCommands {
 		dispatcher.register(literal(Apathy.MODID)
 			.then(literal("set")
 				.then(literal("join")
-					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
+					.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestSelfSelectPlayerSets)
 						.executes(cmd -> joinSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), false))))
 				.then(literal("part")
-					.then(argument("set", string()).suggests(PlayerSetManager::suggestSelfSelectPlayerSets)
+					.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestSelfSelectPlayerSets)
 						.executes(cmd -> partSet(cmd, Collections.singletonList(cmd.getSource().getPlayerOrException()), getString(cmd, "set"), false))))
 				.then(literal("show")
 					.executes(cmd -> personalShow(cmd, cmd.getSource().getPlayerOrException()))))
@@ -44,23 +44,23 @@ public class ApathyCommands {
 				.requires(src -> src.hasPermission(2))
 				.then(literal("join")
 					.then(argument("who", players())
-						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
+						.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestAllPlayerSets)
 							.executes(cmd -> joinSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), true)))))
 				.then(literal("part")
 					.then(argument("who", players())
-						.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
+						.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestAllPlayerSets)
 							.executes(cmd -> partSet(cmd, getPlayers(cmd, "who"), getString(cmd, "set"), true)))))
 				.then(literal("show")
 					.executes(ApathyCommands::adminShowSets))
 				.then(literal("delete")
-					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
+					.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestAllPlayerSets)
 						.executes(cmd -> adminDeleteSet(cmd, getString(cmd, "set")))))
 				.then(literal("create")
 					.then(argument("name", word())
 						.then(argument("self-select", bool())
 							.executes(cmd -> adminCreateSet(cmd, getString(cmd, "name"), getBool(cmd, "self-select"))))))
 				.then(literal("edit")
-					.then(argument("set", string()).suggests(PlayerSetManager::suggestAllPlayerSets)
+					.then(argument("set", string()).suggests(PlayerSetManagerGuts::suggestAllPlayerSets)
 						.then(argument("self-select", bool())
 							.executes(cmd -> adminEditSet(cmd, getString(cmd, "set"), getBool(cmd, "self-select")))))))
 			.then(literal("reload")
@@ -82,8 +82,8 @@ public class ApathyCommands {
 	}
 	
 	private static Component lit(String msg, Object... args) {
-		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = Portage.stringifyComponent((Component) args[i]);
-		return Portage.literal(String.format(msg, args));
+		for(int i = 0; i < args.length; i++) if(args[i] instanceof Component) args[i] = ApathyPlusMinecraft.instanceMinecraft.stringifyComponent((Component) args[i]);
+		return ApathyPlusMinecraft.instanceMinecraft.literal(String.format(msg, args));
 	}
 	
 	//Joining, parting
@@ -91,7 +91,7 @@ public class ApathyCommands {
 		int successCount = 0;
 		
 		for(ServerPlayer player : players) {
-			PlayerSetManager.JoinResult result = PlayerSetManager.getFor(cmd).join(player, name, op);
+			PlayerSetManagerGuts.JoinResult result = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd).join(player, name, op);
 			switch(result) {
 				case SUCCESS: {
 					successCount++;
@@ -111,11 +111,11 @@ public class ApathyCommands {
 		int successCount = 0;
 		
 		for(ServerPlayer player : players) {
-			PlayerSetManager.PartResult result = PlayerSetManager.getFor(cmd).part(player, name, op);
+			PlayerSetManagerGuts.PartResult result = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd).part(player, name, op);
 			switch(result) {
 				case SUCCESS: {
 					successCount++;
-					msg(cmd, "%s parted set %s.", Portage.stringifyComponent(player.getName()), name);
+					msg(cmd, "%s parted set %s.", ApathyPlusMinecraft.instanceMinecraft.stringifyComponent(player.getName()), name);
 					break;
 				}
 				case NO_SUCH_SET: err(cmd, "There isn't a set named %s. Try /apathy set-admin create.", name); break;
@@ -129,7 +129,7 @@ public class ApathyCommands {
 	
 	//Showing
 	private static int personalShow(CommandContext<CommandSourceStack> cmd, ServerPlayer player) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
+		PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
 			err(cmd, "There aren't any player sets.");
@@ -137,7 +137,7 @@ public class ApathyCommands {
 			personalMsg(cmd, "The following sets exist: %s", setManager.printAllPlayerSets());
 		}
 		
-		for(Map.Entry<String, PlayerSetManager.Entry> entry : setManager.entrySet()) {
+		for(Map.Entry<String, PlayerSetManagerGuts.Entry> entry : setManager.entrySet()) {
 			if(setManager.playerInSet(player, entry.getKey())) {
 				personalMsg(cmd, "You are in set %s.", entry.getKey());
 			} else {
@@ -149,7 +149,7 @@ public class ApathyCommands {
 	}
 	
 	private static int adminShowSets(CommandContext<CommandSourceStack> cmd) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
+		PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd);
 		
 		if(setManager.isEmpty()) {
 			err(cmd, "There aren't any player sets.");
@@ -157,16 +157,16 @@ public class ApathyCommands {
 			personalMsg(cmd, "The following player sets exist: %s", setManager.printAllPlayerSets());
 			PlayerList mgr = cmd.getSource().getServer().getPlayerList();
 			
-			for(Map.Entry<String, PlayerSetManager.Entry> entry : setManager.entrySet()) {
+			for(Map.Entry<String, PlayerSetManagerGuts.Entry> entry : setManager.entrySet()) {
 				String name = entry.getKey();
-				PlayerSetManager.Entry set = entry.getValue();
+				PlayerSetManagerGuts.Entry set = entry.getValue();
 				
 				personalMsg(cmd, "Set %s contains %s members.", name, set.members().size());
 				for(UUID uuid : set.members()) {
 					ServerPlayer player = mgr.getPlayer(uuid);
 					personalMsg(cmd, player == null ?
 						String.format(" - someone with UUID %s", uuid) :
-						String.format(" - %s (UUID %s)", Portage.stringifyComponent(player.getName()), uuid));
+						String.format(" - %s (UUID %s)", ApathyPlusMinecraft.instanceMinecraft.stringifyComponent(player.getName()), uuid));
 				}
 			}
 		}
@@ -175,8 +175,8 @@ public class ApathyCommands {
 	}
 	
 	private static int adminEditSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
-		PlayerSetManager.EditResult result = setManager.edit(name, selfSelect);
+		PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd);
+		PlayerSetManagerGuts.EditResult result = setManager.edit(name, selfSelect);
 		
 		switch(result) {
 			case SUCCESS: msg(cmd, selfSelect ? "Made set %s a self-select set." : "Made set %s a non-self-select set.", name); break;
@@ -185,35 +185,35 @@ public class ApathyCommands {
 			case ALREADY_NOT_SELF_SELECT: err(cmd, "Set %s is already not self-select.", name); break;
 		}
 		
-		return result == PlayerSetManager.EditResult.SUCCESS ? 1 : 0;
+		return result == PlayerSetManagerGuts.EditResult.SUCCESS ? 1 : 0;
 	}
 	
 	private static int adminCreateSet(CommandContext<CommandSourceStack> cmd, String name, boolean selfSelect) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
-		PlayerSetManager.CreateResult result = setManager.create(name, selfSelect);
+		PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd);
+		PlayerSetManagerGuts.CreateResult result = setManager.create(name, selfSelect);
 		
 		switch(result) {
 			case SUCCESS: msg(cmd, selfSelect ? "Created self-select set %s." : "Created non-self-select set %s.", name); break;
 			case ALREADY_EXISTS: err(cmd, "There's already a set named %s. Try /apathy set-admin edit.", name); break;
 		}
 		
-		return result == PlayerSetManager.CreateResult.SUCCESS ? 1 : 0;
+		return result == PlayerSetManagerGuts.CreateResult.SUCCESS ? 1 : 0;
 	}
 	
 	private static int adminDeleteSet(CommandContext<CommandSourceStack> cmd, String name) {
-		PlayerSetManager setManager = PlayerSetManager.getFor(cmd);
-		PlayerSetManager.DeleteResult result = setManager.delete(name);
+		PlayerSetManagerGuts setManager = ApathyPlusMinecraft.instanceMinecraft.getFor(cmd);
+		PlayerSetManagerGuts.DeleteResult result = setManager.delete(name);
 		
 		switch(result) {
 			case SUCCESS: msg(cmd, "Player set %s deleted.", name); break;
 			case NO_SUCH_SET: err(cmd, "There isn't a set named %s.", name); break;
 		}
 		
-		return result == PlayerSetManager.DeleteResult.SUCCESS ? 1 : 0;
+		return result == PlayerSetManagerGuts.DeleteResult.SUCCESS ? 1 : 0;
 	}
 	
 	private static int reloadNow(CommandContext<CommandSourceStack> cmd) {
-		boolean ok = Apathy116.instance116.refreshConfig();
+		boolean ok = Apathy.instance.refreshConfig();
 		
 		if(ok) msg(cmd, "Reloaded Apathy config files.");
 		else err(cmd, "Error reloading Apathy config files. Check the server log.");

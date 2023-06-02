@@ -1,6 +1,5 @@
-package agency.highlysuspect.apathy.rule;
+package agency.highlysuspect.apathy.coreplusminecraft.rule;
 
-import agency.highlysuspect.apathy.VerConv;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.rule.CoolGsonHelper;
 import agency.highlysuspect.apathy.core.rule.JsonSerializer;
@@ -8,10 +7,11 @@ import agency.highlysuspect.apathy.core.rule.Partial;
 import agency.highlysuspect.apathy.core.rule.PartialSpecAlways;
 import agency.highlysuspect.apathy.core.rule.Spec;
 import agency.highlysuspect.apathy.core.rule.Who;
+import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
+import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,11 +42,11 @@ public class PartialSpecEffect implements Spec<Partial, PartialSpecEffect> {
 		if(mobEffects.size() == 1) {
 			MobEffect theEffect = mobEffects.iterator().next();
 			return (attacker, defender) -> {
-				LivingEntity which = who.choose(VerConv.mob(attacker), VerConv.player(defender));
+				LivingEntity which = who.choose(MinecraftConv.mob(attacker), MinecraftConv.player(defender));
 				return which.hasEffect(theEffect);
 			};
 		} else return (attacker, defender) -> {
-			LivingEntity which = who.choose(VerConv.mob(attacker), VerConv.player(defender));
+			LivingEntity which = who.choose(MinecraftConv.mob(attacker), MinecraftConv.player(defender));
 			for(MobEffect effect : mobEffects) {
 				if(which.hasEffect(effect)) return true;
 			}
@@ -65,7 +65,7 @@ public class PartialSpecEffect implements Spec<Partial, PartialSpecEffect> {
 		@Override
 		public void write(PartialSpecEffect thing, JsonObject json) {
 			json.add("effects", thing.mobEffects.stream()
-				.map(Registry.MOB_EFFECT::getKey)
+				.map(ApathyPlusMinecraft.instanceMinecraft.mobEffectRegistry()::getKey)
 				.filter(Objects::nonNull)
 				.map(ResourceLocation::toString)
 				.map(JsonPrimitive::new)
@@ -79,7 +79,7 @@ public class PartialSpecEffect implements Spec<Partial, PartialSpecEffect> {
 				.map(JsonElement::getAsString)
 				.map(ResourceLocation::new)
 				.flatMap(rl -> {
-					MobEffect effect = Registry.MOB_EFFECT.get(rl);
+					MobEffect effect = ApathyPlusMinecraft.instanceMinecraft.mobEffectRegistry().get(rl);
 					if(effect == null) {
 						Apathy.instance.log.error("unknown mob effect: " + rl);
 						return Stream.of();

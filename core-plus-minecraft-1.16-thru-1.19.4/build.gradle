@@ -6,7 +6,7 @@ buildscript {
 	}
 	dependencies {
 		classpath "agency.highlysuspect:minivan:0.2"
-		classpath "agency.highlysuspect:crossroad:0.1"
+		classpath "agency.highlysuspect:crossroad:0.3"
 	}
 }
 

@@ -1,7 +1,6 @@
 package agency.highlysuspect.apathy.core.config;
 
 import agency.highlysuspect.apathy.core.Apathy;
-import agency.highlysuspect.apathy.core.CoreBossOptions;
 import agency.highlysuspect.apathy.core.CoreMobOptions;
 
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO: exclude on Forge builds? (it's not needed)
 public class CrummyConfig implements CookedConfig {
 	public CrummyConfig(ConfigSchema schema, Path path) {
 		this.schema = schema;

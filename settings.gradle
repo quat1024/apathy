@@ -1,6 +1,8 @@
 rootProject.name = "apathy"
 include(
 	"core",
+	"crummyconfig",
+	
 	"core-plus-minecraft-1.16.5-thru-1.20",
 	
 	"common-1.20.0",

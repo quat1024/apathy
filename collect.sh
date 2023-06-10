@@ -14,5 +14,7 @@ mkdir collect/sources
 cp ./**/build/libs/*.jar collect
 
 mv ./collect/*sources*.jar collect/sources
+
+mv ./collect/*crummyconfig*.jar collect/common
 mv ./collect/*common*.jar collect/common
 mv ./collect/*core*.jar collect/common

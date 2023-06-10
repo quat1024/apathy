@@ -1,5 +1,6 @@
 package agency.highlysuspect.apathy.mixin.dragon;
 
+import agency.highlysuspect.apathy.EndDragonFightExt;
 import agency.highlysuspect.apathy.core.Apathy;
 import agency.highlysuspect.apathy.core.CoreBossOptions;
 import agency.highlysuspect.apathy.core.etc.PortalInitialState;
@@ -9,8 +10,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -42,6 +41,7 @@ public abstract class EndDragonFightMixin {
 	//a zillion shadows
 	@Shadow @Final private Predicate<Entity> validPlayer;
 	@Shadow @Final private ServerLevel level;
+	@Shadow @Final private BlockPos origin;
 	@Shadow @Final private ObjectArrayList<Integer> gateways;
 	@Shadow private boolean dragonKilled;
 	@Shadow private boolean previouslyKilled;
@@ -54,40 +54,13 @@ public abstract class EndDragonFightMixin {
 	
 	//my additions
 	
-	@Unique private boolean createdApathyPortal = false;
-	@Unique private int gatewayTimer = NOT_RUNNING;
-	@Unique private static final int NOT_RUNNING = -100;
-	
-	@Unique private static final String APATHY_CREATEDPORTAL = "apathy-created-exit-portal";
-	@Unique private static final String APATHY_GATEWAYTIMER = "apathy-gateway-timer";
+	@Unique EndDragonFightExt ext;
 	
 	@Unique private boolean apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 	
-	@Inject(method = "<init>", at = @At("TAIL"))
-	void apathy$onInit(ServerLevel world, long l, CompoundTag tag, CallbackInfo ci) {
-		createdApathyPortal = tag.getBoolean(APATHY_CREATEDPORTAL);
-		
-		if(tag.contains(APATHY_GATEWAYTIMER)) {
-			gatewayTimer = tag.getInt(APATHY_GATEWAYTIMER);
-		} else {
-			gatewayTimer = NOT_RUNNING;
-		}
-		
-		//COPY PASTE from vanilla.
-		//In vanilla, this code only runs if dragonKilled is true.
-		//In Apathy, it's possible for the location of the exit portal to be decided before killing the first dragon.
-		//In this situation we should still honor the ExitPortalLocation from disk. (Vanilla unconditionally saves it, no edits are needed there.)
-		if(tag.contains("ExitPortalLocation", 10)) {
-			this.portalLocation = NbtUtils.readBlockPos(tag.getCompound("ExitPortalLocation"));
-		}
-	}
-	
-	@Inject(method = "saveData", at = @At(value = "RETURN"))
-	void apathy$whenTagging(CallbackInfoReturnable<CompoundTag> cir) {
-		CompoundTag tag = cir.getReturnValue();
-		
-		tag.putBoolean(APATHY_CREATEDPORTAL, createdApathyPortal);
-		tag.putInt(APATHY_GATEWAYTIMER, gatewayTimer);
+	@Inject(method = "<init>(Lnet/minecraft/server/level/ServerLevel;JLnet/minecraft/world/level/dimension/end/EndDragonFight$Data;Lnet/minecraft/core/BlockPos;)V", at = @At("TAIL"))
+	void apathy$onInit(ServerLevel slevel, long $$1, EndDragonFight.Data $$2, BlockPos $$3, CallbackInfo ci) {
+		ext = EndDragonFightExt.get(slevel);
 	}
 	
 	//runs BEFORE vanilla tick().
@@ -97,7 +70,7 @@ public abstract class EndDragonFightMixin {
 		if(!isArenaLoaded()) return;
 		
 		//First-run tasks.
-		if(!createdApathyPortal) {
+		if(!ext.hasCompletedInitialSetup()) {
 			PortalInitialState portalInitialState = Apathy.instance.bossCfg.get(CoreBossOptions.portalInitialState);
 			
 			//1. If the End Portal was requested to be open by default, honor that.
@@ -107,8 +80,9 @@ public abstract class EndDragonFightMixin {
 				//it is computed from the heightmap (which is totally busted if !isArenaLoaded(), btw)
 				spawnExitPortal(true);
 				
+				//styled after setDragonKilled
 				if(portalInitialState.hasEgg()) {
-					this.level.setBlockAndUpdate(this.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(BlockPos.ZERO)), Blocks.DRAGON_EGG.defaultBlockState());
+					level.setBlockAndUpdate(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(origin)), Blocks.DRAGON_EGG.defaultBlockState());
 				}
 			}
 			
@@ -118,18 +92,11 @@ public abstract class EndDragonFightMixin {
 				spawnNewGateway();
 			}
 			
-			createdApathyPortal = true;
+			ext.markInitialSetupCompleted();
 		}
 		
 		//3. Handle the ticker for the ResummonSequence.SPAWN_GATEWAY mechanic.
-		if(gatewayTimer != NOT_RUNNING && portalLocation != null) {
-			if(gatewayTimer > 0) {
-				gatewayTimer--;
-			} else {
-				doGatewaySpawn();
-				gatewayTimer = NOT_RUNNING;
-			}
-		}
+		if(portalLocation != null && ext.tickTimer()) doGatewaySpawn();
 		
 		//4. Handle simulacra advancements.
 		boolean simulacra = Apathy.instance.bossCfg.get(CoreBossOptions.simulacraDragonAdvancements);
@@ -154,6 +121,7 @@ public abstract class EndDragonFightMixin {
 		apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 		
 		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
+		//(see: the needsStateScanning variable.)
 		//It is also called before vanilla code spawns the initial Ender Dragon.
 		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
 		//player has requested for the initial dragon to be removed.
@@ -181,21 +149,22 @@ public abstract class EndDragonFightMixin {
 	}
 	
 	//tryRespawn handles detecting the 4 end crystals by the exit portal.
-	//respawnDragon gets called with the list of end crystals if there are four, and actually summons the boss.
-	@Inject(method = "respawnDragon(Ljava/util/List;)V", at = @At("HEAD"), cancellable = true)
+	//If there are four, respawnDragon gets called with the list of end crystals and actually summons the boss.
+	@Inject(method = "respawnDragon", at = @At("HEAD"), cancellable = true)
 	void apathy$whenBeginningRespawnSequence(List<EndCrystal> crystals, CallbackInfo ci) {
+		//Nothing to do.
 		switch(Apathy.instance.bossCfg.get(CoreBossOptions.resummonSequence)) {
-			case DEFAULT -> {} //Nothing to do.
-			case DISABLED -> ci.cancel();
-			case SPAWN_GATEWAY -> {
-				ci.cancel();
+			case DEFAULT: break;
+			case SPAWN_GATEWAY:
 				tryEnderCrystalGateway(crystals);
-			}
+				//fall through
+			case DISABLED: 
+				ci.cancel();
 		}
 	}
 	
 	@Unique private void tryEnderCrystalGateway(List<EndCrystal> crystalsAroundEndPortal) {
-		if(gatewayTimer == NOT_RUNNING) {
+		if(!ext.gatewayTimerRunning()) {
 			BlockPos pos = gatewayDryRun();
 			if(pos != null) {
 				BlockPos downABit = pos.below(2); //where the actual gateway block will be
@@ -204,7 +173,7 @@ public abstract class EndDragonFightMixin {
 				}
 				
 				this.respawnCrystals = crystalsAroundEndPortal;
-				gatewayTimer = 100; //5 seconds
+				ext.setGatewayTimer(100); //5 seconds
 			}
 		}
 	}

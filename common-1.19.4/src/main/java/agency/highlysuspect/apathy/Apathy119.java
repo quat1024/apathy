@@ -8,6 +8,8 @@ import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
 import agency.highlysuspect.apathy.coreplusminecraft.MinecraftConv;
 import agency.highlysuspect.apathy.coreplusminecraft.PlayerSetManagerGuts;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -91,6 +93,16 @@ public abstract class Apathy119 extends ApathyPlusMinecraft {
 	@Override
 	public void explodeNoBlockInteraction(Level level, Entity who, double x, double y, double z, float strength) {
 		level.explode(who, x, y, z, strength, Level.ExplosionInteraction.NONE);
+	}
+	
+	@Override
+	public void sendSuccess(CommandContext<CommandSourceStack> cmd, Component message, boolean impersonal) {
+		cmd.getSource().sendSuccess(message, impersonal);
+	}
+	
+	@Override
+	public ServerLevel serverLevel(Entity ent) {
+		return (ServerLevel) ent.level;
 	}
 	
 	public void noticePlayerAttack(Player player, Entity provoked) {

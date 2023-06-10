@@ -6,6 +6,8 @@ import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
 import agency.highlysuspect.apathy.coreplusminecraft.PlayerSetManagerGuts;
+import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
@@ -13,6 +15,7 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -86,6 +89,16 @@ public abstract class Apathy118 extends ApathyPlusMinecraft {
 	@Override
 	public void explodeNoBlockInteraction(Level level, Entity who, double x, double y, double z, float strength) {
 		level.explode(who, x, y, z, strength, Explosion.BlockInteraction.NONE);
+	}
+	
+	@Override
+	public void sendSuccess(CommandContext<CommandSourceStack> cmd, Component message, boolean impersonal) {
+		cmd.getSource().sendSuccess(message, impersonal);
+	}
+	
+	@Override
+	public ServerLevel serverLevel(Entity ent) {
+		return (ServerLevel) ent.level;
 	}
 	
 	public void noticePlayerAttack(Player player, Entity provoked) {

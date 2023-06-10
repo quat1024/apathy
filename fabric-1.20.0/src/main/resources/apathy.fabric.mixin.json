@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "agency.highlysuspect.apathy.platform.fabric.mixin",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"EntityGetterMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"refmap": "apathy.refmap.json"
+}

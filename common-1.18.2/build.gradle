@@ -10,7 +10,7 @@ buildscript {
 }
 
 evaluationDependsOn(":core") // fuck gradle episode 151905105
-evaluationDependsOn(":core-plus-minecraft-1.16-thru-1.19.4") // fuck gradle episode 151905105
+evaluationDependsOn(":core-plus-minecraft-1.16.5-thru-1.20") // fuck gradle episode 151905105
 
 apply plugin: "java"
 apply plugin: "agency.highlysuspect.minivan"
@@ -40,12 +40,12 @@ dependencies {
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
 	implementation project(":core")
-	implementation project(":core-plus-minecraft-1.16-thru-1.19.4")
+	implementation project(":core-plus-minecraft-1.16.5-thru-1.20")
 }
 
 processResources {
 	from project(":core").sourceSets.main.resources
-	from project(":core-plus-minecraft-1.16-thru-1.19.4").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.resources
 }
 
 tasks.withType(GenerateModuleMetadata) {

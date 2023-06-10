@@ -13,7 +13,7 @@ For documentation, view the `docs/2.x/` folder.
 Versions prior to 2.5 were developed separately, one codebase per version. Maintaining that was difficult, so everything is now in a giant Gradle subproject. This is also unwieldy but in a different way - if you're having trouble fitting the damn thing into RAM, comment out a few subprojects from `settings.gradle`.
 
 * `core` - Truly version-independent code, only depends on a (slightly old version of) google gson. Lowest-common-denominator code.
-* `core-plus-minecraft-1.16-thru-1.19.4` - Code that depends on only the common subset of Minecraft 1.16.5, 1.18.2, 1.19.2, and 1.19.4 (using the [crossroad](https://github.com/CrackedPolishedBlackstoneBricksMC/crossroad) jar intersection tool).
+* `core-plus-minecraft-1.16.5-thru-1.20` - Code that depends on only the common subset of Minecraft 1.16.5, 1.18.2, 1.19.2, and 1.19.4 (using the [crossroad](https://github.com/CrackedPolishedBlackstoneBricksMC/crossroad) jar intersection tool).
 * `common-xxx` - Allows accessing Minecraft (through [minivan](https://github.com/CrackedPolishedBlackstoneBricksMC/minivan), formerly [VanillaGradle](https://github.com/SpongePowered/VanillaGradle)) and writing the code of mixins. Contains glue between the version-independent core and the Minecraft version in question.
   * Technically `core-plus-minecraft` can also write mixins, but IDE support is weak; my intersection tool currently doesn't emit method bodies
 * `fabric-xxx` and `forge-xxx` - Can refer to Minecraft as well as features from the specific modloader. This is generally just a tiny bit of glue code, initialization using modloader services, platform-specific mixins, blah blah.

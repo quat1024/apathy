@@ -74,11 +74,11 @@ public class ApathyCommands {
 	}
 	
 	private static void personalMsg(CommandContext<CommandSourceStack> cmd, String msg, Object... args) {
-		ApathyPlusMinecraft.instanceMinecraft.sendSuccess(cmd, lit(msg, args), false);
+		ApathyPlusMinecraft.instanceMinecraft.sendSuccess(cmd, () -> lit(msg, args), false);
 	}
 	
 	private static void msg(CommandContext<CommandSourceStack> cmd, String msg, Object... args) {
-		ApathyPlusMinecraft.instanceMinecraft.sendSuccess(cmd, lit(msg, args), true);
+		ApathyPlusMinecraft.instanceMinecraft.sendSuccess(cmd, () -> lit(msg, args), true);
 	}
 	
 	private static Component lit(String msg, Object... args) {

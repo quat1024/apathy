@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Apathy116 extends ApathyPlusMinecraft {
 	public static Apathy116 instance116;
@@ -94,8 +95,8 @@ public abstract class Apathy116 extends ApathyPlusMinecraft {
 	}
 	
 	@Override
-	public void sendSuccess(CommandContext<CommandSourceStack> cmd, Component message, boolean impersonal) {
-		cmd.getSource().sendSuccess(message, impersonal);
+	public void sendSuccess(CommandContext<CommandSourceStack> cmd, Supplier<Component> message, boolean impersonal) {
+		cmd.getSource().sendSuccess(message.get(), impersonal);
 	}
 	
 	@Override

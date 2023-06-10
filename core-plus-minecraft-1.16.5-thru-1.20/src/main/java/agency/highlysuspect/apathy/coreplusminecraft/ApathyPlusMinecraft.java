@@ -50,6 +50,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class ApathyPlusMinecraft extends Apathy {
 	public static ApathyPlusMinecraft instanceMinecraft;
@@ -79,7 +80,7 @@ public abstract class ApathyPlusMinecraft extends Apathy {
 	public abstract DamageSource comicalAnvilSound(Entity rarrr);
 	public abstract void explodeNoBlockInteraction(Level level, Entity who, double x, double y, double z, float strength);
 	//1.20
-	public abstract void sendSuccess(CommandContext<CommandSourceStack> cmd, Component message, boolean impersonal);
+	public abstract void sendSuccess(CommandContext<CommandSourceStack> cmd, Supplier<Component> messageMaker, boolean impersonal);
 	public abstract ServerLevel serverLevel(Entity ent);
 	
 	@Override

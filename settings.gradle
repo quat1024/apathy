@@ -3,11 +3,11 @@ include(
 	"core",
 	"crummyconfig",
 	
-	"core-plus-minecraft-1.16.5-thru-1.20",
+	"core-plus-minecraft-1.16.5-thru-1.20.1",
 	
-	"common-1.20.0",
-	"fabric-1.20.0",
-	"forge-1.20.0",
+	"common-1.20.1",
+	"fabric-1.20.1",
+	"forge-1.20.1",
 	
 	"common-1.19.4",
 	"fabric-1.19.4",

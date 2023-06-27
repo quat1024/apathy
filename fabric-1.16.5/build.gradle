@@ -49,7 +49,7 @@ dependencies {
 	implementation WHAT
 	implementation project(":core")
 	implementation project(":crummyconfig")
-	implementation project(":core-plus-minecraft-1.16.5-thru-1.20")
+	implementation project(":core-plus-minecraft-1.16.5-thru-1.20.1")
 }
 
 //fold in xplat resources and sources
@@ -57,7 +57,7 @@ processResources {
 	from WHAT.sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
 	from project(":crummyconfig").sourceSets.main.resources
-	from project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/fabric.mod.json") {
@@ -69,7 +69,7 @@ tasks.withType(JavaCompile) {
 	source(WHAT.sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
 	source(project(":crummyconfig").sourceSets.main.allSource)
-	source(project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects

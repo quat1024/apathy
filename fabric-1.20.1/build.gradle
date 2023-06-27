@@ -19,7 +19,7 @@ evaluationDependsOn(":core") // fuck gradle episode 151905106
 apply plugin: "java"
 apply plugin: "fabric-loom"
 
-archivesBaseName = "${project.modId}-fabric-1.20.0"
+archivesBaseName = "${project.modId}-fabric-1.20.1"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 tasks.withType(JavaCompile) {
@@ -32,28 +32,28 @@ java.withSourcesJar()
 
 dependencies {
 	//basics
-	minecraft "com.mojang:minecraft:1.20"
+	minecraft "com.mojang:minecraft:1.20.1"
 	mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:0.14.21"
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
 	//fabric api, TODO trim down to required modules
-	modImplementation "net.fabricmc.fabric-api:fabric-api:0.83.0+1.20"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.84.0+1.20.1"
 	
 	//xplat
-	implementation project(":common-1.20.0")
+	implementation project(":common-1.20.1")
 	implementation project(":core")
 	implementation project(":crummyconfig")
-	implementation project(":core-plus-minecraft-1.16.5-thru-1.20")
+	implementation project(":core-plus-minecraft-1.16.5-thru-1.20.1")
 }
 
 //fold in xplat resources and sources
 
 processResources {
-	from project(":common-1.20.0").sourceSets.main.resources
+	from project(":common-1.20.1").sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
 	from project(":crummyconfig").sourceSets.main.resources
-	from project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.resources
 	
 	inputs.property "version", project.version
 	filesMatching("**/fabric.mod.json") {
@@ -62,10 +62,10 @@ processResources {
 }
 
 tasks.withType(JavaCompile) {
-	source(project(":common-1.20.0").sourceSets.main.allSource)
+	source(project(":common-1.20.1").sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
 	source(project(":crummyconfig").sourceSets.main.allSource)
-	source(project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.allSource)
 }
 
 //loom doesn't generate run configs by default in subprojects
@@ -73,13 +73,13 @@ loom {
 	runs {
 		client {
 			client()
-			setConfigName("Fabric 1.20.0 Client")
+			setConfigName("Fabric 1.20.1 Client")
 			ideConfigGenerated(true)
 			runDir("run")
 		}
 		server {
 			server()
-			setConfigName("Fabric 1.20.0 Server")
+			setConfigName("Fabric 1.20.1 Server")
 			ideConfigGenerated(true)
 			runDir("run")
 		}

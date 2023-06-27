@@ -6,24 +6,25 @@ buildscript {
 	}
 	dependencies {
 		classpath "agency.highlysuspect:minivan:0.2"
+		classpath "agency.highlysuspect:crossroad:0.3"
 	}
 }
 
+evaluationDependsOn(":core") // i love gradle :)
+
 apply plugin: "java"
 apply plugin: "agency.highlysuspect.minivan"
+apply plugin: "agency.highlysuspect.crossroad"
 
-archivesBaseName = "${project.modId}-common-1.20.0"
+archivesBaseName = "${project.modId}-core-plus-minecraft"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 tasks.withType(JavaCompile) {
 	options.encoding = "UTF-8"
-	options.release = 17
+	sourceCompatibility = "8"
+	targetCompatibility = "8"
 }
 java.withSourcesJar()
-
-minivan {
-	version("1.20")
-}
 
 repositories {
 	maven {
@@ -36,13 +37,21 @@ dependencies {
 	compileOnly "org.spongepowered:mixin:0.8.5"
 	compileOnly "org.jetbrains:annotations:24.0.1"
 	
+	def a = minivan.getMinecraft("1.16.5")
+	def b = minivan.getMinecraft("1.18.2")
+	def c = minivan.getMinecraft("1.19.2")
+	def d = minivan.getMinecraft("1.19.4")
+	def e = minivan.getMinecraft("1.20.1")
+	def merged = crossroad.merge(a.minecraft, b.minecraft, c.minecraft, d.minecraft, e.minecraft)
+	
+	compileOnly project.files(merged)
+	a.dependencies.each { compileOnly it } //NOTE: not actually merging the libraries
+	
 	implementation project(":core")
-	implementation project(":core-plus-minecraft-1.16.5-thru-1.20")
 }
 
 processResources {
 	from project(":core").sourceSets.main.resources
-	from project(":core-plus-minecraft-1.16.5-thru-1.20").sourceSets.main.resources
 }
 
 tasks.withType(GenerateModuleMetadata) {

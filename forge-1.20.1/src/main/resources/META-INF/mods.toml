@@ -16,6 +16,6 @@ description="Mobs don't attack players, or maybe they do! Configurable."
 [[dependencies.apathy]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.20,1.21)"
+versionRange="[1.20.1,1.21)"
 ordering="NONE"
 side="BOTH"

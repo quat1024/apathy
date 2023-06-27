@@ -62,7 +62,7 @@ public abstract class EndDragonFightMixin {
 	
 	//runs BEFORE vanilla tick().
 	@Inject(method = "tick", at = @At("HEAD"))
-	void apathy$dontTick(CallbackInfo ci) {
+	void apathy$tick(CallbackInfo ci) {
 		if(!isArenaLoaded()) return;
 		
 		//Tick the ResummonSequence.SPAWN_GATEWAY mechanic.

@@ -1,3 +1,40 @@
+# What does scanState do in vanilla (1.20)
+
+This function is called only 1 time ever, the first time the End arena is fully loaded. `needsStateScanning` is this "first-run" variable.
+
+1. Look for hasActiveExitPortal. This returns `true` if any End Portal *block entities* exist in a decent region around the origin. The variable `previouslyKilled` is set to the result of this check.
+   * If the check failed, an initial, closed End Portal will be created too
+
+2. Look for Ender Dragon entities.
+   * If there are none, `dragonKilled` is set to `true`.
+   * If there are some, `dragonKilled` is set to `false` and the dragons are removed if an exit portal blockentity was not found in (2). (This would happen if you logged out of your 1.8 world mid-bossfight)
+
+3. If `!previouslyKilled`, set `dragonKilled` to `false`
+
+So in non-legacy worlds, this function
+
+1. Spawns a closed exit End portal at 0, 0
+2. (doesn't find any dragons)
+3. sets `previouslyKilled` and `dragonKilled` to `false`.
+
+## What do these variables do
+
+`previouslyKilled` determines whether a new Ender Dragon kill will place a Dragon Egg block, and changes XP dropped by dragon
+
+`dragonKilled` is a more spicy one - if `!dragonKilled` and there's no dragon (defined as `dragonUUID == null || ticksSinceLastDragonSeen >= 1200)`, the game will spawn a new one.
+
+## fixing [issue 21](https://github.com/quat1024/apathy/issues/21)
+
+Probably inject at the *return* of scanState instead
+
+* player wants closed end portal: No side effect
+* player wants open end portal: call `spawnExitPortal(true)`
+* player wants egg portal: same thing, then add the egg
+
+* player wants a dragon: No side effect
+* player wants the "passive dragon" thing: i think existing mixins handle this
+* player wants no dragon: Set `dragonKilled = true`
+
 # v2.5 testing marathon
 
 all fabrics using the latest fabric-api version on modrinth as of apr 19 2023

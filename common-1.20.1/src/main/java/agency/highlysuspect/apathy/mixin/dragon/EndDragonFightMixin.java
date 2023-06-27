@@ -53,10 +53,7 @@ public abstract class EndDragonFightMixin {
 	@Shadow protected abstract void spawnExitPortal(boolean previouslyKilled);
 	
 	//my additions
-	
 	@Unique EndDragonFightExt ext;
-	
-	@Unique private boolean apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
 	
 	@Inject(method = "<init>(Lnet/minecraft/server/level/ServerLevel;JLnet/minecraft/world/level/dimension/end/EndDragonFight$Data;Lnet/minecraft/core/BlockPos;)V", at = @At("TAIL"))
 	void apathy$onInit(ServerLevel slevel, long $$1, EndDragonFight.Data $$2, BlockPos $$3, CallbackInfo ci) {
@@ -66,39 +63,12 @@ public abstract class EndDragonFightMixin {
 	//runs BEFORE vanilla tick().
 	@Inject(method = "tick", at = @At("HEAD"))
 	void apathy$dontTick(CallbackInfo ci) {
-		//Vanilla tick() adds a chunk ticket that loads a region around the main End Island if there's anyone standing nearby.
 		if(!isArenaLoaded()) return;
 		
-		//First-run tasks.
-		if(!ext.hasCompletedInitialSetup()) {
-			PortalInitialState portalInitialState = Apathy.instance.bossCfg.get(CoreBossOptions.portalInitialState);
-			
-			//1. If the End Portal was requested to be open by default, honor that.
-			if(portalInitialState.isOpenByDefault()) {
-				//boolean prop is "whether it's open or not".
-				//this has computeIfAbsent semantics regarding the position of the portal - if the portal position is not already known,
-				//it is computed from the heightmap (which is totally busted if !isArenaLoaded(), btw)
-				spawnExitPortal(true);
-				
-				//styled after setDragonKilled
-				if(portalInitialState.hasEgg()) {
-					level.setBlockAndUpdate(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(origin)), Blocks.DRAGON_EGG.defaultBlockState());
-				}
-			}
-			
-			//2. If any End Gateways were requested to be open by default, generate those too.
-			int initialEndGatewayCount = Apathy.instance.bossCfg.get(CoreBossOptions.initialEndGatewayCount);
-			for(int i = 0; i < initialEndGatewayCount; i++) {
-				spawnNewGateway();
-			}
-			
-			ext.markInitialSetupCompleted();
-		}
-		
-		//3. Handle the ticker for the ResummonSequence.SPAWN_GATEWAY mechanic.
+		//Tick the ResummonSequence.SPAWN_GATEWAY mechanic.
 		if(portalLocation != null && ext.tickTimer()) doGatewaySpawn();
 		
-		//4. Handle simulacra advancements.
+		//Handle simulacra advancements.
 		boolean simulacra = Apathy.instance.bossCfg.get(CoreBossOptions.simulacraDragonAdvancements);
 		boolean startCalm = Apathy.instance.bossCfg.get(CoreBossOptions.dragonInitialState).isCalm();
 		if(simulacra && startCalm) {
@@ -110,35 +80,37 @@ public abstract class EndDragonFightMixin {
 		}
 	}
 	
-	//wait wait gimme a sec, i can explain
-	@Inject(method = "scanState", at = @At("HEAD"))
-	void apathy$startScanningState(CallbackInfo ci) {
-		apathyIsManagingTheInitialPortalVanillaDontLookPlease = Apathy.instance.bossCfg.get(CoreBossOptions.portalInitialState) != PortalInitialState.CLOSED;
-	}
-	
 	@Inject(method = "scanState", at = @At("RETURN"))
 	void apathy$finishScanningState(CallbackInfo ci) {
-		apathyIsManagingTheInitialPortalVanillaDontLookPlease = false;
+		//scanState is called ONCE, EVER, the very first time any player loads the End.
+		//It is never called again (the `needsStateScanning` variable makes sure of that).
+		//So this is a good time to do "first-run" tasks.
 		
-		//scanState is called ONCE, EVER, the very first time any player loads the End. It is never called again.
-		//(see: the needsStateScanning variable.)
-		//It is also called before vanilla code spawns the initial Ender Dragon.
-		//This is the perfect time to set the magic "do not automatically spawn an enderdragon" variable if the
-		//player has requested for the initial dragon to be removed.
+		//Player requested the initial dragon to be removed. At this point the dragon has not
+		//been spawned yet. It will be spawned later in the callee of scanState (tick) only if dragonKilled is unset.
 		if(Apathy.instance.bossCfg.get(CoreBossOptions.dragonInitialState).isCalm()) {
-			dragonKilled = true; //This is the magic variable.
-			previouslyKilled = true;
+			dragonKilled = true;
+			previouslyKilled = true; //TODO: is this needed anymore?
 		}
-	}
-	
-	//the SUPER AWESOME ULTRA TURBO MEGA HACK:
-	//so if Apathy creates an already-opened End portal, it tends to confuse the shit out of the vanilla scanState logic
-	//it takes the existence of any End Portal block entities at all to mean "the dragon was already killed" and it does not
-	//spawn a dragon on first login. Because "already opened end portal" + "dragon" is a valid setup in apathy, i need to bop
-	//this shit on the head, the solution is to prevent endportals from being discovered in scanState.
-	@Inject(method = "hasActiveExitPortal", at = @At("HEAD"), cancellable = true)
-	void apathy$bopActiveExitPortal(CallbackInfoReturnable<Boolean> cir) {
-		if(apathyIsManagingTheInitialPortalVanillaDontLookPlease) cir.setReturnValue(false);
+		
+		//If the player requested the exit End portal to generate open, do that.
+		PortalInitialState portalInitialState = Apathy.instance.bossCfg.get(CoreBossOptions.portalInitialState);
+		if(portalInitialState.isOpenByDefault()) {
+			//vanilla method, boolean prop is "whether it's open or not".
+			//Since the portal location is known, this should cleanly overwrite the vanilla portal.
+			spawnExitPortal(true);
+			
+			//styled after setDragonKilled
+			if(portalInitialState.hasEgg()) {
+				level.setBlockAndUpdate(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, EndPodiumFeature.getLocation(origin)), Blocks.DRAGON_EGG.defaultBlockState());
+			}
+		}
+		
+		//Generate any End Portals players requested to be opened by default.
+		int initialEndGatewayCount = Apathy.instance.bossCfg.get(CoreBossOptions.initialEndGatewayCount);
+		for(int i = 0; i < initialEndGatewayCount; i++) {
+			spawnNewGateway();
+		}
 	}
 	
 	@Inject(method = "createNewDragon", at = @At("RETURN"))

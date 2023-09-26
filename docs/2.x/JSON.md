@@ -459,7 +459,7 @@ This predicate does the following:
 	* `attacker_spawn_location`: the first location where the attacking mob was noticed
 * returns `true` if the location is loaded and passes the `LocationPredicate`.
 
-LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.fandom.com/wiki/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
+LocationPredicates can test x/y/z ranges, biomes, dimensions, features, light levels, and a couple other oddities (like whether an entity is in campfire smoke). Please check [the minecraft wiki](https://minecraft.wiki/w/Predicate), Ctrl-F the page for "location_check", and open the box labeled "Tags common to all locations". The `offsetX`/`offsetY`/`offsetZ` keys are also supported.
 
 `uniqueId` is required because the result of `"who": "attacker_spawn_location"` predicates is tested only one time and cached on the entity. This helps on performance, and fixes issues relating to the attacker's spawn location being unloaded.
 

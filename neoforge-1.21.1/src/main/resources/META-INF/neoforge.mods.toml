@@ -9,14 +9,12 @@ version="${version}"
 displayName="Apathy"
 displayURL="https://github.com/quat1024/apathy/"
 logoFile="apathy-icon-128.png"
-credits="whizball1 for Apathetic Mobs, jaredl0008 and Darkhax for MultiLoader-Template"
+credits="whizball1 for Apathetic Mobs, jaredl0008 and Darkhax for MultiLoader-Template, MerchantPug"
 authors="quaternary"
 description="Mobs don't attack players, or maybe they do! Configurable."
 
 [[mixins]]
 config = "apathy.common.mixin.json"
-[[mixins]]
-config = "apathy.neoforge.mixin.json"
 
 [[dependencies.apathy]]
 modId="minecraft"

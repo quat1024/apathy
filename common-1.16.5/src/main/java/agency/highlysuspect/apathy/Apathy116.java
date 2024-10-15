@@ -6,24 +6,34 @@ import agency.highlysuspect.apathy.core.wrapper.AttackerTag;
 import agency.highlysuspect.apathy.core.wrapper.DragonDuck;
 import agency.highlysuspect.apathy.coreplusminecraft.ApathyPlusMinecraft;
 import agency.highlysuspect.apathy.coreplusminecraft.PlayerSetManagerGuts;
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -103,7 +113,52 @@ public abstract class Apathy116 extends ApathyPlusMinecraft {
 	public ServerLevel serverLevel(Entity ent) {
 		return (ServerLevel) ent.level;
 	}
-	
+
+	@Override
+	public ResourceLocation resource(String str) {
+		return new ResourceLocation(str);
+	}
+
+	@Override
+	public ResourceKey<MobEffect> invisibilityResourceKey() {
+		return Registry.MOB_EFFECT.getResourceKey(MobEffects.INVISIBILITY).orElseThrow(RuntimeException::new);
+	}
+
+	@Override
+	public boolean hasEffect(LivingEntity entity, ResourceKey<MobEffect> effect) {
+		return entity.hasEffect(Registry.MOB_EFFECT.getOrThrow(effect));
+	}
+
+	@Override
+	public int getPlayerScore(Scoreboard scoreboard, Entity entity, Objective objective) {
+		return scoreboard.hasPlayerScore(entity.getScoreboardName(), objective) ? scoreboard.getOrCreatePlayerScore(entity.getScoreboardName(), objective).getScore() : 0;
+	}
+
+	@Override
+	public boolean isLocationPredicateAny(LocationPredicate predicate) {
+		return predicate == LocationPredicate.ANY;
+	}
+
+	@Override
+	public boolean doesAdvancementExist(ServerAdvancementManager manager, ResourceLocation id) {
+		return manager.getAdvancement(id) != null;
+	}
+
+	@Override
+	public boolean isAdvancementDone(PlayerAdvancements playerAdvancements, ServerAdvancementManager manager, ResourceLocation id) {
+		return playerAdvancements.getOrStartProgress(manager.getAdvancement(id)).isDone();
+	}
+
+	@Override
+	public JsonElement serializeLocationPredicate(LocationPredicate predicate) {
+		return predicate.serializeToJson();
+	}
+
+	@Override
+	public LocationPredicate deserializeLocationPredicate(JsonElement json) {
+		return LocationPredicate.fromJson(json);
+	}
+
 	public void noticePlayerAttack(Player player, Entity provoked) {
 		Level level = player.level;
 		if(level.isClientSide) return;

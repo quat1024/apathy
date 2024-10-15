@@ -14,7 +14,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath "net.minecraftforge.gradle:ForgeGradle:5.1.71"
+		classpath "net.minecraftforge.gradle:ForgeGradle:6.0.29"
 		classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
 	}
 }
@@ -37,7 +37,7 @@ java.withSourcesJar()
 mixin {
 	//Tell mixingradle what filename the refmap should use
 	add sourceSets.main, "${project.modId}.refmap.json"
-	
+
 	//Tell mixingradle which mixin configs exist
 	config "${project.modId}.common.mixin.json"
 	config "${project.modId}.forge.mixin.json"
@@ -46,12 +46,12 @@ mixin {
 dependencies {
 	minecraft "net.minecraftforge:forge:1.20.1-47.0.19"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor" //todo does mixin gradle do this? maybe
-	
+
 	compileOnly "org.jetbrains:annotations:24.0.1"
-	
+
 	compileOnly project(":common-1.20.1")
 	compileOnly project(":core")
-	compileOnly project(":core-plus-minecraft-1.16.5-thru-1.20.1")
+	compileOnly project(":core-plus-minecraft-1.16.5-thru-1.21.1")
 }
 
 //fold in xplat resources and sources
@@ -60,8 +60,8 @@ processResources {
 	//include common resources
 	from project(":common-1.20.1").sourceSets.main.resources
 	from project(":core").sourceSets.main.resources
-	from project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.resources
-	
+	from project(":core-plus-minecraft-1.16.5-thru-1.21.1").sourceSets.main.resources
+
 	inputs.property "version", project.version
 	filesMatching("**/mods.toml") {
 		expand "version": project.version
@@ -71,12 +71,12 @@ processResources {
 tasks.withType(JavaCompile) {
 	source(project(":common-1.20.1").sourceSets.main.allSource)
 	source(project(":core").sourceSets.main.allSource)
-	source(project(":core-plus-minecraft-1.16.5-thru-1.20.1").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16.5-thru-1.21.1").sourceSets.main.allSource)
 }
 
 minecraft {
 	mappings channel: "official", version: "1.20.1" //official mappings epic moments
-	
+
 	runs {
 		client {
 			taskName "client1.20.1"
@@ -89,7 +89,7 @@ minecraft {
 				}
 			}
 		}
-		
+
 		server {
 			taskName "server1.20.1"
 			workingDirectory project.file("run")

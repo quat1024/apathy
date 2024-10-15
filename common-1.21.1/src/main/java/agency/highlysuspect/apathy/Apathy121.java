@@ -52,8 +52,8 @@ public abstract class Apathy121 extends ApathyPlusMinecraft {
 		if(instance121 == null) {
 			instance121 = this;
 		} else {
-			IllegalStateException e = new IllegalStateException("Apathy 1.20 instantiated twice!");
-			log.error("Apathy 1.20 instantiated twice!", e);
+			IllegalStateException e = new IllegalStateException("Apathy 1.21 instantiated twice!");
+			log.error("Apathy 1.21 instantiated twice!", e);
 			throw e;
 		}
 	}

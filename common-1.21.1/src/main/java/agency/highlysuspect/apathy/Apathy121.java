@@ -11,7 +11,6 @@ import agency.highlysuspect.apathy.coreplusminecraft.PlayerSetManagerGuts;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;

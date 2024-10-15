@@ -86,9 +86,8 @@ public class NeoForgeInit extends Apathy121 {
 	@Override
 	public void installPlayerSetManagerTicker() {
 		NeoForge.EVENT_BUS.addListener((ServerTickEvent.Pre e) -> {
-			//Imagine having access to the server, that is ticking, in something called "Server Tick Event".
-			//What a FUCKIng concept!
-			ApathyPlusMinecraft.instanceMinecraft.getFor(ServerLifecycleHooks.getCurrentServer()).syncWithConfig();
+			// They did it! ServerTickEvent has the server!
+			ApathyPlusMinecraft.instanceMinecraft.getFor(e.getServer()).syncWithConfig();
 		});
 	}
 	

@@ -1,4 +1,4 @@
-package agency.highlysuspect.apathy.platform.neoforge.mixin;
+package agency.highlysuspect.apathy.mixin;
 
 import agency.highlysuspect.apathy.Apathy121;
 import net.minecraft.server.level.ServerPlayer;

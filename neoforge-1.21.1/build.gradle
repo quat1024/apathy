@@ -1,0 +1,104 @@
+buildscript {
+  	repositories {
+		maven {
+			url = "https://maven.neoforged.net/releases/"
+			content {
+			  	includeGroup "net.neoforged"
+			  	includeGroup "net.neoforged.moddev"
+			}
+		}
+	  	gradlePluginPortal()
+		mavenCentral()
+  	}
+	dependencies {
+		classpath "net.neoforged.moddev:net.neoforged.moddev.gradle.plugin:2.0.42-beta"
+	}
+}
+
+evaluationDependsOn(":core") // fuck gradle episode 151905106
+
+apply plugin: "java"
+apply plugin: "net.neoforged.moddev"
+
+archivesBaseName = "${project.modId}-neoforge-1.21.1"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+	options.release = 21
+}
+java.withSourcesJar()
+
+/// deps ///
+
+dependencies {
+	//basics
+	compileOnly "org.jetbrains:annotations:24.0.1"
+	
+	//xplat
+	implementation project(":common-1.21.1")
+	implementation project(":core")
+	implementation project(":crummyconfig")
+	implementation project(":core-plus-minecraft-1.16.5-thru-1.21.1")
+}
+
+//fold in xplat resources and sources
+
+processResources {
+	from project(":common-1.21.1").sourceSets.main.resources
+	from project(":core").sourceSets.main.resources
+	from project(":crummyconfig").sourceSets.main.resources
+	from project(":core-plus-minecraft-1.16.5-thru-1.21.1").sourceSets.main.resources
+	
+	inputs.property "version", project.version
+	filesMatching("**/neoforge.mods.toml") {
+		expand "version": project.version
+	}
+}
+
+tasks.withType(JavaCompile) {
+	source(project(":common-1.21.1").sourceSets.main.allSource)
+	source(project(":core").sourceSets.main.allSource)
+	source(project(":crummyconfig").sourceSets.main.allSource)
+	source(project(":core-plus-minecraft-1.16.5-thru-1.21.1").sourceSets.main.allSource)
+}
+
+neoForge {
+  	version = "21.1.71"
+
+  	runs {
+	  	configureEach {
+		  	ideName = "NeoForge 1.21.1 ${it.name.capitalize()} (${project.path})"
+		}
+		client {
+		  	client()
+		}
+		server {
+		  	server()
+		}
+  	}
+
+  	mods {
+		testproject {
+		  	sourceSet sourceSets.main
+		}
+  	}
+}
+
+//conventional to include a jar manifest in forge mods, for whatever reason. idk, it doesn't hurt
+jar {
+  	manifest {
+		attributes([
+	  		"Specification-Title": "Apathy",
+	  		"Specification-Vendor": "quaternary",
+	  		"Specification-Version": "1",
+	  		"Implementation-Title": "Apathy",
+	  		"Implementation-Version": "${archiveVersion.get()}",
+	  		"Implementation-Vendor": "quaternary"
+		])
+  	}
+}
+
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
+}

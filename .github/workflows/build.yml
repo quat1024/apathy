@@ -11,11 +11,11 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
-      - uses: gradle/wrapper-validation-action@v1
+      - uses: gradle/actions/wrapper-validation@v4
 
-      - uses: gradle/gradle-build-action@v2.4.2
+      - uses: gradle/actions/setup-gradle@v4.1.0
         with:
           arguments: clean build
       

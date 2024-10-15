@@ -28,8 +28,6 @@ import java.util.concurrent.Executor;
 @Mod("apathy")
 public class NeoForgeInit extends Apathy121 {
 	public NeoForgeInit(IEventBus bus) {
-		LegacyToTomlUpgrader.doIt();
-
 		generalForgeSpec = new ModConfigSpec.Builder();
 		mobsForgeSpec = new ModConfigSpec.Builder();
 		bossForgeSpec = new ModConfigSpec.Builder();

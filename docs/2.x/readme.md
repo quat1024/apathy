@@ -4,7 +4,7 @@ Details how the mod works. Reading this is helpful if you want to write a detail
 
 ## `MOBS.md`
 
-Documents the config options in `config/apathy-mobs.toml` or `config/apathy/mobs.cfg`. This file configures the main "is X allowed to attack Y" rule.
+Documents the config options in `config/apathy-mobs.toml` or `config/apathy/mobs.cfg`. This file configures the main "is mob X allowed to attack player Y" rule.
 
 ## `GENERAL.md`
 

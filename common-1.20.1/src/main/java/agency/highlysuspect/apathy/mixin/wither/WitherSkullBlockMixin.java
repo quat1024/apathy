@@ -19,9 +19,14 @@ public class WitherSkullBlockMixin {
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
-		)
+		),
+		//Bukkit adds a two-argument addFreshEntity call for the purpose of allowing plugins to cancel the Wither,
+		//and due to Mohist, this ends up being my problem. It's trouble to support on my end (the second argument
+		//is a Bukkit specific type). If people want to cancel the Wither spawning on Mohist, they can go ahead and
+		//use a Bukkit plugin for it. https://github.com/quat1024/apathy/issues/34
+		require = 0
 	)
-	private static boolean apathy$yeet(Level level, Entity entity) {
+	private static boolean apathy$removeWither_regular(Level level, Entity entity) {
 		//If the difficulty is contained within the set, call the normal spawn method
 		if(Apathy.instance.bossCfg.get(CoreBossOptions.witherDifficulties).contains(MinecraftConv.toApathyDifficulty(level.getDifficulty()))) return level.addFreshEntity(entity);
 		

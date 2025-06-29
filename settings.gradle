@@ -1,3 +1,7 @@
+plugins {
+	id "org.gradle.toolchains.foojay-resolver-convention" version "1.0.0"
+}
+
 rootProject.name = "apathy"
 include(
 	"core",
@@ -12,20 +16,20 @@ include(
 	"common-1.20.1",
 	"fabric-1.20.1",
 	"forge-1.20.1",
-
-	"common-1.19.4",
-	"fabric-1.19.4",
-	"forge-1.19.4",
-
-	"common-1.19.2-begrudgingly", //please stop playing 1.19.2
-	"fabric-1.19.2-please-stop", //please stop playing 1.19.2
-	"forge-1.19.2-please-stop", //please stop playing 1.19.2
-
-	"common-1.18.2",
-	"fabric-1.18.2",
-	"forge-1.18.2",
-
-	"common-1.16.5",
-	"fabric-1.16.5"
-	//Forge 1.16 doesn't acutally use official mappings, rip
+//
+//	"common-1.19.4",
+//	"fabric-1.19.4",
+//	"forge-1.19.4",
+//
+//	"common-1.19.2-begrudgingly",
+//	"fabric-1.19.2-please-stop",
+//	"forge-1.19.2-please-stop",
+//
+//	"common-1.18.2",
+//	"fabric-1.18.2",
+//	"forge-1.18.2",
+//
+//	"common-1.16.5",
+//	"fabric-1.16.5"
+//	//Forge 1.16 doesn't acutally use official mappings, rip
 )

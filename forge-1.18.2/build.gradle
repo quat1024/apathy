@@ -20,6 +20,7 @@ buildscript {
 }
 
 evaluationDependsOn(":core")
+evaluationDependsOn(":core-plus-minecraft-1.16.5-thru-1.21.1")
 
 apply plugin: "java"
 apply plugin: "net.minecraftforge.gradle"

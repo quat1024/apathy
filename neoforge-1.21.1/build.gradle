@@ -11,11 +11,12 @@ buildscript {
 		mavenCentral()
   	}
 	dependencies {
-		classpath "net.neoforged.moddev:net.neoforged.moddev.gradle.plugin:2.0.42-beta"
+		classpath "net.neoforged.moddev:net.neoforged.moddev.gradle.plugin:2.0.96"
 	}
 }
 
 evaluationDependsOn(":core") // fuck gradle episode 151905106
+evaluationDependsOn(":core-plus-minecraft-1.16.5-thru-1.21.1")
 
 apply plugin: "java"
 apply plugin: "net.neoforged.moddev"

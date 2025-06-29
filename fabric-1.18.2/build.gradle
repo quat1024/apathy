@@ -10,9 +10,13 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath "fabric-loom:fabric-loom.gradle.plugin:1.8.9"
+		classpath "fabric-loom:fabric-loom.gradle.plugin:1.10.5"
 	}
 }
+
+evaluationDependsOn(":core")
+evaluationDependsOn(":crummyconfig")
+evaluationDependsOn(":core-plus-minecraft-1.16.5-thru-1.21.1")
 
 apply plugin: "java"
 apply plugin: "fabric-loom"

@@ -14,12 +14,13 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath "net.minecraftforge.gradle:ForgeGradle:6.0.29"
+		classpath "net.minecraftforge.gradle:ForgeGradle:6.0.36"
 		classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
 	}
 }
 
 evaluationDependsOn(":core")
+evaluationDependsOn(":core-plus-minecraft-1.16.5-thru-1.21.1")
 
 apply plugin: "java"
 apply plugin: "net.minecraftforge.gradle"

@@ -10,7 +10,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath "fabric-loom:fabric-loom.gradle.plugin:1.8.9"
+		classpath "fabric-loom:fabric-loom.gradle.plugin:1.10.5"
 	}
 }
 
